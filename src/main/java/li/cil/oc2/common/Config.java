@@ -45,6 +45,12 @@ public final class Config {
     @Path("admin.virtual_network") public static int ethernetFrameTimeToLive = 12;
     @Path("admin.virtual_network") public static int hubEthernetFramesPerTick = 32;
 
+    @Path("vxlan") public static boolean enable = false;
+    @Path("vxlan") public static String remoteHost = "::1";
+    @Path("vxlan") public static int remotePort = 4789;
+    @Path("vxlan") public static String bindHost = "::1";
+    @Path("vxlan") public static int bindPort = 4789;
+
     public static boolean computersUseEnergy() {
         return computerEnergyPerTick > 0 && computerEnergyStorage > 0;
     }
