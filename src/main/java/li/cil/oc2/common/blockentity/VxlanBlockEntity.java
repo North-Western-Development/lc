@@ -81,7 +81,9 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     public void onLoad() {
         super.onLoad();
 
-        System.out.println("Tunnel VTI: " + vti);
+        if (!level.isClientSide()) {
+            System.out.println("Tunnel VTI: " + vti);
+        }
         adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this);
     }
 

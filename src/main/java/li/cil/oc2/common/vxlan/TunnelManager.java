@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class TunnelManager {
 
     private final HashMap<Integer, TunnelInterface> tunnels = new HashMap<>();
-    private final DatagramSocket socket;
+    private DatagramSocket socket;
     private static TunnelManager INSTANCE;
     private final InetAddress remoteHost;
     private final short remotePort;
@@ -28,8 +28,8 @@ public class TunnelManager {
     public static void initialize() {
         try {
             INSTANCE = new TunnelManager(
-                InetAddress.getByName(Config.bindHost), (short) Config.bindPort,
-                InetAddress.getByName(Config.remoteHost), (short) Config.remotePort
+                InetAddress.getByName("2001:16b8:4908:5700:d22e:ecd:e75b:f5a8"), (short) Config.bindPort,
+                InetAddress.getByName("2001:470:7398::a"), (short) Config.remotePort
             );
         } catch (SocketException | UnknownHostException e) {
             System.out.println("Failed to bind host: " + e.getMessage());
