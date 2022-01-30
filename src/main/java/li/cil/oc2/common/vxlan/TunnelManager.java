@@ -2,6 +2,7 @@ package li.cil.oc2.common.vxlan;
 
 import li.cil.oc2.api.capabilities.NetworkInterface;
 import li.cil.oc2.common.Config;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.*;
@@ -9,11 +10,19 @@ import java.util.HashMap;
 
 public class TunnelManager {
 
-    private final HashMap<Integer, NetworkInterface> tunnels = new HashMap<>();
+    private final HashMap<Integer, TunnelInterface> tunnels = new HashMap<>();
     private final DatagramSocket socket;
     private static TunnelManager INSTANCE;
+    private final InetAddress remoteHost;
+    private final short remotePort;
+    private final InetAddress bindHost;
+    private final short bindPort;
 
     public TunnelManager(InetAddress bindHost, short bindPort, InetAddress remoteHost, short remotePort) throws SocketException {
+        this.remoteHost = remoteHost;
+        this.remotePort = remotePort;
+        this.bindHost = bindHost;
+        this.bindPort = bindPort;
         socket = new DatagramSocket(bindPort, bindHost);
         socket.connect(remoteHost, remotePort);
     }
@@ -29,12 +38,7 @@ public class TunnelManager {
                 e.printStackTrace();
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    INSTANCE.listen();
-                }
-            }).start();
+            new Thread(() -> INSTANCE.listen()).start();
         }
     }
 
@@ -50,19 +54,21 @@ public class TunnelManager {
                 }
 
                 byte flags = packet.getData()[0];
-                int vni_1 = packet.getData()[4];
+                int vni = packet.getData()[6]
+                    + packet.getData()[5] << 8
+                    + packet.getData()[4] << 16;
 
                 if ((flags & 0x08) != 0x08) {
                     continue;
                 }
 
-                NetworkInterface iface = tunnels.get(vni);
+                TunnelInterface iface = tunnels.get(vni);
 
                 if (iface != null) {
                     byte[] inner = new byte[packet.getData().length - 8];
-                    copyBytes(packet.getData(), inner, 8, 0, packet.getData().length - 8);
+                    System.arraycopy(packet.getData(), 8, inner, 0, packet.getData().length - 8);
 
-                    iface.writeEthernetFrame(null, inner, 255);
+                    iface.target.writeEthernetFrame(iface, inner, 255);
                 }
             }
         } catch (IOException e) {
@@ -74,9 +80,44 @@ public class TunnelManager {
         return INSTANCE;
     }
 
-    private void copyBytes(byte[] input, byte[] output, int inputOffset, int outputOffset, int length) {
-        for (int i = 0; i < length; i++) {
-            output[outputOffset + i] = input[inputOffset + i];
+    public void sendToVti(int vti, byte[] payload) {
+        byte[] buffer = new byte[payload.length + 8];
+
+        System.arraycopy(payload, 0, buffer, 8, payload.length);
+
+        buffer[0] = 0x08;
+        buffer[4] = (byte) ((vti >> 16) & 0xff);
+        buffer[5] = (byte) ((vti >> 8) & 0xff);
+        buffer[6] = (byte) (vti & 0xff);
+
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, this.remoteHost, this.remotePort);
+    }
+
+    public void registerVti(int vti, NetworkInterface iface) {
+        tunnels.put(vti, new TunnelInterface(vti, iface));
+    }
+
+    public void unregisterVti(int vti) {
+        tunnels.remove(vti);
+    }
+
+    public class TunnelInterface implements NetworkInterface {
+        final NetworkInterface target;
+        private final int vti;
+
+        public TunnelInterface(int vti, NetworkInterface iface) {
+            this.vti = vti;
+            this.target = iface;
+        }
+
+        @Override
+        public byte[] readEthernetFrame() {
+            return new byte[0];
+        }
+
+        @Override
+        public void writeEthernetFrame(final NetworkInterface source, final byte[] frame, final int timeToLive) {
+            TunnelManager.this.sendToVti(vti, frame);
         }
     }
 }

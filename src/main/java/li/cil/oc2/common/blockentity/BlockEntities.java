@@ -26,6 +26,7 @@ public final class BlockEntities {
     public static final RegistryObject<BlockEntityType<NetworkHubBlockEntity>> NETWORK_HUB = register(Blocks.NETWORK_HUB, NetworkHubBlockEntity::new);
     public static final RegistryObject<BlockEntityType<ProjectorBlockEntity>> PROJECTOR = register(Blocks.PROJECTOR, ProjectorBlockEntity::new);
     public static final RegistryObject<BlockEntityType<RedstoneInterfaceBlockEntity>> REDSTONE_INTERFACE = register(Blocks.REDSTONE_INTERFACE, RedstoneInterfaceBlockEntity::new);
+    public static final RegistryObject<BlockEntityType<VxlanBlockEntity>> VXLAN_HUB = register(Blocks.VXLAN_HUB, VxlanBlockEntity::new);
 
     ///////////////////////////////////////////////////////////////////
 
