@@ -16,12 +16,18 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.stream.Stream;
 
-public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInterface {
+public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInterface, TickableBlockEntity {
     private static final int TTL_COST = 1;
-    private int vti = ((int) (Math.random() * Integer.MAX_VALUE)) & 0x00ff_ffff;
+    //private int vti = ((int) (Math.random() * Integer.MAX_VALUE)) & 0x00ff_ffff;
+    private int vti = 4037973;
     private boolean initialized = false;
+
+    private BlockingQueue<byte[]> packetQueue = new ArrayBlockingQueue<byte[]>(32);
 
     ///////////////////////////////////////////////////////////////////
 
@@ -32,8 +38,9 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     ///////////////////////////////////////////////////////////////////
 
     public VxlanBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.NETWORK_HUB.get(), pos, state);
+        super(BlockEntities.VXLAN_HUB.get(), pos, state);
     }
+
 
     ///////////////////////////////////////////////////////////////////
 
@@ -55,24 +62,47 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
         });
     }
 
+    @Override
+    public void serverTick() {
+        if (level == null) {
+            return;
+        }
+
+        if (adjacentBlockInterfaces[0] != null) {
+            packetQueue.forEach(packet -> {
+                writeEthernetFrame(adjacentBlockInterfaces[0], packet, 255);
+            });
+            packetQueue.clear();
+        } else {
+            System.out.printf("VXLAN block is unregistered upstream: VTI=%d\n", vti);
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        vti = tag.getInt("vti");
+        if (!level.isClientSide()) {
+            // vti = tag.getInt("vti");
+            adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, packetQueue);
+        }
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putInt("vti", vti);
+        if (!level.isClientSide()) {
+            tag.putInt("vti", vti);
+        }
     }
 
     @Override
     protected void onUnload(final boolean isRemove) {
-        adjacentBlockInterfaces[0] = null;
-        TunnelManager.instance().unregisterVti(vti);
+        if (!level.isClientSide()) {
+            adjacentBlockInterfaces[0] = null;
+            TunnelManager.instance().unregisterVti(vti);
+        }
 
         super.onUnload(isRemove);
     }
@@ -83,11 +113,13 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
 
         if (!level.isClientSide()) {
             System.out.println("Tunnel VTI: " + vti);
+            adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this.packetQueue);
         }
-        adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this);
     }
 
     ///////////////////////////////////////////////////////////////////
+
+
 
     @Override
     protected void collectCapabilities(final CapabilityCollector collector, @Nullable final Direction direction) {

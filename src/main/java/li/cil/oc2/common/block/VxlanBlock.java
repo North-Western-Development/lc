@@ -2,6 +2,7 @@ package li.cil.oc2.common.block;
 
 import li.cil.oc2.common.blockentity.BlockEntities;
 import li.cil.oc2.common.blockentity.NetworkHubBlockEntity;
+import li.cil.oc2.common.blockentity.TickableBlockEntity;
 import li.cil.oc2.common.blockentity.VxlanBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,6 +13,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
@@ -50,6 +53,12 @@ public final class VxlanBlock extends HorizontalDirectionalBlock implements Enti
     @Override
     public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
         return BlockEntities.VXLAN_HUB.get().create(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> type) {
+        return TickableBlockEntity.createServerTicker(level, type, BlockEntities.VXLAN_HUB.get());
     }
 
     ///////////////////////////////////////////////////////////////////

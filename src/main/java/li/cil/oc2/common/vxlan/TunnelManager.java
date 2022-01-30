@@ -2,11 +2,11 @@ package li.cil.oc2.common.vxlan;
 
 import li.cil.oc2.api.capabilities.NetworkInterface;
 import li.cil.oc2.common.Config;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
+import java.util.concurrent.BlockingQueue;
 
 public class TunnelManager {
 
@@ -28,8 +28,8 @@ public class TunnelManager {
     public static void initialize() {
         try {
             INSTANCE = new TunnelManager(
-                InetAddress.getByName("2001:16b8:4908:5700:d22e:ecd:e75b:f5a8"), (short) Config.bindPort,
-                InetAddress.getByName("2001:470:7398::a"), (short) Config.remotePort
+                InetAddress.getByName("2001:470:7398::a"), (short) Config.bindPort,
+                InetAddress.getByName("2001:470:7398::10"), (short) Config.remotePort
             );
         } catch (SocketException | UnknownHostException e) {
             System.out.println("Failed to bind host: " + e.getMessage());
@@ -37,13 +37,15 @@ public class TunnelManager {
         }
 
         //if (Config.enable) {
-            new Thread(() -> {
+            Thread bgThread = new Thread(() -> {
                 try {
                     INSTANCE.listen();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }).start();
+            });
+            bgThread.setName("VXLAN Background Thread");
+            bgThread.start();
         //}
     }
 
@@ -52,7 +54,7 @@ public class TunnelManager {
 
         //if (Config.enable) {
         socket = new DatagramSocket(bindPort/*, bindHost*/);
-        socket.connect(remoteHost, remotePort);
+        //socket.connect(remoteHost, remotePort);
         //} else {
         //    socket = null;
         //}
@@ -62,28 +64,33 @@ public class TunnelManager {
         while (true) {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
-            System.out.println("Received message");
 
-            if (packet.getData().length < 8) {
+            if (packet.getLength() < 8) {
                 continue;
             }
 
             byte flags = packet.getData()[0];
-            int vni = packet.getData()[6]
-                + packet.getData()[5] << 8
-                + packet.getData()[4] << 16;
+            int vni = (packet.getData()[6] & 0xFF )
+                | ( ( packet.getData()[5] & 0xFF ) << 8 )
+                | ( ( packet.getData()[4] & 0xFF ) << 16 );
 
             if ((flags & 0x08) != 0x08) {
                 continue;
             }
 
+            System.out.println(vni);
+
             TunnelInterface iface = tunnels.get(vni);
 
             if (iface != null) {
-                byte[] inner = new byte[packet.getData().length - 8];
-                System.arraycopy(packet.getData(), 8, inner, 0, packet.getData().length - 8);
+                byte[] inner = new byte[packet.getLength() - 8];
+                System.arraycopy(packet.getData(), 8, inner, 0, packet.getLength() - 8);
 
-                iface.target.writeEthernetFrame(iface, inner, 255);
+                try {
+                    iface.packetQueue.add(inner);
+                } catch (IllegalStateException ignored) {
+                    System.err.println("Queue full");
+                }
             }
         }
     }
@@ -92,8 +99,9 @@ public class TunnelManager {
         return INSTANCE;
     }
 
-    public void sendToVti(int vti, byte[] payload) {
+    public void sendToOuternet(int vti, byte[] payload) {
         if (socket != null) {
+
             byte[] buffer = new byte[payload.length + 8];
 
             System.arraycopy(payload, 0, buffer, 8, payload.length);
@@ -110,11 +118,13 @@ public class TunnelManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            System.out.printf("No socket in TunnelManager\n");
         }
     }
 
-    public NetworkInterface registerVti(int vti, NetworkInterface iface) {
-        TunnelInterface tuniface = new TunnelInterface(vti, iface);
+    public NetworkInterface registerVti(int vti, BlockingQueue<byte[]> packetQueue) {
+        TunnelInterface tuniface = new TunnelInterface(vti, packetQueue);
         tunnels.put(vti, tuniface);
         return tuniface;
     }
@@ -124,13 +134,14 @@ public class TunnelManager {
     }
 
     public class TunnelInterface implements NetworkInterface {
-        final NetworkInterface target;
+        final BlockingQueue<byte[]> packetQueue;
         private final int vti;
 
-        public TunnelInterface(int vti, NetworkInterface iface) {
+        public TunnelInterface(int vti, BlockingQueue<byte[]> packetQueue) {
             this.vti = vti;
-            this.target = iface;
+            this.packetQueue = packetQueue;
         }
+
 
         @Override
         public byte[] readEthernetFrame() {
@@ -139,7 +150,7 @@ public class TunnelManager {
 
         @Override
         public void writeEthernetFrame(final NetworkInterface source, final byte[] frame, final int timeToLive) {
-            TunnelManager.this.sendToVti(vti, frame);
+            TunnelManager.this.sendToOuternet(vti, frame);
         }
     }
 }
