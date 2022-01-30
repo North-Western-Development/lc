@@ -23,61 +23,68 @@ public class TunnelManager {
         this.remotePort = remotePort;
         this.bindHost = bindHost;
         this.bindPort = bindPort;
-        if (Config.enable) {
-            socket = new DatagramSocket(bindPort, bindHost);
-            socket.connect(remoteHost, remotePort);
-        } else {
-            socket = null;
-        }
     }
 
     public static void initialize() {
-
         try {
             INSTANCE = new TunnelManager(
                 InetAddress.getByName(Config.bindHost), (short) Config.bindPort,
                 InetAddress.getByName(Config.remoteHost), (short) Config.remotePort
             );
         } catch (SocketException | UnknownHostException e) {
+            System.out.println("Failed to bind host: " + e.getMessage());
             e.printStackTrace();
         }
 
-        if (Config.enable) {
-            new Thread(() -> INSTANCE.listen()).start();
-        }
+        //if (Config.enable) {
+            new Thread(() -> {
+                try {
+                    INSTANCE.listen();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        //}
     }
 
-    public void listen() {
+    public void listen() throws IOException {
+        System.out.printf("Binding %s:%s\n", bindHost, bindPort);
+
+        //if (Config.enable) {
+        socket = new DatagramSocket(bindPort/*, bindHost*/);
+        socket.connect(remoteHost, remotePort);
+        //} else {
+        //    socket = null;
+        //}
+        System.out.printf("Bind successful: connected=%s bound=%s\n", socket.isConnected(), socket.isBound());
+
         byte[] buffer = new byte[65535];
-        try {
-            while (true) {
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
+        while (true) {
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
+            System.out.println("Received message");
 
-                if (packet.getData().length < 8) {
-                    continue;
-                }
-
-                byte flags = packet.getData()[0];
-                int vni = packet.getData()[6]
-                    + packet.getData()[5] << 8
-                    + packet.getData()[4] << 16;
-
-                if ((flags & 0x08) != 0x08) {
-                    continue;
-                }
-
-                TunnelInterface iface = tunnels.get(vni);
-
-                if (iface != null) {
-                    byte[] inner = new byte[packet.getData().length - 8];
-                    System.arraycopy(packet.getData(), 8, inner, 0, packet.getData().length - 8);
-
-                    iface.target.writeEthernetFrame(iface, inner, 255);
-                }
+            if (packet.getData().length < 8) {
+                continue;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            byte flags = packet.getData()[0];
+            int vni = packet.getData()[6]
+                + packet.getData()[5] << 8
+                + packet.getData()[4] << 16;
+
+            if ((flags & 0x08) != 0x08) {
+                continue;
+            }
+
+            TunnelInterface iface = tunnels.get(vni);
+
+            if (iface != null) {
+                byte[] inner = new byte[packet.getData().length - 8];
+                System.arraycopy(packet.getData(), 8, inner, 0, packet.getData().length - 8);
+
+                iface.target.writeEthernetFrame(iface, inner, 255);
+            }
         }
     }
 
