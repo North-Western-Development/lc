@@ -47,9 +47,9 @@ public final class Config {
 
     @Path("vxlan") public static boolean enable = false;
     @Path("vxlan") public static String remoteHost = "::1";
-    @Path("vxlan") public static short remotePort = 4789;
+    @Path("vxlan") public static int remotePort = 4789;
     @Path("vxlan") public static String bindHost = "::1";
-    @Path("vxlan") public static short bindPort = 4789;
+    @Path("vxlan") public static int bindPort = 4789;
 
     public static boolean computersUseEnergy() {
         return computerEnergyPerTick > 0 && computerEnergyStorage > 0;

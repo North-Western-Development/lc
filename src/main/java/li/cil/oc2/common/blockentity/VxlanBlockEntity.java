@@ -64,6 +64,12 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     }
 
     @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putInt("vti", vti);
+    }
+
+    @Override
     protected void onUnload(final boolean isRemove) {
         adjacentBlockInterfaces[0] = null;
         TunnelManager.instance().unregisterVti(vti);

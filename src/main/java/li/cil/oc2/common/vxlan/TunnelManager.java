@@ -23,21 +23,26 @@ public class TunnelManager {
         this.remotePort = remotePort;
         this.bindHost = bindHost;
         this.bindPort = bindPort;
-        socket = new DatagramSocket(bindPort, bindHost);
-        socket.connect(remoteHost, remotePort);
+        if (Config.enable) {
+            socket = new DatagramSocket(bindPort, bindHost);
+            socket.connect(remoteHost, remotePort);
+        } else {
+            socket = null;
+        }
     }
 
     public static void initialize() {
-        if (Config.enable) {
-            try {
-                INSTANCE = new TunnelManager(
-                    InetAddress.getByName(Config.bindHost), Config.bindPort,
-                    InetAddress.getByName(Config.remoteHost), Config.remotePort
-                );
-            } catch (SocketException | UnknownHostException e) {
-                e.printStackTrace();
-            }
 
+        try {
+            INSTANCE = new TunnelManager(
+                InetAddress.getByName(Config.bindHost), (short) Config.bindPort,
+                InetAddress.getByName(Config.remoteHost), (short) Config.remotePort
+            );
+        } catch (SocketException | UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        if (Config.enable) {
             new Thread(() -> INSTANCE.listen()).start();
         }
     }
@@ -81,16 +86,24 @@ public class TunnelManager {
     }
 
     public void sendToVti(int vti, byte[] payload) {
-        byte[] buffer = new byte[payload.length + 8];
+        if (socket != null) {
+            byte[] buffer = new byte[payload.length + 8];
 
-        System.arraycopy(payload, 0, buffer, 8, payload.length);
+            System.arraycopy(payload, 0, buffer, 8, payload.length);
 
-        buffer[0] = 0x08;
-        buffer[4] = (byte) ((vti >> 16) & 0xff);
-        buffer[5] = (byte) ((vti >> 8) & 0xff);
-        buffer[6] = (byte) (vti & 0xff);
+            buffer[0] = 0x08;
+            buffer[4] = (byte) ((vti >> 16) & 0xff);
+            buffer[5] = (byte) ((vti >> 8) & 0xff);
+            buffer[6] = (byte) (vti & 0xff);
 
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, this.remoteHost, this.remotePort);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, this.remoteHost, this.remotePort);
+
+            try {
+                socket.send(packet);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public NetworkInterface registerVti(int vti, NetworkInterface iface) {
