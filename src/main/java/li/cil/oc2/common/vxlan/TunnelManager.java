@@ -93,8 +93,10 @@ public class TunnelManager {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, this.remoteHost, this.remotePort);
     }
 
-    public void registerVti(int vti, NetworkInterface iface) {
-        tunnels.put(vti, new TunnelInterface(vti, iface));
+    public NetworkInterface registerVti(int vti, NetworkInterface iface) {
+        TunnelInterface tuniface = new TunnelInterface(vti, iface);
+        tunnels.put(vti, tuniface);
+        return tuniface;
     }
 
     public void unregisterVti(int vti) {

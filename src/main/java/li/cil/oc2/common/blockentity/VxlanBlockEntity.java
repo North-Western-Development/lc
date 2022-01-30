@@ -65,6 +65,7 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
 
     @Override
     protected void onUnload(final boolean isRemove) {
+        adjacentBlockInterfaces[0] = null;
         TunnelManager.instance().unregisterVti(vti);
 
         super.onUnload(isRemove);
@@ -74,7 +75,8 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     public void onLoad() {
         super.onLoad();
 
-        TunnelManager.instance().registerVti(vti, this);
+        System.out.println("Tunnel VTI: " + vti);
+        adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this);
     }
 
     ///////////////////////////////////////////////////////////////////
