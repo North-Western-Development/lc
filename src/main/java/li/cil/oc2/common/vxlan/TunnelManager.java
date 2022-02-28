@@ -28,15 +28,15 @@ public class TunnelManager {
     public static void initialize() {
         try {
             INSTANCE = new TunnelManager(
-                InetAddress.getByName("2001:470:7398::a"), (short) Config.bindPort,
-                InetAddress.getByName("2001:470:7398::10"), (short) Config.remotePort
+                InetAddress.getByName(Config.bindHost), (short) Config.bindPort,
+                InetAddress.getByName(Config.remoteHost), (short) Config.remotePort
             );
         } catch (SocketException | UnknownHostException e) {
             System.out.println("Failed to bind host: " + e.getMessage());
             e.printStackTrace();
         }
 
-        //if (Config.enable) {
+        if (Config.enable) {
             Thread bgThread = new Thread(() -> {
                 try {
                     INSTANCE.listen();
@@ -46,18 +46,17 @@ public class TunnelManager {
             });
             bgThread.setName("VXLAN Background Thread");
             bgThread.start();
-        //}
+        }
     }
 
     public void listen() throws IOException {
         System.out.printf("Binding %s:%s\n", bindHost, bindPort);
 
-        //if (Config.enable) {
-        socket = new DatagramSocket(bindPort/*, bindHost*/);
-        //socket.connect(remoteHost, remotePort);
-        //} else {
-        //    socket = null;
-        //}
+        if (Config.enable) {
+            socket = new DatagramSocket(bindPort, bindHost);
+        } else {
+            socket = null;
+        }
         System.out.printf("Bind successful: connected=%s bound=%s\n", socket.isConnected(), socket.isBound());
 
         byte[] buffer = new byte[65535];

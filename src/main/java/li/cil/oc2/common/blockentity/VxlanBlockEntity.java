@@ -83,10 +83,6 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        if (!level.isClientSide()) {
-            // vti = tag.getInt("vti");
-            adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, packetQueue);
-        }
     }
 
     @Override
@@ -108,13 +104,9 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-
-        if (!level.isClientSide()) {
-            System.out.println("Tunnel VTI: " + vti);
-            adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this.packetQueue);
-        }
+    public void loadServer() {
+        System.out.println("Tunnel VTI: " + vti);
+        adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this.packetQueue);
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -123,7 +115,7 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
 
     @Override
     protected void collectCapabilities(final CapabilityCollector collector, @Nullable final Direction direction) {
-        collector.offer(Capabilities.NETWORK_INTERFACE, this);
+        collector.offer(Capabilities.networkInterface(), this);
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -152,7 +144,7 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
         for (final Direction side : Constants.DIRECTIONS) {
             final BlockEntity neighborBlockEntity = LevelUtils.getBlockEntityIfChunkExists(level, pos.relative(side));
             if (neighborBlockEntity != null) {
-                final LazyOptional<NetworkInterface> optional = neighborBlockEntity.getCapability(Capabilities.NETWORK_INTERFACE, side.getOpposite());
+                final LazyOptional<NetworkInterface> optional = neighborBlockEntity.getCapability(Capabilities.networkInterface(), side.getOpposite());
                 optional.ifPresent(adjacentInterface -> {
                     adjacentBlockInterfaces[side.get3DDataValue() + 1] = adjacentInterface;
                     LazyOptionalUtils.addWeakListener(optional, this, (hub, unused) -> hub.handleNeighborChanged());
