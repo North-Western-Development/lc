@@ -24,6 +24,7 @@ public final class Blocks {
     public static final RegistryObject<NetworkSwitchBlock> NETWORK_SWITCH = BLOCKS.register("network_switch", NetworkSwitchBlock::new);
     public static final RegistryObject<ProjectorBlock> PROJECTOR = BLOCKS.register("projector", ProjectorBlock::new);
     public static final RegistryObject<RedstoneInterfaceBlock> REDSTONE_INTERFACE = BLOCKS.register("redstone_interface", RedstoneInterfaceBlock::new);
+    public static final RegistryObject<VxlanBlock> VXLAN_HUB = BLOCKS.register("vxlan_hub", VxlanBlock::new);
 
     ///////////////////////////////////////////////////////////////////
 
