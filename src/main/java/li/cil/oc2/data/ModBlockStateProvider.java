@@ -28,6 +28,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
     private static final ResourceLocation NETWORK_HUB_MODEL = new ResourceLocation(API.MOD_ID, "block/network_hub");
     private static final ResourceLocation PROJECTOR_MODEL = new ResourceLocation(API.MOD_ID, "block/projector");
     private static final ResourceLocation REDSTONE_INTERFACE_MODEL = new ResourceLocation(API.MOD_ID, "block/redstone_interface");
+    private static final ResourceLocation PCI_CARD_CAGE_MODEL = new ResourceLocation(API.MOD_ID, "block/pci_card_cage");
+
 
     public ModBlockStateProvider(final DataGenerator generator, final ExistingFileHelper existingFileHelper) {
         super(generator, API.MOD_ID, existingFileHelper);
@@ -57,6 +59,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(Blocks.NETWORK_SWITCH, Items.NETWORK_SWITCH, NETWORK_HUB_MODEL);
         horizontalBlock(Blocks.PROJECTOR, Items.PROJECTOR, PROJECTOR_MODEL);
         horizontalBlock(Blocks.REDSTONE_INTERFACE, Items.REDSTONE_INTERFACE, REDSTONE_INTERFACE_MODEL);
+        horizontalBlock(Blocks.PCI_CARD_CAGE, Items.PCI_CARD_CAGE, PCI_CARD_CAGE_MODEL);
 
         registerCableStates();
     }

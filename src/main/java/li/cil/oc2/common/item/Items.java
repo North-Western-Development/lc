@@ -35,6 +35,7 @@ public final class Items {
     public static final RegistryObject<Item> PROJECTOR = register(Blocks.PROJECTOR);
     public static final RegistryObject<Item> REDSTONE_INTERFACE = register(Blocks.REDSTONE_INTERFACE);
     public static final RegistryObject<Item> VXLAN_HUB = register(Blocks.VXLAN_HUB);
+    public static final RegistryObject<Item> PCI_CARD_CAGE = register(Blocks.PCI_CARD_CAGE);
 
     ///////////////////////////////////////////////////////////////////
 
