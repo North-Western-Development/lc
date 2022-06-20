@@ -30,10 +30,10 @@ public final class PciRootPortDevice implements MemoryMappedDevice {
         this.buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
 
         this.buffer.putInt(0, 0x12345678);
-        this.buffer.putInt(4, 0);
+        this.buffer.putInt(4, 2);
         this.buffer.putInt(8, 0xFF000000);
         this.buffer.putInt(12, 0x00000101);
-        this.buffer.putInt(16, 0x40000000);
+        this.buffer.putInt(0x10, 0x00000000);
         this.buffer.putInt(0x2C, 0x12345678);
 
 
@@ -62,7 +62,14 @@ public final class PciRootPortDevice implements MemoryMappedDevice {
     @Override
     public long load(final int offset, final int sizeLog2) throws MemoryAccessException {
         if (offset >= 0 && offset <= length - (1 << sizeLog2)) {
-            System.out.println(String.format("PCI config read: %x", offset));
+            System.out.println(String.format("PCI config read: %x %x", offset, sizeLog2));
+            if (offset == 0x10) {
+                long res = buffer.getInt(offset);
+                System.out.println(String.format("        00:00.0 BAR0 read    %x", res));
+                res = res & 0xFFFFF000L;
+                System.out.println(String.format("Clipped 00:00.0 BAR0 read to %x", res));
+                return res;
+            }
             return switch (sizeLog2) {
                 case 0 -> buffer.get(offset);
                 case 1 -> buffer.getShort(offset);

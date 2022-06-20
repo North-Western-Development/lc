@@ -41,8 +41,10 @@ public final class PciRootPortDeviceProvider implements DeviceTreeProvider {
             .addProp(DevicePropertyNames.NUM_ADDRESS_CELLS,3)
             .addProp(DevicePropertyNames.NUM_SIZE_CELLS, 2)
             .addProp("bus-range", 0, 1)
-            .addProp("linux,pci-probe-only", 1)
-            .addProp(DevicePropertyNames.RANGES, 0x02000000, 0, 0x40000000, 0x40000000, 0, 0x20000000);
+            //.addProp("linux,pci-probe-only", 1)
+            .addProp(DevicePropertyNames.RANGES,
+                //          type       pci.hi      pci.lo      cpu.hi       cpu.lo     len.hi      len.lo
+                0x02000000, 0x00000000, 0x40000000, 0x00000000, 0x40000000, 0x00000000, 0x20000000); //
     }
 }
 
