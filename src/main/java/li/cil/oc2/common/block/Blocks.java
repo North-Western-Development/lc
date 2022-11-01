@@ -2,8 +2,10 @@
 
 package li.cil.oc2.common.block;
 
+import li.cil.oc2.common.blockentity.VxlanBlockEntity;
 import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -25,6 +27,8 @@ public final class Blocks {
     public static final RegistryObject<ProjectorBlock> PROJECTOR = BLOCKS.register("projector", ProjectorBlock::new);
     public static final RegistryObject<RedstoneInterfaceBlock> REDSTONE_INTERFACE = BLOCKS.register("redstone_interface", RedstoneInterfaceBlock::new);
     public static final RegistryObject<VxlanBlock> VXLAN_HUB = BLOCKS.register("vxlan_hub", VxlanBlock::new);
+    public static final RegistryObject<PciCardCageBlock> PCI_CARD_CAGE = BLOCKS.register("pci_card_cage", PciCardCageBlock::new);
+
 
     ///////////////////////////////////////////////////////////////////
 

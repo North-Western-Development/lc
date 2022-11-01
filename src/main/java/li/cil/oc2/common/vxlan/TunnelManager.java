@@ -28,8 +28,8 @@ public class TunnelManager {
     public static void initialize() {
         try {
             INSTANCE = new TunnelManager(
-                InetAddress.getByName(Config.bindHost), (short) Config.bindPort,
-                InetAddress.getByName(Config.remoteHost), (short) Config.remotePort
+                InetAddress.getByName("2001:16b8:4908:5700:d22e:ecd:e75b:f5a8"), (short) 4789,
+                InetAddress.getByName("2001:470:7398::a"), (short) 4789
             );
         } catch (SocketException | UnknownHostException e) {
             System.out.println("Failed to bind host: " + e.getMessage());
