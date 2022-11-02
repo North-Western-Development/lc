@@ -2,6 +2,9 @@ package li.cil.oc2.common.vxlan;
 
 import li.cil.oc2.api.capabilities.NetworkInterface;
 import li.cil.oc2.common.Config;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.*;
@@ -9,6 +12,7 @@ import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
 public class TunnelManager {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final HashMap<Integer, TunnelInterface> tunnels = new HashMap<>();
     private DatagramSocket socket;
@@ -26,14 +30,16 @@ public class TunnelManager {
     }
 
     public static void initialize() {
+        LOGGER.info("Initializing outernet tunnel manager");
+
         try {
             INSTANCE = new TunnelManager(
-                InetAddress.getByName("2001:16b8:4908:5700:d22e:ecd:e75b:f5a8"), (short) 4789,
-                InetAddress.getByName("2001:470:7398::a"), (short) 4789
+                InetAddress.getByName(Config.bindHost), (short) Config.bindPort,
+                InetAddress.getByName(Config.remoteHost), (short) Config.remotePort
             );
         } catch (SocketException | UnknownHostException e) {
-            System.out.println("Failed to bind host: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Failed to bind to configured address: " + e.getMessage());
+            LOGGER.error(e);
         }
 
         if (Config.enable) {
@@ -41,7 +47,7 @@ public class TunnelManager {
                 try {
                     INSTANCE.listen();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e);
                 }
             });
             bgThread.setName("VXLAN Background Thread");
@@ -50,14 +56,14 @@ public class TunnelManager {
     }
 
     public void listen() throws IOException {
-        System.out.printf("Binding %s:%s\n", bindHost, bindPort);
+        LOGGER.printf(Level.INFO, "Binding %s:%s\n", bindHost, bindPort);
 
         if (Config.enable) {
             socket = new DatagramSocket(bindPort, bindHost);
         } else {
             socket = null;
         }
-        System.out.printf("Bind successful: connected=%s bound=%s\n", socket.isConnected(), socket.isBound());
+        LOGGER.printf(Level.INFO, "Bind successful: connected=%s bound=%s\n", socket.isConnected(), socket.isBound());
 
         byte[] buffer = new byte[65535];
         while (true) {
@@ -88,7 +94,7 @@ public class TunnelManager {
                 try {
                     iface.packetQueue.add(inner);
                 } catch (IllegalStateException ignored) {
-                    System.err.println("Queue full");
+                    LOGGER.error("Queue full");
                 }
             }
         }
@@ -118,7 +124,7 @@ public class TunnelManager {
                 e.printStackTrace();
             }
         } else {
-            System.out.printf("No socket in TunnelManager\n");
+            LOGGER.error("No socket in TunnelManager\n");
         }
     }
 

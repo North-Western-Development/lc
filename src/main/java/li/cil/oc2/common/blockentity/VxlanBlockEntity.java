@@ -69,9 +69,7 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
         }
 
         if (adjacentBlockInterfaces[0] != null) {
-            packetQueue.forEach(packet -> {
-                writeEthernetFrame(adjacentBlockInterfaces[0], packet, 255);
-            });
+            packetQueue.forEach(packet -> writeEthernetFrame(adjacentBlockInterfaces[0], packet, 255));
             packetQueue.clear();
         } else {
             System.out.printf("VXLAN block is unregistered upstream: VTI=%d\n", vti);
@@ -105,7 +103,6 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
 
     @Override
     public void loadServer() {
-        System.out.println("Tunnel VTI: " + vti);
         adjacentBlockInterfaces[0] = TunnelManager.instance().registerVti(vti, this.packetQueue);
     }
 

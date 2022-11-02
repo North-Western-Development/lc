@@ -1,7 +1,6 @@
 package li.cil.oc2.common.block;
 
 import li.cil.oc2.common.blockentity.BlockEntities;
-import li.cil.oc2.common.blockentity.NetworkHubBlockEntity;
 import li.cil.oc2.common.blockentity.TickableBlockEntity;
 import li.cil.oc2.common.blockentity.VxlanBlockEntity;
 import net.minecraft.core.BlockPos;
