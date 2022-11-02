@@ -23,7 +23,6 @@ import li.cil.oc2.common.tags.ItemTags;
 import li.cil.oc2.common.util.RegistryUtils;
 import li.cil.oc2.common.util.SoundEvents;
 import li.cil.oc2.common.vm.provider.DeviceTreeProviders;
-import li.cil.oc2.common.vxlan.TunnelManager;
 import li.cil.sedna.Sedna;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -58,7 +57,6 @@ public final class Main {
 
         BlockDeviceDataRegistry.initialize();
         FirmwareRegistry.initialize();
-        TunnelManager.initialize();
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manuals::initialize);
 
