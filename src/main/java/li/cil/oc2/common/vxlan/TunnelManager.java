@@ -121,7 +121,7 @@ public class TunnelManager {
             try {
                 socket.send(packet);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e);
             }
         } else {
             LOGGER.error("No socket in TunnelManager\n");
