@@ -1,6 +1,7 @@
 package li.cil.oc2.common.blockentity;
 
 import li.cil.oc2.api.capabilities.NetworkInterface;
+import li.cil.oc2.common.Config;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.capabilities.Capabilities;
 import li.cil.oc2.common.util.LazyOptionalUtils;
@@ -16,7 +17,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Stream;
@@ -25,7 +25,8 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     private static final int TTL_COST = 1;
     //private int vti = ((int) (Math.random() * Integer.MAX_VALUE)) & 0x00ff_ffff;
     private int vti = 4037973;
-    private boolean initialized = false;
+    private int frameCount;
+    private long lastGameTime;
 
     private BlockingQueue<byte[]> packetQueue = new ArrayBlockingQueue<byte[]>(32);
 
@@ -55,6 +56,20 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
 
     @Override
     public void writeEthernetFrame(final NetworkInterface source, final byte[] frame, final int timeToLive) {
+        if (level == null) {
+            return;
+        }
+
+        final long gameTime = level.getGameTime();
+        if (gameTime > lastGameTime) {
+            lastGameTime = gameTime;
+            frameCount = 1;
+        } else if (frameCount > Config.hubEthernetFramesPerTick) {
+            return;
+        } else {
+            frameCount++;
+        }
+
         getAdjacentInterfaces().forEach(adjacentInterface -> {
             if (adjacentInterface != source) {
                 adjacentInterface.writeEthernetFrame(this, frame, timeToLive - TTL_COST);
@@ -81,6 +96,9 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        if (!level.isClientSide() && tag.contains("vti")) {
+            vti = tag.getInt("vti");
+        }
     }
 
     @Override

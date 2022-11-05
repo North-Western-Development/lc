@@ -61,7 +61,7 @@ public class TunnelManager {
         if (Config.enable) {
             socket = new DatagramSocket(bindPort, bindHost);
         } else {
-            socket = null;
+            return;
         }
         LOGGER.printf(Level.INFO, "Bind successful: connected=%s bound=%s\n", socket.isConnected(), socket.isBound());
 
@@ -83,7 +83,7 @@ public class TunnelManager {
                 continue;
             }
 
-            System.out.println(vni);
+            LOGGER.debug("recv on vti " + vni);
 
             TunnelInterface iface = tunnels.get(vni);
 
@@ -91,11 +91,8 @@ public class TunnelManager {
                 byte[] inner = new byte[packet.getLength() - 8];
                 System.arraycopy(packet.getData(), 8, inner, 0, packet.getLength() - 8);
 
-                try {
-                    iface.packetQueue.add(inner);
-                } catch (IllegalStateException ignored) {
-                    LOGGER.error("Queue full");
-                }
+                // Ignore failed inserts
+                iface.packetQueue.offer(inner);
             }
         }
     }
@@ -147,10 +144,9 @@ public class TunnelManager {
             this.packetQueue = packetQueue;
         }
 
-
         @Override
         public byte[] readEthernetFrame() {
-            return new byte[0];
+            return null;
         }
 
         @Override
