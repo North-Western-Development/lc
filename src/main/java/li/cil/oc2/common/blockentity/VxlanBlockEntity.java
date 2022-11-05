@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInterface, TickableBlockEntity {
     private static final int TTL_COST = 1;
     //private int vti = ((int) (Math.random() * Integer.MAX_VALUE)) & 0x00ff_ffff;
-    private int vti = 4037973;
+    private int vti = 1000;
     private int frameCount;
     private long lastGameTime;
 
