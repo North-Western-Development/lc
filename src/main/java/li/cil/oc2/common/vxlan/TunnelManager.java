@@ -5,11 +5,12 @@ import li.cil.oc2.common.Config;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 
 public class TunnelManager {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -66,6 +67,8 @@ public class TunnelManager {
         LOGGER.printf(Level.INFO, "Bind successful: connected=%s bound=%s\n", socket.isConnected(), socket.isBound());
 
         byte[] buffer = new byte[65535];
+        // TODO shut this thread down more cleanly on server shutdown?
+        //noinspection InfiniteLoopStatement
         while (true) {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
@@ -91,8 +94,10 @@ public class TunnelManager {
                 byte[] inner = new byte[packet.getLength() - 8];
                 System.arraycopy(packet.getData(), 8, inner, 0, packet.getLength() - 8);
 
-                // Ignore failed inserts
-                iface.packetQueue.offer(inner);
+                // CircularFifoQueue isn't thread-safe, so we have to synchronize on it.
+                synchronized (iface.packetQueue) {
+                    iface.packetQueue.offer(inner);
+                }
             }
         }
     }
@@ -125,7 +130,7 @@ public class TunnelManager {
         }
     }
 
-    public NetworkInterface registerVti(int vti, BlockingQueue<byte[]> packetQueue) {
+    public NetworkInterface registerVti(int vti, Queue<byte[]> packetQueue) {
         TunnelInterface tuniface = new TunnelInterface(vti, packetQueue);
         tunnels.put(vti, tuniface);
         return tuniface;
@@ -136,10 +141,10 @@ public class TunnelManager {
     }
 
     public class TunnelInterface implements NetworkInterface {
-        final BlockingQueue<byte[]> packetQueue;
+        final Queue<byte[]> packetQueue;
         private final int vti;
 
-        public TunnelInterface(int vti, BlockingQueue<byte[]> packetQueue) {
+        public TunnelInterface(int vti, Queue<byte[]> packetQueue) {
             this.vti = vti;
             this.packetQueue = packetQueue;
         }
@@ -150,7 +155,7 @@ public class TunnelManager {
         }
 
         @Override
-        public void writeEthernetFrame(final NetworkInterface source, final byte[] frame, final int timeToLive) {
+        public void writeEthernetFrame(final @NotNull NetworkInterface source, final byte @NotNull [] frame, final int timeToLive) {
             TunnelManager.this.sendToOuternet(vti, frame);
         }
     }

@@ -82,6 +82,7 @@ dependencies {
         compileOnly "li.cil.sedna:sedna-buildroot:0.0.8"
     }
     implementation "curse.maven:sedna-511276:3885542"
+    implementation "org.apache.commons:commons-collections4:4.4"
 
     implementation fg.deobf("curse.maven:markdownmanual-502485:3738124")
 
