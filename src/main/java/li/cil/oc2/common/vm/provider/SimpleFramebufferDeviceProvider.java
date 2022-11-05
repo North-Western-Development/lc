@@ -24,7 +24,7 @@ public final class SimpleFramebufferDeviceProvider implements DeviceTreeProvider
         final Optional<MappedMemoryRange> range = memoryMap.getMemoryRange((MemoryMappedDevice) device);
         return range.map(r -> {
             final DeviceTree chosen = root.find("/chosen");
-            //chosen.addProp(DevicePropertyNames.RANGES);
+            chosen.addProp(DevicePropertyNames.RANGES);
 
             return chosen.getChild(deviceName, r.address());
         });
