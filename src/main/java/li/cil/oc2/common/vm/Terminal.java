@@ -760,12 +760,15 @@ public final class Terminal {
             if (shader == null) {
                 return;
             }
-
             RenderSystem.depthMask(false);
             RenderSystem.setShaderTexture(0, LOCATION_FONT_TEXTURE);
 
             for (final VertexBuffer line : lines) {
-                line.drawWithShader(stack.last().pose(), projectionMatrix, shader);
+                try {
+                    line.drawWithShader(stack.last().pose(), projectionMatrix, shader);
+                } catch (Exception e) {
+                    System.out.println("ERROR: " + e.getMessage());
+                }
             }
 
             RenderSystem.depthMask(true);
@@ -776,13 +779,14 @@ public final class Terminal {
                 return;
             }
 
-            final BufferBuilder builder = Tesselator.getInstance().getBuilder();
+
 
             final int mask = dirty.getAndSet(0);
             for (int row = 0; row < lines.length; row++) {
                 if ((mask & (1 << row)) == 0) {
                     continue;
                 }
+                BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
                 final Matrix4f matrix = Matrix4f.createTranslateMatrix(0, row * CHAR_HEIGHT, 0);
 
@@ -797,9 +801,9 @@ public final class Terminal {
                     lines[row] = new VertexBuffer();
                 }
 
-
-
-                lines[row].upload(rb);
+                if (!lines[row].isInvalid() && !rb.isEmpty()) {
+                    lines[row].upload(rb);
+                }
             }
         }
 

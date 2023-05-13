@@ -162,7 +162,7 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
             return;
         }
 
-        setBootError(null);
+        setBootError(Component.literal(""));
         setRunState(VMRunState.LOADING_DEVICES);
         loadDevicesDelay = 0;
     }
@@ -343,12 +343,14 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
         }
 
         if (!state.board.isRunning()) {
+
             stopRunnerAndReset();
             return;
         }
 
         if (!consumeEnergy(busController.getEnergyConsumption(), false)) {
             error(Component.translatable(Constants.COMPUTER_ERROR_NOT_ENOUGH_ENERGY));
+
             return;
         }
 
