@@ -24,9 +24,10 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -62,8 +63,17 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void handleModelRegistryEvent(final ModelRegistryEvent event) {
-        ModelLoaderRegistry.registerLoader(Blocks.BUS_CABLE.getId(), new BusCableModelLoader());
+    public static void handleModelRegistryEvent(final RegisterGeometryLoaders event) {
+        event.register(Blocks.BUS_CABLE.getId().toString().replace("oc2:", ""), new BusCableModelLoader());
+    }
+
+    @SubscribeEvent
+    public void renderHotbar(RenderGuiOverlayEvent event) {
+        if(event.getOverlay().id() == VanillaGuiOverlay.HOTBAR.id() && KeyboardScreen.hideHotbar) {
+            event.setCanceled(true);
+        } else if(event.getOverlay().id() == VanillaGuiOverlay.HOTBAR.id()) {
+            event.setCanceled(false);
+        }
     }
 
     @SubscribeEvent

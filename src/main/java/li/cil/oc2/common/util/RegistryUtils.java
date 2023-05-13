@@ -3,13 +3,17 @@
 package li.cil.oc2.common.util;
 
 import li.cil.oc2.api.API;
+import li.cil.oc2.api.bus.device.DeviceType;
+import li.cil.oc2.api.bus.device.provider.BlockDeviceProvider;
+import li.cil.oc2.api.bus.device.provider.ItemDeviceProvider;
+import li.cil.oc2.common.bus.device.provider.ProviderRegistry;
+import li.cil.oc2.common.bus.device.util.BlockDeviceInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ public abstract class RegistryUtils {
     private static final List<DeferredRegister<?>> ENTRIES = new ArrayList<>();
     private static Phase phase = Phase.PRE_INIT;
 
-    public static <T extends IForgeRegistryEntry<T>> DeferredRegister<T> getInitializerFor(final ResourceKey<Registry<T>> key) {
+    public static <T extends IForgeRegistry<T>> DeferredRegister<T> getInitializerFor(final ResourceKey<Registry<T>> key) {
         if (phase != Phase.INIT) throw new IllegalStateException();
 
         final DeferredRegister<T> entry = DeferredRegister.create(key, API.MOD_ID);
@@ -35,7 +39,7 @@ public abstract class RegistryUtils {
         return entry;
     }
 
-    public static <T extends IForgeRegistryEntry<T>> DeferredRegister<T> getInitializerFor(final IForgeRegistry<T> registry) {
+    public static <T extends IForgeRegistry<T>> DeferredRegister<T> getInitializerFor(final IForgeRegistry<T> registry) {
         if (phase != Phase.INIT) throw new IllegalStateException();
 
         final DeferredRegister<T> entry = DeferredRegister.create(registry, API.MOD_ID);
@@ -59,21 +63,26 @@ public abstract class RegistryUtils {
         ENTRIES.clear();
     }
 
-    public static <T> String key(final IForgeRegistryEntry<T> registryEntry) {
-        return Objects.requireNonNull(registryEntry.getRegistryName()).toString();
+    public static <T> String key(final DeviceType registryEntry) {
+        return Objects.requireNonNull(registryEntry.getName()).toString();
     }
 
-    public static <T> Optional<String> optionalKey(@Nullable final IForgeRegistryEntry<T> registryEntry) {
-        if (registryEntry == null) {
+    public static <T> Optional<String> optionalKey(@Nullable final T registryEntry) {
+        if(registryEntry == null) {
+            return Optional.empty();
+        }
+        String providerName = null;
+        if (registryEntry.getClass() == BlockDeviceProvider.class) {
+            providerName = ProviderRegistry.BLOCK_DEVICE_PROVIDER_REGISTRY.get().getKey((BlockDeviceProvider) registryEntry).toString();
+        } else if (registryEntry.getClass() == ItemDeviceProvider.class) {
+            providerName = ProviderRegistry.ITEM_DEVICE_PROVIDER_REGISTRY.get().getKey((ItemDeviceProvider) registryEntry).toString();
+        }
+
+        if(providerName == null) {
             return Optional.empty();
         }
 
-        final ResourceLocation providerName = registryEntry.getRegistryName();
-        if (providerName == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(providerName.toString());
+        return Optional.of(providerName);
     }
 
     private RegistryUtils() {

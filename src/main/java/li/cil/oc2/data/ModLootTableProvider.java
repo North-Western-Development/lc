@@ -20,6 +20,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,7 @@ public final class ModLootTableProvider extends LootTableProvider {
         @Override
         protected Iterable<Block> getKnownBlocks() {
             return StreamSupport.stream(super.getKnownBlocks().spliterator(), false)
-                .filter(block -> requireNonNull(block.getRegistryName()).getNamespace().equals(API.MOD_ID))
+                .filter(block -> requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).getNamespace().equals(API.MOD_ID))
                 .filter(block -> block != Blocks.BUS_CABLE.get()) // All bus drops depend on block state.
                 .collect(Collectors.toList());
         }

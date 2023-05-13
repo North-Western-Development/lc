@@ -7,12 +7,10 @@ import li.cil.sedna.api.memory.MemoryMap;
 import li.cil.sedna.buildroot.Buildroot;
 import li.cil.sedna.memory.MemoryMaps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.io.IOException;
 
-public final class BuildrootFirmware extends ForgeRegistryEntry<Firmware> implements Firmware {
+public final class BuildrootFirmware implements Firmware {
     @Override
     public boolean run(final MemoryMap memory, final long startAddress) {
         try {
@@ -26,6 +24,6 @@ public final class BuildrootFirmware extends ForgeRegistryEntry<Firmware> implem
 
     @Override
     public Component getDisplayName() {
-        return new TextComponent("Sedna Linux");
+        return Component.literal("Sedna Linux");
     }
 }

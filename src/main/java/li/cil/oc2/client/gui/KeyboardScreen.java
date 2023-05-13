@@ -14,27 +14,30 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.OverlayRegistry;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Random;
 
 public final class KeyboardScreen extends Screen {
     private static final int BORDER_SIZE = 4;
     private static final float ARM_SWING_RATE = 0.8f;
     private static final int BORDER_COLOR = 0xFFFFFFFF;
 
-    private static final TranslatableComponent CLOSE_INFO = new TranslatableComponent("gui.oc2.keyboard.close_info");
+    private static final MutableComponent CLOSE_INFO = Component.translatable("gui.oc2.keyboard.close_info");
 
     ///////////////////////////////////////////////////////////////////
 
     private final KeyboardBlockEntity keyboard;
 
     ///////////////////////////////////////////////////////////////////
+
+    public static boolean hideHotbar = false;
 
     public KeyboardScreen(final KeyboardBlockEntity keyboard) {
         super(Items.KEYBOARD.get().getDescription());
@@ -52,7 +55,7 @@ public final class KeyboardScreen extends Screen {
         grabMouse();
 
         // Disable hotbar since we don't need it here, and it just blocks screen space.
-        OverlayRegistry.enableOverlay(ForgeIngameGui.HOTBAR_ELEMENT, false);
+        hideHotbar = true;
     }
 
     @Override
@@ -109,7 +112,7 @@ public final class KeyboardScreen extends Screen {
     public void removed() {
         super.removed();
 
-        OverlayRegistry.enableOverlay(ForgeIngameGui.HOTBAR_ELEMENT, true);
+        hideHotbar = false;
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -155,7 +158,7 @@ public final class KeyboardScreen extends Screen {
             return;
         }
 
-        final Random random = player.getRandom();
+        final RandomSource random = player.getRandom();
         if (random.nextFloat() < ARM_SWING_RATE) {
             return;
         }

@@ -90,10 +90,8 @@ public abstract class AbstractItemDeviceBusElement extends AbstractGroupingDevic
             return;
         }
 
-        final ResourceLocation registryName = query.getItemStack().getItem().getRegistryName();
-        if (registryName != null) {
-            final String itemName = registryName.toString();
-            entries.add(new ItemEntry(new ItemDeviceInfo(null, new TypeNameRPCDevice(itemName), 0)));
+        if (query.getItemStack().getDisplayName() != null) {
+            entries.add(new ItemEntry(new ItemDeviceInfo(null, new TypeNameRPCDevice(query.getItemStack().getDisplayName().toString()), 0)));
         }
     }
 

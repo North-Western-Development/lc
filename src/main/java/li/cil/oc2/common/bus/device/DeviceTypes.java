@@ -10,6 +10,7 @@ import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -19,15 +20,18 @@ import java.util.function.Supplier;
 import static li.cil.oc2.common.util.TranslationUtils.text;
 
 public final class DeviceTypes {
-    private static final DeferredRegister<DeviceType> DEVICE_TYPES = RegistryUtils.getInitializerFor(DeviceType.REGISTRY);
+    private static final DeferredRegister<DeviceType> DEVICE_TYPES = DeferredRegister.create(new ResourceLocation("device_type"), API.MOD_ID);
 
     ///////////////////////////////////////////////////////////////////
 
-    public static final Supplier<IForgeRegistry<DeviceType>> DEVICE_TYPE_REGISTRY = DEVICE_TYPES.makeRegistry(DeviceType.class, RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<DeviceType>> DEVICE_TYPE_REGISTRY = DEVICE_TYPES.makeRegistry(RegistryBuilder::new);
 
     ///////////////////////////////////////////////////////////////////
 
     public static void initialize() {
+        DEVICE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+
         register(ItemTags.DEVICES_MEMORY);
         register(ItemTags.DEVICES_HARD_DRIVE);
         register(ItemTags.DEVICES_FLASH_MEMORY);

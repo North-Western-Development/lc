@@ -11,8 +11,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +20,7 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static li.cil.oc2.common.util.TranslationUtils.text;
 
@@ -157,7 +156,7 @@ public final class FileChooserScreen extends Screen {
         final int buttonTop = fileNameTop + TEXT_FIELD_HEIGHT + WIDGET_SPACING;
         final int buttonCount = 2;
         final int buttonWidth = widgetsWidth / buttonCount - (buttonCount - 1) * WIDGET_SPACING;
-        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, TextComponent.EMPTY, this::handleOkPressed));
+        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed));
         addRenderableWidget(new Button(MARGIN + buttonWidth + WIDGET_SPACING, buttonTop, buttonWidth, BUTTON_HEIGHT, CANCEL_TEXT, this::handleCancelPressed));
 
         fileList.refreshFiles(directory);
@@ -300,7 +299,7 @@ public final class FileChooserScreen extends Screen {
                                 return 1;
                             }
                             return p1.getFileName().compareTo(p2.getFileName());
-                        }).toList();
+                        }).collect(Collectors.toList());
                     for (final Path path : files) {
                         try {
                             if (Files.isHidden(path)) {
@@ -347,7 +346,7 @@ public final class FileChooserScreen extends Screen {
         }
 
         private FileList.FileEntry createFileEntry(final Path file) {
-            return new FileList.FileEntry(file, new TextComponent(file.getFileName().toString()));
+            return new FileList.FileEntry(file, Component.literal(file.getFileName().toString()));
         }
 
         private FileList.FileEntry createDirectoryEntry(final Path path) {
@@ -358,7 +357,7 @@ public final class FileChooserScreen extends Screen {
             final TextColor color = path != null && Files.exists(path)
                 ? TextColor.fromRgb(0xA0A0FF)
                 : TextColor.fromLegacyFormat(ChatFormatting.GRAY);
-            return new FileList.FileEntry(path, new TextComponent(displayName)
+            return new FileList.FileEntry(path, Component.literal(displayName)
                 .withStyle(s -> s.withColor(color)));
         }
 
@@ -412,7 +411,7 @@ public final class FileChooserScreen extends Screen {
 
             @Override
             public Component getNarration() {
-                return new TranslatableComponent("narrator.select", displayName);
+                return Component.translatable("narrator.select", displayName);
             }
         }
     }

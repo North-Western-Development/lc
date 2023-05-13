@@ -6,12 +6,20 @@ buildscript {
 plugins {
     id "idea"
     id "maven-publish"
-    id "net.minecraftforge.gradle" version "5.1.+"
+    id "net.minecraftforge.gradle" version "5.1.73"
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 apply plugin: 'org.spongepowered.mixin'
 apply from: "minecraft.gradle"
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "1000"
+        }
+    }
+}
 
 def getGitRef() {
     try {
@@ -42,12 +50,12 @@ final def hasGithubPackageCredentials =
 repositories {
     mavenCentral()
     maven {
-        url 'https://cursemaven.com'
-        content { includeGroup 'curse.maven' }
+        url "https://cursemaven.com"
     }
     maven {
-        url 'https://dvs1.progwml6.com/files/maven/'
-        content { includeGroup 'mezz.jei' }
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
     }
     if (hasGithubPackageCredentials) {
         final def GithubPackages = [
@@ -69,7 +77,7 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "net.minecraftforge:forge:1.19.2-43.2.10"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
     // Specify the libs embedded in the library mod explicitly for local development, where
@@ -83,10 +91,13 @@ dependencies {
     }
     implementation "curse.maven:sedna-511276:3885542"
 
-    implementation fg.deobf("curse.maven:markdownmanual-502485:3738124")
+    implementation fg.deobf("curse.maven:markdownmanual-502485:4306669")
+    implementation fg.deobf("curse.maven:architectury-api-419699:4521273")
 
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:9.7.0.180:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:9.7.0.180")
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:11.6.0.1015")
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:11.6.0.1015")
+
+    runtimeOnly fg.deobf("mezz.jei:jei-1.19.2-forge:11.6.0.1015")
 
     testImplementation "org.mockito:mockito-inline:4.3.1"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
@@ -116,7 +127,7 @@ minecraft {
     runs {
         all {
             property "forge.logging.markers", "REGISTRIES"
-            property "forge.logging.console.level", "info"
+            property "forge.logging.console.level", "debug"
 
             mods {
                 oc2 {
@@ -126,7 +137,7 @@ minecraft {
         }
 
         client {
-            workingDirectory project.file("run")
+            workingDirectory project.file("runclient")
             property "forge.enabledGameTestNamespaces", "oc2"
         }
 

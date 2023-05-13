@@ -2,10 +2,12 @@
 
 package li.cil.oc2.common.bus.device.data;
 
+import li.cil.oc2.api.API;
 import li.cil.oc2.api.bus.device.data.Firmware;
 import li.cil.oc2.api.util.Registries;
 import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -16,11 +18,11 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public final class FirmwareRegistry {
-    private static final DeferredRegister<Firmware> INITIALIZER = RegistryUtils.getInitializerFor(Registries.FIRMWARE);
+    private static final DeferredRegister<Firmware> INITIALIZER = DeferredRegister.create(new ResourceLocation("firmware"), API.MOD_ID);
 
     ///////////////////////////////////////////////////////////////////
 
-    private static final Supplier<IForgeRegistry<Firmware>> REGISTRY = INITIALIZER.makeRegistry(Firmware.class, RegistryBuilder::new);
+    private static final Supplier<IForgeRegistry<Firmware>> REGISTRY = INITIALIZER.makeRegistry(RegistryBuilder::new);
 
     ///////////////////////////////////////////////////////////////////
 
@@ -29,11 +31,12 @@ public final class FirmwareRegistry {
     ///////////////////////////////////////////////////////////////////
 
     public static void initialize() {
+        INITIALIZER.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     @Nullable
     public static ResourceLocation getKey(final Firmware firmware) {
-        return firmware.getRegistryName();
+        return INITIALIZER.getRegistryName();
     }
 
     @Nullable

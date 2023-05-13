@@ -791,13 +791,15 @@ public final class Terminal {
                 renderBackground(matrix, builder, row);
                 renderForeground(matrix, builder, row);
 
-                builder.end();
+                BufferBuilder.RenderedBuffer rb = builder.end();
 
                 if (lines[row] == null) {
                     lines[row] = new VertexBuffer();
                 }
 
-                lines[row].upload(builder);
+
+
+                lines[row].upload(rb);
             }
         }
 
@@ -910,6 +912,7 @@ public final class Terminal {
         }
 
         private void renderCursor(final PoseStack stack) {
+            BufferUploader.reset();
             if (terminal.x < 0 || terminal.x >= WIDTH || terminal.y < 0 || terminal.y >= HEIGHT) {
                 return;
             }
@@ -934,8 +937,8 @@ public final class Terminal {
             buffer.vertex(matrix, CHAR_WIDTH, 0, 0).color(r, g, b, 1).endVertex();
             buffer.vertex(matrix, 0, 0, 0).color(r, g, b, 1).endVertex();
 
-            buffer.end();
-            BufferUploader.end(buffer);
+            BufferBuilder.RenderedBuffer rb = buffer.end();
+            BufferUploader.draw(rb);
 
             stack.popPose();
 

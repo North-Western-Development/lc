@@ -40,9 +40,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.RenderNameplateEvent;
+import net.minecraftforge.client.event.RenderNameTagEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -203,7 +203,7 @@ public final class ProjectorDepthRenderer {
      * Suppresses fog rendering while rendering depth buffer for projectors.
      */
     @SubscribeEvent
-    public static void handleFog(final EntityViewRenderEvent.RenderFogEvent event) {
+    public static void handleFog(final EntityRenderersEvent event) {
         if (isRenderingProjectorDepth) {
             FogRenderer.setupNoFog();
         }
@@ -213,7 +213,7 @@ public final class ProjectorDepthRenderer {
      * Suppresses nameplate rendering while rendering depth buffer for projectors.
      */
     @SubscribeEvent
-    public static void handleNameplate(final RenderNameplateEvent event) {
+    public static void handleNameplate(final RenderNameTagEvent event) {
         if (isRenderingProjectorDepth) {
             event.setResult(Event.Result.DENY);
         }
@@ -275,8 +275,8 @@ public final class ProjectorDepthRenderer {
         minecraft.hitResult = null;
 
         // Skip shadow rendering for perf.
-        entityShadowsBak = minecraft.options.entityShadows;
-        minecraft.options.entityShadows = false;
+        entityShadowsBak = minecraft.options.entityShadows().get();
+        minecraft.options.entityShadows().set(false);
 
         minecraftCameraEntityBak = minecraft.getCameraEntity();
         minecraft.setCameraEntity(ProjectorCameraEntity.get(level, Vec3.ZERO, partialTicks));
@@ -288,7 +288,7 @@ public final class ProjectorDepthRenderer {
 
     private static void finishDepthBufferRendering(final Minecraft minecraft) {
         minecraft.hitResult = hitResultBak;
-        minecraft.options.entityShadows = entityShadowsBak;
+        minecraft.options.entityShadows().set(entityShadowsBak);
 
         RenderSystem.restoreProjectionMatrix();
 
@@ -566,7 +566,7 @@ public final class ProjectorDepthRenderer {
         }
 
         private ProjectorCameraEntity(final Level level, final BlockPos blockPos, final float rotationY) {
-            super(level, blockPos, rotationY, FakePlayerUtils.getFakePlayerProfile());
+            super(level, blockPos, rotationY, FakePlayerUtils.getFakePlayerProfile(), null);
         }
 
         @Override

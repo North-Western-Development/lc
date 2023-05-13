@@ -230,7 +230,7 @@ public final class ComputerBlock extends HorizontalDirectionalBlock implements E
         final ItemStack computer = new ItemStack(this);
 
         final CompoundTag itemsTag = NBTUtils.getOrCreateChildTag(computer.getOrCreateTag(), BLOCK_ENTITY_TAG_NAME_IN_ITEM, ITEMS_TAG_NAME);
-        itemsTag.put(key(DeviceTypes.FLASH_MEMORY), makeInventoryTag(
+        itemsTag.put(DeviceTypes.FLASH_MEMORY.getName().toString(), makeInventoryTag(
             new ItemStack(Items.FLASH_MEMORY_CUSTOM.get())
         ));
 
@@ -241,16 +241,16 @@ public final class ComputerBlock extends HorizontalDirectionalBlock implements E
         final ItemStack computer = getComputerWithFlash();
 
         final CompoundTag itemsTag = NBTUtils.getOrCreateChildTag(computer.getOrCreateTag(), BLOCK_ENTITY_TAG_NAME_IN_ITEM, ITEMS_TAG_NAME);
-        itemsTag.put(key(DeviceTypes.MEMORY), makeInventoryTag(
+        itemsTag.put(DeviceTypes.MEMORY.getName().toString(), makeInventoryTag(
             new ItemStack(Items.MEMORY_LARGE.get()),
             new ItemStack(Items.MEMORY_LARGE.get()),
             new ItemStack(Items.MEMORY_LARGE.get()),
             new ItemStack(Items.MEMORY_LARGE.get())
         ));
-        itemsTag.put(key(DeviceTypes.HARD_DRIVE), makeInventoryTag(
+        itemsTag.put(DeviceTypes.HARD_DRIVE.getName().toString(), makeInventoryTag(
             new ItemStack(Items.HARD_DRIVE_CUSTOM.get())
         ));
-        itemsTag.put(key(DeviceTypes.CARD), makeInventoryTag(
+        itemsTag.put(DeviceTypes.CARD.getName().toString(), makeInventoryTag(
             new ItemStack(Items.NETWORK_INTERFACE_CARD.get())
         ));
 

@@ -11,6 +11,7 @@ import li.cil.oc2.client.manual.ModManualScreenStyle;
 import li.cil.oc2.client.manual.ModManualStyle;
 import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -22,7 +23,7 @@ import java.util.List;
 
 public final class ManualItem extends AbstractManualItem {
     public ManualItem() {
-        super(new Properties().tab(ItemGroup.COMMON));
+        super(new Item.Properties().tab(ItemGroup.COMMON));
     }
 
     ///////////////////////////////////////////////////////////////////

@@ -7,8 +7,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
@@ -126,8 +126,8 @@ public final class ServerScheduler {
         }
 
         @SubscribeEvent
-        public static void handleLevelUnload(final WorldEvent.Unload event) {
-            final LevelAccessor level = event.getWorld();
+        public static void handleLevelUnload(final LevelEvent.Unload event) {
+            final LevelAccessor level = event.getLevel();
 
             levelTickSchedulers.remove(level);
             chunkLoadSchedulers.remove(level);
@@ -141,7 +141,7 @@ public final class ServerScheduler {
 
         @SubscribeEvent
         public static void handleChunkLoad(final ChunkEvent.Load event) {
-            final HashMap<ChunkPos, ListenerCollection> chunkMap = chunkLoadSchedulers.get(event.getWorld());
+            final HashMap<ChunkPos, ListenerCollection> chunkMap = chunkLoadSchedulers.get(event.getLevel());
             if (chunkMap == null) {
                 return;
             }
@@ -154,7 +154,7 @@ public final class ServerScheduler {
 
         @SubscribeEvent
         public static void handleChunkUnload(final ChunkEvent.Unload event) {
-            final HashMap<ChunkPos, ListenerCollection> chunkMap = chunkUnloadSchedulers.get(event.getWorld());
+            final HashMap<ChunkPos, ListenerCollection> chunkMap = chunkUnloadSchedulers.get(event.getLevel());
             if (chunkMap == null) {
                 return;
             }
@@ -177,14 +177,14 @@ public final class ServerScheduler {
         }
 
         @SubscribeEvent
-        public static void handleLevelTick(final TickEvent.WorldTickEvent event) {
+        public static void handleLevelTick(final TickEvent.LevelTickEvent event) {
             if (event.phase != TickEvent.Phase.START) {
                 return;
             }
 
             globalTickScheduler.processQueue();
 
-            final TickScheduler scheduler = levelTickSchedulers.get(event.world);
+            final TickScheduler scheduler = levelTickSchedulers.get(event.level);
             if (scheduler != null) {
                 scheduler.processQueue();
             }

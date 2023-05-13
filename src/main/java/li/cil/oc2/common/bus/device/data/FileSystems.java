@@ -79,7 +79,7 @@ public final class FileSystems {
 
         LOGGER.info("Searching for datapack filesystems...");
         final Collection<ResourceLocation> fileSystemDescriptorLocations = resourceManager
-            .listResources("file_systems", s -> s.endsWith(".json"));
+            .listResources("file_systems", s -> s.toString().endsWith(".json")).keySet();
 
         final ArrayList<ZipStreamFileSystem> fileSystems = new ArrayList<>();
         final Object2IntArrayMap<ZipStreamFileSystem> fileSystemOrder = new Object2IntArrayMap<>();
@@ -87,15 +87,15 @@ public final class FileSystems {
         for (final ResourceLocation fileSystemDescriptorLocation : fileSystemDescriptorLocations) {
             LOGGER.info("Found [{}]", fileSystemDescriptorLocation);
             try {
-                final Resource fileSystemDescriptor = resourceManager.getResource(fileSystemDescriptorLocation);
-                final JsonObject json = JsonParser.parseReader(new InputStreamReader(fileSystemDescriptor.getInputStream())).getAsJsonObject();
+                final Resource fileSystemDescriptor = resourceManager.getResource(fileSystemDescriptorLocation).get();
+                final JsonObject json = JsonParser.parseReader(new InputStreamReader(fileSystemDescriptor.open())).getAsJsonObject();
                 final String type = json.getAsJsonPrimitive("type").getAsString();
                 switch (type) {
                     case "layer" -> {
                         final ResourceLocation location = new ResourceLocation(json.getAsJsonPrimitive("location").getAsString());
 
                         final ZipStreamFileSystem fileSystem;
-                        try (final InputStream stream = resourceManager.getResource(location).getInputStream()) {
+                        try (final InputStream stream = resourceManager.getResource(location).get().open()) {
                             fileSystem = new ZipStreamFileSystem(stream);
                         }
 

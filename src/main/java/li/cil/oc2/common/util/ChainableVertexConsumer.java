@@ -124,16 +124,6 @@ public record ChainableVertexConsumer(VertexConsumer inner) implements VertexCon
     }
 
     @Override
-    public void putBulkData(final PoseStack.Pose matrixStack, final BakedQuad bakedQuad, final float red, final float green, final float blue, final int lightmapCoord, final int overlayColor, final boolean readExistingColor) {
-        inner.putBulkData(matrixStack, bakedQuad, red, green, blue, lightmapCoord, overlayColor, readExistingColor);
-    }
-
-    @Override
-    public void putBulkData(final PoseStack.Pose matrixEntry, final BakedQuad bakedQuad, final float red, final float green, final float blue, final float alpha, final int lightmapCoord, final int overlayColor) {
-        inner.putBulkData(matrixEntry, bakedQuad, red, green, blue, alpha, lightmapCoord, overlayColor);
-    }
-
-    @Override
     public void putBulkData(final PoseStack.Pose matrixEntry, final BakedQuad bakedQuad, final float red, final float green, final float blue, final float alpha, final int lightmapCoord, final int overlayColor, final boolean readExistingColor) {
         inner.putBulkData(matrixEntry, bakedQuad, red, green, blue, alpha, lightmapCoord, overlayColor, readExistingColor);
     }

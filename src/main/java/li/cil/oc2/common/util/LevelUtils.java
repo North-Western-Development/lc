@@ -11,6 +11,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -35,7 +36,7 @@ public final class LevelUtils {
 
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
-            final ResourceLocation registryName = blockEntity.getType().getRegistryName();
+            final ResourceLocation registryName = ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(blockEntity.getType());
             if (registryName != null) {
                 return registryName.toString();
             }
@@ -43,7 +44,7 @@ public final class LevelUtils {
 
         final Block block = level.getBlockState(pos).getBlock();
         {
-            final ResourceLocation registryName = block.getRegistryName();
+            final ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
             if (registryName != null) {
                 return registryName.toString();
             }

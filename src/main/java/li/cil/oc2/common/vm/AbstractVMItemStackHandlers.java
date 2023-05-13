@@ -105,7 +105,7 @@ public abstract class AbstractVMItemStackHandlers implements VMItemStackHandlers
     public void saveItems(final CompoundTag tag) {
         itemHandlers.forEach((deviceType, handler) -> {
             if (!handler.isEmpty()) {
-                tag.put(key(deviceType), handler.saveItems());
+                tag.put(deviceType.getName().toString(), handler.saveItems());
             }
         });
     }
@@ -118,12 +118,12 @@ public abstract class AbstractVMItemStackHandlers implements VMItemStackHandlers
 
     public void loadItems(final CompoundTag tag) {
         itemHandlers.forEach((deviceType, handler) ->
-            handler.loadItems(tag.getCompound(key(deviceType))));
+            handler.loadItems(tag.getCompound(deviceType.getName().toString())));
     }
 
     public void saveDevices(final CompoundTag tag) {
         itemHandlers.forEach((deviceType, handler) ->
-            tag.put(key(deviceType), handler.saveDevices()));
+            tag.put(deviceType.getName().toString(), handler.saveDevices()));
     }
 
     public CompoundTag saveDevices() {
@@ -134,7 +134,7 @@ public abstract class AbstractVMItemStackHandlers implements VMItemStackHandlers
 
     public void loadDevices(final CompoundTag tag) {
         itemHandlers.forEach((deviceType, handler) ->
-            handler.loadDevices(tag.getCompound(key(deviceType))));
+            handler.loadDevices(tag.getCompound(deviceType.getName().toString())));
     }
 
     ///////////////////////////////////////////////////////////////////
