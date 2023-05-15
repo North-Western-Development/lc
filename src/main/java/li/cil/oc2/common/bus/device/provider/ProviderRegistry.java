@@ -20,12 +20,12 @@ import net.minecraftforge.registries.RegistryBuilder;
 import java.util.function.Supplier;
 
 public final class ProviderRegistry {
-    private static final DeferredRegister<BlockDeviceProvider> BLOCK_DEVICE_PROVIDERS = DeferredRegister.create(new ResourceLocation("block_device_provider"), API.MOD_ID);
+    private static final DeferredRegister<BlockDeviceProvider> BLOCK_DEVICE_PROVIDERS = DeferredRegister.create(Registries.BLOCK_DEVICE_PROVIDER, API.MOD_ID);
     public static final Supplier<IForgeRegistry<BlockDeviceProvider>> BLOCK_DEVICE_PROVIDER_REGISTRY = BLOCK_DEVICE_PROVIDERS.makeRegistry(RegistryBuilder::new);
 
     ///////////////////////////////////////////////////////////////////
 
-    private static final DeferredRegister<ItemDeviceProvider> ITEM_DEVICE_PROVIDERS = DeferredRegister.create(new ResourceLocation("item_device_provider"), API.MOD_ID);
+    private static final DeferredRegister<ItemDeviceProvider> ITEM_DEVICE_PROVIDERS = DeferredRegister.create(Registries.ITEM_DEVICE_PROVIDER, API.MOD_ID);
     public static final Supplier<IForgeRegistry<ItemDeviceProvider>> ITEM_DEVICE_PROVIDER_REGISTRY = ITEM_DEVICE_PROVIDERS.makeRegistry(RegistryBuilder::new);
 
     ///////////////////////////////////////////////////////////////////

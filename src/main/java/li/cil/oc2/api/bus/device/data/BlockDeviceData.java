@@ -4,9 +4,6 @@ package li.cil.oc2.api.bus.device.data;
 
 import li.cil.sedna.api.device.BlockDevice;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.function.Supplier;
 
 /**
  * Implementations of this interface that are registered with the registry for

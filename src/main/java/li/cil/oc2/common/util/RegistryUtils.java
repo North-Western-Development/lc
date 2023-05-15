@@ -67,15 +67,15 @@ public abstract class RegistryUtils {
         return Objects.requireNonNull(registryEntry.getName()).toString();
     }
 
-    public static <T> Optional<String> optionalKey(@Nullable final T registryEntry) {
+    public static <T> Optional<String> optionalKey(final T registryEntry) {
         if(registryEntry == null) {
             return Optional.empty();
         }
         String providerName = null;
-        if (registryEntry.getClass() == BlockDeviceProvider.class) {
-            providerName = ProviderRegistry.BLOCK_DEVICE_PROVIDER_REGISTRY.get().getKey((BlockDeviceProvider) registryEntry).toString();
-        } else if (registryEntry.getClass() == ItemDeviceProvider.class) {
-            providerName = ProviderRegistry.ITEM_DEVICE_PROVIDER_REGISTRY.get().getKey((ItemDeviceProvider) registryEntry).toString();
+        if (BlockDeviceProvider.class.isAssignableFrom(registryEntry.getClass())) {
+            providerName = ProviderRegistry.BLOCK_DEVICE_PROVIDER_REGISTRY.get().getRegistryName().toString();
+        } else if (ItemDeviceProvider.class.isAssignableFrom(registryEntry.getClass())) {
+            providerName = ProviderRegistry.ITEM_DEVICE_PROVIDER_REGISTRY.get().getRegistryName().toString();
         }
 
         if(providerName == null) {

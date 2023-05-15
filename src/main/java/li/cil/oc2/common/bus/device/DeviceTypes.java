@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 import static li.cil.oc2.common.util.TranslationUtils.text;
 
 public final class DeviceTypes {
-    private static final DeferredRegister<DeviceType> DEVICE_TYPES = DeferredRegister.create(new ResourceLocation("device_type"), API.MOD_ID);
+    private static final DeferredRegister<DeviceType> DEVICE_TYPES = DeferredRegister.create(DeviceType.REGISTRY, API.MOD_ID);
 
     ///////////////////////////////////////////////////////////////////
 

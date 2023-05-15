@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public final class BlockDeviceDataRegistry {
-    private static final DeferredRegister<BlockDeviceData> INITIALIZER = DeferredRegister.create(new ResourceLocation("block_device_data"), API.MOD_ID);
+    private static final DeferredRegister<BlockDeviceData> INITIALIZER = DeferredRegister.create(Registries.BLOCK_DEVICE_DATA, API.MOD_ID);
 
     ///////////////////////////////////////////////////////////////////
 

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public final class FirmwareRegistry {
-    private static final DeferredRegister<Firmware> INITIALIZER = DeferredRegister.create(new ResourceLocation("firmware"), API.MOD_ID);
+    private static final DeferredRegister<Firmware> INITIALIZER = DeferredRegister.create(Registries.FIRMWARE, API.MOD_ID);
 
     ///////////////////////////////////////////////////////////////////
 
