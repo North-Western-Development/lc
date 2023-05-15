@@ -38,46 +38,51 @@ public final class BusCableBakedModel implements IDynamicBakedModel {
     private static final ModelProperty<BusCableSupportSide> BUS_CABLE_SUPPORT_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<BusCableFacade> BUS_CABLE_FACADE_PROPERTY = new ModelProperty<>();
     private final BakedModel proxy;
+    private final BakedModel[] straightModelByAxis;
+    private final BakedModel[] supportModelByFace;
 
 
     ///////////////////////////////////////////////////////////////////
 
-    BusCableBakedModel(final BakedModel proxy) {
+    BusCableBakedModel(BakedModel proxy, BakedModel[] straightModelByAxis, BakedModel[] supportModelByFace) {
         this.proxy = proxy;
+        this.straightModelByAxis = straightModelByAxis;
+        this.supportModelByFace = supportModelByFace;
     }
 
     @Override
     @Nonnull
     public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final RandomSource rand, final ModelData extraData, @Nullable RenderType renderType) {
+        final RenderType layer = RenderType.solid();
 
-        final BusCableFacade facade = extraData.get(BUS_CABLE_FACADE_PROPERTY);
-        if (side != null) {
-            if (facade != null && (renderType != null && renderType.equals(RenderType.solid()))) {
-                return facade.model.getQuads(state, side, rand, facade.data, renderType);
+        if (extraData.has(BUS_CABLE_FACADE_PROPERTY)) {
+            final BusCableFacade facade = extraData.get(BUS_CABLE_FACADE_PROPERTY);
+            if (facade != null && (layer == null)) {
+                return facade.model.getQuads(facade.blockState, side, rand, facade.data, RenderType.solid());
             } else {
                 return Collections.emptyList();
             }
-        } else {
-            if (state == null || !state.getValue(BusCableBlock.HAS_CABLE) || renderType == null || !renderType.equals(RenderType.solid())) {
-                return Collections.emptyList();
-            }
-
-            for (int i = 0; i < Constants.AXES.length; i++) {
-                final Direction.Axis axis = Constants.AXES[i];
-                if (isStraightAlongAxis(state, axis)) {
-                    return proxy.getQuads(state, side, rand, extraData, renderType);
-                }
-            }
-
-            final ArrayList<BakedQuad> quads = new ArrayList<>(proxy.getQuads(state, side, rand, extraData, renderType));
-
-            final BusCableSupportSide supportSide = extraData.get(BUS_CABLE_SUPPORT_PROPERTY);
-            if (supportSide != null) {
-                quads.addAll(proxy.getQuads(state, side, rand, extraData, renderType));
-            }
-
-            return quads;
         }
+
+        if (state == null || !state.getValue(BusCableBlock.HAS_CABLE) || layer == null || !layer.equals(RenderType.solid())) {
+            return Collections.emptyList();
+        }
+
+        for (int i = 0; i < Constants.AXES.length; i++) {
+            final Direction.Axis axis = Constants.AXES[i];
+            if (isStraightAlongAxis(state, axis)) {
+                return straightModelByAxis[i].getQuads(state, side, rand, extraData, RenderType.solid());
+            }
+        }
+
+        final ArrayList<BakedQuad> quads = new ArrayList<>(proxy.getQuads(state, side, rand, extraData, RenderType.solid()));
+
+        final BusCableSupportSide supportSide = extraData.get(BUS_CABLE_SUPPORT_PROPERTY);
+        if (supportSide != null) {
+            quads.addAll(supportModelByFace[supportSide.value.get3DDataValue()].getQuads(state, side, rand, extraData, RenderType.solid()));
+        }
+
+        return quads;
     }
 
     @Override

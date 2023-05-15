@@ -18,6 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -661,6 +662,7 @@ public final class Terminal {
         final int clearCount = Math.abs(count * WIDTH);
         Arrays.fill(buffer, clearIndex, clearIndex + clearCount, (byte) ' ');
         // TODO Copy color and style from last line.
+        // TODO Copy color and style from last line.
         Arrays.fill(colors, clearIndex, clearIndex + clearCount, DEFAULT_COLORS);
         Arrays.fill(styles, clearIndex, clearIndex + clearCount, DEFAULT_STYLE);
 
@@ -755,19 +757,36 @@ public final class Terminal {
 
         ///////////////////////////////////////////////////////////////
 
+        private int findLineIndex(VertexBuffer[] vba, VertexBuffer vb) {
+            int i = 0;
+            while (i < vba.length) {
+                if (vba[i] == vb) {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
+        }
+
         private void renderBuffer(final PoseStack stack, final Matrix4f projectionMatrix) {
             final ShaderInstance shader = GameRenderer.getPositionColorTexShader();
             if (shader == null) {
                 return;
             }
+
             RenderSystem.depthMask(false);
             RenderSystem.setShaderTexture(0, LOCATION_FONT_TEXTURE);
 
             for (final VertexBuffer line : lines) {
-                try {
-                    line.drawWithShader(stack.last().pose(), projectionMatrix, shader);
-                } catch (Exception e) {
-                    System.out.println("ERROR: " + e.getMessage());
+                if (!line.isInvalid()) {
+                    try {
+                        line.bind();
+                        line.drawWithShader(stack.last().pose(), projectionMatrix, shader);
+                        VertexBuffer.unbind();
+                    } catch (Exception e) {
+                        System.out.println("ERROR: " + e.getMessage());
+                        System.out.println(findLineIndex(lines, line));
+                    }
                 }
             }
 
@@ -792,17 +811,22 @@ public final class Terminal {
 
                 builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 
-                renderBackground(matrix, builder, row);
                 renderForeground(matrix, builder, row);
+                renderBackground(matrix, builder, row);
 
                 BufferBuilder.RenderedBuffer rb = builder.end();
 
                 if (lines[row] == null) {
                     lines[row] = new VertexBuffer();
+                }else if (lines[row] != null) {
+                    lines[row].close();
+                    lines[row] = new VertexBuffer();
                 }
 
-                if (!lines[row].isInvalid() && !rb.isEmpty()) {
+                if (!lines[row].isInvalid()){
+                    lines[row].bind();
                     lines[row].upload(rb);
+                    VertexBuffer.unbind();
                 }
             }
         }
@@ -942,7 +966,7 @@ public final class Terminal {
             buffer.vertex(matrix, 0, 0, 0).color(r, g, b, 1).endVertex();
 
             BufferBuilder.RenderedBuffer rb = buffer.end();
-            BufferUploader.draw(rb);
+            BufferUploader.drawWithShader(rb);
 
             stack.popPose();
 

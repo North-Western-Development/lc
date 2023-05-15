@@ -22,6 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -34,6 +35,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -42,7 +44,6 @@ import static li.cil.oc2.common.util.NBTUtils.makeInventoryTag;
 import static li.cil.oc2.common.util.RegistryUtils.key;
 
 public final class RobotItem extends ModItem {
-
     @Override
     public void appendHoverText(final ItemStack stack, @Nullable final Level level, final List<Component> tooltip, final TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
@@ -109,6 +110,16 @@ public final class RobotItem extends ModItem {
     }
 
     ///////////////////////////////////////////////////////////////////
+
+    @Override
+    public void initializeClient(final Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return new RobotWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+            }
+        });
+    }
 
     private ItemStack getRobotWithFlash() {
         final ItemStack robot = new ItemStack(this);

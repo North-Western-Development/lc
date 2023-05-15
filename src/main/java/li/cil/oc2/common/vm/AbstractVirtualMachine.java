@@ -377,7 +377,7 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
         handleRunStateChanged(value);
     }
 
-    private void setBootError(@Nullable final Component value) {
+    private void setBootError(final Component value) {
         bootError = value;
         handleBootErrorChanged(value);
     }

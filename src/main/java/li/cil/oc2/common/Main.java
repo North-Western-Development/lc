@@ -15,7 +15,6 @@ import li.cil.oc2.common.bus.device.data.FirmwareRegistry;
 import li.cil.oc2.common.bus.device.provider.ProviderRegistry;
 import li.cil.oc2.common.container.Containers;
 import li.cil.oc2.common.entity.Entities;
-import li.cil.oc2.common.item.ItemRenameHandler;
 import li.cil.oc2.common.item.Items;
 import li.cil.oc2.common.item.crafting.RecipeSerializers;
 import li.cil.oc2.common.serialization.ceres.Serializers;
@@ -26,11 +25,9 @@ import li.cil.oc2.common.util.SoundEvents;
 import li.cil.oc2.common.vm.provider.DeviceTreeProviders;
 import li.cil.sedna.Sedna;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.NewRegistryEvent;
 
 @Mod(API.MOD_ID)
 public final class Main {
@@ -63,8 +60,8 @@ public final class Main {
 
         RegistryUtils.finish();
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manuals::initialize);
         FMLJavaModLoadingContext.get().getModEventBus().register(CommonSetup.class);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manuals::initialize);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
             FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class));
     }

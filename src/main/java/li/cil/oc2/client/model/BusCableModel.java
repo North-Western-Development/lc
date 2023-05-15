@@ -31,7 +31,22 @@ public final class BusCableModel implements IUnbakedGeometry<BusCableModel> {
 
     @Override
     public BakedModel bake(final IGeometryBakingContext owner, final ModelBakery bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
-        return new BusCableBakedModel(proxy.bake(owner, bakery, spriteGetter, modelTransform, overrides, modelLocation));
+        final BakedModel bakedBaseModel = proxy.bake(owner, bakery, spriteGetter, modelTransform, overrides, modelLocation);
+        final BakedModel[] straightModelByAxis = {
+            requireNonNull(bakery.bake(BUS_CABLE_STRAIGHT_MODEL, BlockModelRotation.X0_Y90, spriteGetter)),
+            requireNonNull(bakery.bake(BUS_CABLE_STRAIGHT_MODEL, BlockModelRotation.X90_Y0, spriteGetter)),
+            requireNonNull(bakery.bake(BUS_CABLE_STRAIGHT_MODEL, modelTransform, spriteGetter))
+        };
+        final BakedModel[] supportModelByFace = {
+            requireNonNull(bakery.bake(BUS_CABLE_SUPPORT_MODEL, BlockModelRotation.X270_Y0, spriteGetter)), // -y
+            requireNonNull(bakery.bake(BUS_CABLE_SUPPORT_MODEL, BlockModelRotation.X90_Y0, spriteGetter)), // +y
+            requireNonNull(bakery.bake(BUS_CABLE_SUPPORT_MODEL, BlockModelRotation.X0_Y180, spriteGetter)), // -z
+            requireNonNull(bakery.bake(BUS_CABLE_SUPPORT_MODEL, modelTransform, spriteGetter)), // +z
+            requireNonNull(bakery.bake(BUS_CABLE_SUPPORT_MODEL, BlockModelRotation.X0_Y90, spriteGetter)), // -x
+            requireNonNull(bakery.bake(BUS_CABLE_SUPPORT_MODEL, BlockModelRotation.X0_Y270, spriteGetter)) // +x
+        };
+
+        return new BusCableBakedModel(proxy.bake(owner, bakery, spriteGetter, modelTransform, overrides, modelLocation), straightModelByAxis, supportModelByFace);
     }
 
     @Override
