@@ -20,8 +20,7 @@ echo "Proceeding will completely erase $1 and flash the firmware\n $2 to it. Thi
 
 read -p "Are you sure? " -n 1 -r
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]; the
-n
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     dd ibs=$(echo "12*1024*1024" | bc) count=1 if=/dev/zero of=$1
     if [ "$3" = "yes" ]; then
     	dd if=/mnt/builtin/firmware_files/fw_jump.bin of=$1
