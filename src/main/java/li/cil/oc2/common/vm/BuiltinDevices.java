@@ -13,6 +13,7 @@ import li.cil.sedna.device.serial.UART16550A;
 import li.cil.sedna.device.virtio.VirtIOConsoleDevice;
 import li.cil.sedna.device.virtio.VirtIOFileSystemDevice;
 
+import java.util.OptionalLong;
 import java.util.function.Function;
 
 public final class BuiltinDevices {

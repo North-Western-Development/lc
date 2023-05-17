@@ -61,6 +61,8 @@ public final class Network {
         registerMessage(OpenRobotTerminalMessage.class, OpenRobotTerminalMessage::new, NetworkDirection.PLAY_TO_SERVER);
 
         registerMessage(DiskDriveFloppyMessage.class, DiskDriveFloppyMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(FirmwareFlasherMessage.class, FirmwareFlasherMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+
 
         registerMessage(BusInterfaceNameMessage.ToClient.class, BusInterfaceNameMessage.ToClient::new, NetworkDirection.PLAY_TO_CLIENT);
         registerMessage(BusInterfaceNameMessage.ToServer.class, BusInterfaceNameMessage.ToServer::new, NetworkDirection.PLAY_TO_SERVER);
@@ -138,7 +140,7 @@ public final class Network {
         INSTANCE.messageBuilder(type, getNextPacketId(), direction)
             .encoder(AbstractMessage::toBytes)
             .decoder(decoder)
-            .consumer(AbstractMessage::handleMessage)
+            .consumerNetworkThread(AbstractMessage::handleMessage)
             .add();
     }
 

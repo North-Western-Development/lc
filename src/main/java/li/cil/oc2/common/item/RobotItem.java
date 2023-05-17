@@ -45,6 +45,11 @@ import static li.cil.oc2.common.util.RegistryUtils.key;
 
 public final class RobotItem extends ModItem {
     @Override
+    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> items) {
+        items.add(getRobotWithFlash());
+    }
+
+    @Override
     public void appendHoverText(final ItemStack stack, @Nullable final Level level, final List<Component> tooltip, final TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
         TooltipUtils.addEnergyConsumption(Config.robotEnergyPerTick, tooltip);
@@ -78,6 +83,8 @@ public final class RobotItem extends ModItem {
         if (robot == null) {
             return InteractionResult.FAIL;
         }
+
+        System.out.println("Created successfully");
 
         robot.moveTo(position.x, position.y - robot.getBbHeight() * 0.5f, position.z,
             Direction.fromYRot(context.getRotation()).getOpposite().toYRot(), 0);

@@ -13,6 +13,9 @@ import li.cil.oc2.api.bus.device.vm.event.VMInitializingEvent;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.bus.device.util.IdentityProxy;
 import li.cil.oc2.common.bus.device.util.OptionalAddress;
+import li.cil.oc2.common.item.AbstractStorageItem;
+import li.cil.oc2.common.serialization.BlobStorage;
+import li.cil.oc2.common.util.ItemStackUtils;
 import li.cil.sedna.api.memory.MemoryAccessException;
 import li.cil.sedna.api.memory.MemoryMap;
 import li.cil.sedna.device.flash.FlashMemoryDevice;
@@ -99,19 +102,32 @@ public final class ByteBufferFlashStorageDevice extends IdentityProxy<ItemStack>
     @Override
     public void deserializeNBT(final CompoundTag tag) {
         final byte[] data = tag.getByteArray(DATA_TAG_NAME);
-        final ByteBuffer bufferData = device.getData();
+        final ByteBuffer bufferData = ByteBuffer.allocate(size);
         bufferData.clear();
         bufferData.put(data, 0, Math.min(bufferData.limit(), data.length));
+        this.data = bufferData;
     }
 
     ///////////////////////////////////////////////////////////////
 
     private boolean allocateDevice(final VMContext context) {
-        if (!context.getMemoryAllocator().claimMemory(size)) {
+        if (!context.getMemoryAllocator().claimMemory(12*Constants.MEGABYTE)) {
             return false;
         }
 
-        data = ByteBuffer.allocate(size);
+        if (data == null) {
+            try {
+                data = ByteBuffer.allocate(12*Constants.MEGABYTE);
+                data.clear();
+                CompoundTag tag = ItemStackUtils.getModDataTag(identity).getCompound(DATA_TAG_NAME);
+                if (tag.hasUUID("blob")) {
+                    BlobStorage.getOrOpen(tag.getUUID("blob")).read(data, 0);
+                }
+            } catch(Exception e) {
+                System.out.println("Error message: " + e.getMessage());
+            }
+        }
+
         device = new FlashMemoryDevice(data);
 
         return true;

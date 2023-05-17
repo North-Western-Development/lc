@@ -18,6 +18,7 @@ import li.cil.oc2.common.capabilities.Capabilities;
 import li.cil.oc2.common.container.FixedSizeItemStackHandler;
 import li.cil.oc2.common.container.RobotInventoryContainer;
 import li.cil.oc2.common.container.RobotTerminalContainer;
+import li.cil.oc2.common.energy.EnergyStorageItemStack;
 import li.cil.oc2.common.energy.FixedEnergyStorage;
 import li.cil.oc2.common.entity.robot.*;
 import li.cil.oc2.common.integration.Wrenches;
@@ -393,7 +394,9 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
 
     public void importFromItemStack(final ItemStack stack) {
         final CompoundTag itemsTag = NBTUtils.getChildTag(stack.getTag(), MOD_TAG_NAME, ITEMS_TAG_NAME);
+
         deviceItems.loadItems(itemsTag);
+
         inventory.deserializeNBT(itemsTag.getCompound(INVENTORY_TAG_NAME));
 
         energy.deserializeNBT(NBTUtils.getChildTag(stack.getTag(), MOD_TAG_NAME, ENERGY_TAG_NAME));
@@ -416,6 +419,14 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
             tag.put(TERMINAL_TAG_NAME, NBTSerialization.serialize(terminal));
         }
 
+        System.out.println("Action processor: " + actionProcessor.serialize().toString());
+        System.out.println("Bus element: " + busElement.serialize().toString());
+        System.out.println("Items: " + deviceItems.saveItems().toString());
+        System.out.println("Devices: " + deviceItems.saveDevices().toString());
+        System.out.println("Energy: " + energy.serializeNBT().toString());
+        System.out.println("Inventory: " + inventory.serializeNBT().toString());
+        System.out.println("Selected Slot: " + getEntityData().get(SELECTED_SLOT).toString());
+
         tag.put(COMMAND_PROCESSOR_TAG_NAME, actionProcessor.serialize());
         tag.put(BUS_ELEMENT_TAG_NAME, busElement.serialize());
         tag.put(ITEMS_TAG_NAME, deviceItems.saveItems());
@@ -427,6 +438,18 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
 
     @Override
     protected void readAdditionalSaveData(final CompoundTag tag) {
+        System.out.println("VM State: " + tag.getCompound(STATE_TAG_NAME).toString());
+        System.out.println("Terminal: " + tag.getCompound(TERMINAL_TAG_NAME).toString());
+        System.out.println("Action processor: " + tag.getCompound(COMMAND_PROCESSOR_TAG_NAME).toString());
+        System.out.println("Bus element: " + tag.getCompound(BUS_ELEMENT_TAG_NAME).toString());
+        System.out.println("Items: " + tag.getCompound(ITEMS_TAG_NAME).toString());
+        System.out.println("Devices: " + tag.getCompound(DEVICES_TAG_NAME).toString());
+        System.out.println("Energy: " + tag.getCompound(ENERGY_TAG_NAME).toString());
+        System.out.println("Inventory: " + tag.getCompound(INVENTORY_TAG_NAME).toString());
+        System.out.println("Selected Slot: " + tag.getCompound(SELECTED_SLOT_TAG_NAME).toString());
+
+
+
         virtualMachine.deserialize(tag.getCompound(STATE_TAG_NAME));
         NBTSerialization.deserialize(tag.getCompound(TERMINAL_TAG_NAME), terminal);
         actionProcessor.deserialize(tag.getCompound(COMMAND_PROCESSOR_TAG_NAME));

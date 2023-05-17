@@ -30,6 +30,7 @@ public final class Items {
     public static final RegistryObject<Item> COMPUTER = register(Blocks.COMPUTER);
     public static final RegistryObject<Item> CREATIVE_ENERGY = register(Blocks.CREATIVE_ENERGY);
     public static final RegistryObject<Item> DISK_DRIVE = register(Blocks.DISK_DRIVE);
+    public static final RegistryObject<Item> FLASH_MEMORY_FLASHER = register(Blocks.FLASH_MEMORY_FLASHER);
     public static final RegistryObject<Item> KEYBOARD = register(Blocks.KEYBOARD);
     public static final RegistryObject<Item> NETWORK_CONNECTOR = register(Blocks.NETWORK_CONNECTOR);
     public static final RegistryObject<Item> NETWORK_HUB = register(Blocks.NETWORK_HUB);
@@ -61,7 +62,7 @@ public final class Items {
         new HardDriveWithExternalDataItem(BlockDeviceDataRegistry.BUILDROOT.getId(), DyeColor.BROWN));
 
     public static final RegistryObject<FlashMemoryItem> FLASH_MEMORY = register("flash_memory", () ->
-        new FlashMemoryItem(4 * Constants.KILOBYTE));
+        new FlashMemoryItem(12 * Constants.MEGABYTE));
     public static final RegistryObject<FlashMemoryWithExternalDataItem> FLASH_MEMORY_CUSTOM = register("flash_memory_custom", () ->
         new FlashMemoryWithExternalDataItem(FirmwareRegistry.BUILDROOT.getId()));
 

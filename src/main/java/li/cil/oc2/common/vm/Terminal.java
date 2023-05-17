@@ -811,8 +811,8 @@ public final class Terminal {
 
                 builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 
-                renderForeground(matrix, builder, row);
                 renderBackground(matrix, builder, row);
+                renderForeground(matrix, builder, row);
 
                 BufferBuilder.RenderedBuffer rb = builder.end();
 

@@ -15,6 +15,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class BlockDeviceDataRegistry {
@@ -36,7 +37,11 @@ public final class BlockDeviceDataRegistry {
 
     @Nullable
     public static ResourceLocation getKey(final BlockDeviceData data) {
-        return INITIALIZER.getRegistryName();
+        ResourceLocation location = REGISTRY.get().getKey(data);
+        if (location == null) {
+            location = FileSystems.getKeyByValue(data);
+        }
+        return location;
     }
 
     @Nullable

@@ -16,6 +16,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,6 +42,15 @@ public final class FileSystems {
 
     public static FileSystem getLayeredFileSystem() {
         return LAYERED_FILE_SYSTEM;
+    }
+
+    public static ResourceLocation getKeyByValue(BlockDeviceData value) {
+        for (Map.Entry<ResourceLocation, BlockDeviceData> entry : BLOCK_DEVICE_DATA.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     public static Map<ResourceLocation, BlockDeviceData> getBlockData() {
