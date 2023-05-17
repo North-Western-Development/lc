@@ -84,8 +84,6 @@ public final class RobotItem extends ModItem {
             return InteractionResult.FAIL;
         }
 
-        System.out.println("Created successfully");
-
         robot.moveTo(position.x, position.y - robot.getBbHeight() * 0.5f, position.z,
             Direction.fromYRot(context.getRotation()).getOpposite().toYRot(), 0);
         if (!level.noCollision(robot)) {

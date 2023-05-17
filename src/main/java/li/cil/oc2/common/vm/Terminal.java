@@ -624,6 +624,7 @@ public final class Terminal {
         Arrays.fill(buffer, (byte) ' ');
         Arrays.fill(colors, DEFAULT_COLORS);
         Arrays.fill(styles, DEFAULT_STYLE);
+        setCursorPos(0,0);
         renderers.forEach(model -> model.getDirtyMask().set(-1));
     }
 

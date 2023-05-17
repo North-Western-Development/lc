@@ -63,6 +63,7 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
 
     public AbstractVirtualMachine(final CommonDeviceBusController busController) {
         this.busController = busController;
+        this.bootError = Component.literal("");
 
         busController.onBeforeDeviceScan.add(this::handleBeforeDeviceScan);
         busController.onAfterDeviceScan.add(this::handleAfterDeviceScan);
@@ -247,9 +248,12 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
         error(message, true);
     }
 
-    protected void error(@Nullable final Component message, final boolean reset) {
+    protected void error(@Nullable Component message, final boolean reset) {
         if (reset) {
             stopRunnerAndReset();
+        }
+        if (message == null) {
+            message = Component.literal("");
         }
         setBootError(message);
     }
