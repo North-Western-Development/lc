@@ -77,7 +77,7 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:1.19.2-43.2.10"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
     // Specify the libs embedded in the library mod explicitly for local development, where
@@ -90,6 +90,7 @@ dependencies {
         compileOnly "li.cil.sedna:sedna-buildroot:0.0.8"
     }
     implementation "curse.maven:sedna-511276:3885542"
+    minecraftLibrary "org.apache.commons:commons-collections4:4.4"
 
     implementation fg.deobf("curse.maven:markdownmanual-502485:4306669")
     implementation fg.deobf("curse.maven:architectury-api-419699:4521273")
@@ -186,6 +187,7 @@ jar {
             "Implementation-Vendor"   : "Sangar",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "MixinConfigs"            : "mixins.oc2.json",
+            "ContainedDeps"           : "commons-collections4-4.4.jar"
         ])
     }
 }

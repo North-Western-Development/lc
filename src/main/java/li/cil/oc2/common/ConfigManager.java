@@ -65,8 +65,10 @@ public final class ConfigManager {
 
     static {
         PARSERS.put(int.class, ConfigManager::parseIntField);
+        PARSERS.put(short.class, ConfigManager::parseShortField);
         PARSERS.put(long.class, ConfigManager::parseLongField);
         PARSERS.put(double.class, ConfigManager::parseDoubleField);
+        PARSERS.put(boolean.class, ConfigManager::parseBooleanField);
         PARSERS.put(String.class, ConfigManager::parseStringField);
         PARSERS.put(UUID.class, ConfigManager::parseUUIDField);
         PARSERS.put(ResourceLocation.class, ConfigManager::parseResourceLocationField);
@@ -134,6 +136,16 @@ public final class ConfigManager {
         return new ConfigFieldPair<>(field, configValue);
     }
 
+    private static ConfigFieldPair<?> parseShortField(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException {
+        final short defaultValue = field.getShort(instance);
+        final short minValue = (short) Math.max(getMin(field), Short.MIN_VALUE);
+        final short maxValue = (short) Math.min(getMax(field), Short.MAX_VALUE);
+
+        final ForgeConfigSpec.IntValue configValue = builder.defineInRange(path, defaultValue, minValue, maxValue);
+
+        return new ConfigFieldPair<>(field, configValue);
+    }
+
     private static ConfigFieldPair<?> parseLongField(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException {
         final long defaultValue = field.getLong(instance);
         final long minValue = (long) Math.max(getMin(field), Long.MIN_VALUE);
@@ -168,6 +180,14 @@ public final class ConfigManager {
         final ForgeConfigSpec.ConfigValue<String> configValue = builder.define(path, defaultValue.toString());
 
         return new ConfigFieldPair<>(field, configValue, UUID::fromString);
+    }
+
+    private static ConfigFieldPair<?> parseBooleanField(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException {
+        final boolean defaultValue = (boolean) field.get(instance);
+
+        final ForgeConfigSpec.ConfigValue<Boolean> configValue = builder.define(path, defaultValue);
+
+        return new ConfigFieldPair<>(field, configValue);
     }
 
     private static ConfigFieldPair<?> parseResourceLocationField(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException {
