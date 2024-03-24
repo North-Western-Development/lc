@@ -24,10 +24,8 @@ public final class PciRootPortDeviceProvider implements DeviceTreeProvider {
     public Optional<DeviceTree> createNode(final DeviceTree root, final MemoryMap memoryMap, final Device device, final String deviceName) {
         final Optional<MappedMemoryRange> range = memoryMap.getMemoryRange((MemoryMappedDevice) device);
         return range.map(r -> {
-            final DeviceTree chosen = root.find("/soc");
-            //chosen.addProp(DevicePropertyNames.RANGES);
-
-            return chosen.getChild(deviceName, r.address());
+            final DeviceTree pci = root.find("/pci");
+            return pci.getChild(deviceName, r.address());
         });
     }
 

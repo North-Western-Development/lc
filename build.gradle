@@ -86,8 +86,8 @@ dependencies {
 
     implementation fg.deobf("curse.maven:markdownmanual-502485:3738124")
 
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:9.7.0.180:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:9.7.0.180")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:13.1.0.6:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:13.1.0.6")
 
     testImplementation "org.mockito:mockito-inline:4.3.1"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
@@ -176,6 +176,7 @@ jar {
             "Implementation-Vendor"   : "Sangar",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "MixinConfigs"            : "mixins.oc2.json",
+            "ContainedDeps"           : "commons-collections4-4.4.jar"
         ])
     }
 }

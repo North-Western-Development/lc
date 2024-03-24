@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Stream;
 
 public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInterface, TickableBlockEntity {
@@ -29,7 +30,7 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     private int frameCount;
     private long lastGameTime;
 
-    private final Queue<byte[]> packetQueue = QueueUtils.synchronizedQueue(new CircularFifoQueue<>(32));
+    private final Queue<byte[]> packetQueue = new ArrayBlockingQueue<byte[]>(32);
 
     ///////////////////////////////////////////////////////////////////
 
