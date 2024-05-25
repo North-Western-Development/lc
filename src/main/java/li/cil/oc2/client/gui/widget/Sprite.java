@@ -35,11 +35,11 @@ public final class Sprite {
     }
 
     public void draw(final GuiGraphics graphics, final int x, final int y, final int uOffset, final int vOffset) {
-        graphics.blit(texture.location, x, y, u0 + uOffset, v0 + vOffset, width, height);
+        graphics.blit(texture.location, x, y, u0 + uOffset, v0 + vOffset, width, height, texture.width, texture.height);
     }
 
     public void drawFillY(final GuiGraphics graphics, final int x, final int y, final float value) {
         final int h = (int) (this.height * Mth.clamp(value, 0, 1));
-        graphics.blit(texture.location, x, y + (height - h), u0, v0 + (height - h), width, h);
+        graphics.blit(texture.location, x, y + (height - h), u0, v0 + (height - h), width, h, texture.width, texture.height);
     }
 }

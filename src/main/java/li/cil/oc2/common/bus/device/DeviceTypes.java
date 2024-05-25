@@ -4,13 +4,19 @@ package li.cil.oc2.common.bus.device;
 
 import li.cil.oc2.api.API;
 import li.cil.oc2.api.bus.device.DeviceType;
+import li.cil.oc2.client.ClientSetup;
 import li.cil.oc2.common.bus.device.util.DeviceTypeImpl;
 import li.cil.oc2.common.tags.ItemTags;
 import li.cil.oc2.common.util.RegistryUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -31,7 +37,6 @@ public final class DeviceTypes {
     public static void initialize() {
         DEVICE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
-
         register(ItemTags.DEVICES_MEMORY);
         register(ItemTags.DEVICES_HARD_DRIVE);
         register(ItemTags.DEVICES_FLASH_MEMORY);
@@ -47,8 +52,10 @@ public final class DeviceTypes {
         final String id = tag.location().getPath().replaceFirst("^devices/", "");
         DEVICE_TYPES.register(id, () -> new DeviceTypeImpl(
             tag,
-            new ResourceLocation(API.MOD_ID, "gui/icon/" + id),
+            new ResourceLocation(API.MOD_ID, "item/" + id + "_slot"),
             text("gui.{mod}.device_type." + id)
         ));
+
+        System.out.println("gui/icon/" + id);
     }
 }

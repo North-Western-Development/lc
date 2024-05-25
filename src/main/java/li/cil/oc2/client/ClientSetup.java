@@ -42,6 +42,7 @@ import java.util.function.Consumer;
 
 public final class ClientSetup {
     private static final Set<ResourceLocation> sprites = new HashSet<ResourceLocation>();
+    private static boolean readyForSprites = false;
 
     @SubscribeEvent
     public static void handleSetupEvent(final FMLClientSetupEvent event) {
@@ -67,16 +68,6 @@ public final class ClientSetup {
 
             // We need to register this manually, because static init throws errors when running data generation.
             MinecraftForge.EVENT_BUS.register(ProjectorDepthRenderer.class);
-
-            for (final DeviceType deviceType : DeviceTypes.DEVICE_TYPE_REGISTRY.get().getValues()) {
-                sprites.add(deviceType.getBackgroundIcon());
-            }
-
-            sprites.add(ComputerRenderer.OVERLAY_POWER_LOCATION);
-            sprites.add(ComputerRenderer.OVERLAY_STATUS_LOCATION);
-            sprites.add(ComputerRenderer.OVERLAY_TERMINAL_LOCATION);
-
-            sprites.add(ChargerRenderer.EFFECT_LOCATION);
         });
     }
 
@@ -92,13 +83,6 @@ public final class ClientSetup {
         } else if(event.getOverlay().id() == VanillaGuiOverlay.HOTBAR.id()) {
             event.setCanceled(false);
         }
-    }
-
-    @ApiStatus.Internal
-    public static void collectSprites(ResourceLocation atlas, Consumer<ResourceLocation> spriteConsumer) {
-        if(!Objects.equals(atlas, InventoryMenu.BLOCK_ATLAS)) return;
-
-        sprites.forEach(spriteConsumer);
     }
 
     @SubscribeEvent

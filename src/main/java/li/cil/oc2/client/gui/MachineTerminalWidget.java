@@ -69,8 +69,8 @@ public final class MachineTerminalWidget {
                 rendererView = terminal.getRenderer();
             }
 
-            //final Matrix4f projectionMatrix = orthographic(0, parent.width, 0, parent.height, -10, 10f);
-            final Matrix4f projectionMatrix = new Matrix4f().ortho(0, parent.width, 0, parent.height, -10, 10f);
+            final Matrix4f projectionMatrix = orthographic(0, parent.width, 0, parent.height, -10, 10f);
+            //final Matrix4f projectionMatrix = new Matrix4f().ortho(0, parent.width, 0, parent.height, -10, 10f);
             rendererView.render(terminalStack, projectionMatrix);
         } else {
             final Font font = getClient().font;

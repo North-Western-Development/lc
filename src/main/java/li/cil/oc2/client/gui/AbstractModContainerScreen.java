@@ -4,6 +4,7 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -54,7 +55,9 @@ public abstract class AbstractModContainerScreen<T extends AbstractContainerMenu
 
         for (final Renderable widget : renderables) {
             if (widget instanceof AbstractWidget abstractWidget) {
-                //abstractWidget.renderToolTip(stack, mouseX, mouseY);
+                if(abstractWidget.getTooltip() == null) continue;
+                System.out.println(abstractWidget.getTooltip());
+                graphics.renderTooltip(Minecraft.getInstance().font, abstractWidget.getTooltip().toCharSequence(Minecraft.getInstance()), mouseX, mouseY);
             }
         }
     }

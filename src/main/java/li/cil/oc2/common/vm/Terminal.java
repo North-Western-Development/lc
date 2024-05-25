@@ -818,10 +818,10 @@ public final class Terminal {
                 BufferBuilder.RenderedBuffer rb = builder.end();
 
                 if (lines[row] == null) {
-                    lines[row] = new VertexBuffer(VertexBuffer.Usage.STATIC);
+                    lines[row] = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
                 }else if (lines[row] != null) {
                     lines[row].close();
-                    lines[row] = new VertexBuffer(VertexBuffer.Usage.STATIC);
+                    lines[row] = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
                 }
 
                 if (!lines[row].isInvalid()){
