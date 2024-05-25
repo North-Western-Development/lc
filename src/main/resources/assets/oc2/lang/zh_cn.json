@@ -11,6 +11,8 @@
   "block.oc2.redstone_interface": "红石接口",
   "block.oc2.disk_drive": "磁盘驱动器",
   "block.oc2.disk_drive.desc": "使用这个来访问软盘。",
+  "block.oc2.flash_memory_flasher": "闪存闪存器",
+  "block.oc2.flash_memory_flasher.desc": "用于将新固件刷新到闪存芯片上。",
   "block.oc2.charger": "充电器",
   "block.oc2.charger.desc": "通过站在上面给实体和物品充电。",
   "block.oc2.creative_energy": "无限能量方块",

@@ -14,6 +14,8 @@
   "block.oc2.redstone_interface.desc": "Подает и считывает редстоун сигналы.",
   "block.oc2.disk_drive": "Дисковод",
   "block.oc2.disk_drive.desc": "Нужен для работы с дискетами.",
+  "block.oc2.flash_memory_flasher": "Флэш-память",
+  "block.oc2.flash_memory_flasher.desc": "Используется для прошивки новой прошивки на чип флэш-памяти.",
   "block.oc2.charger": "Зарядное устройство",
   "block.oc2.charger.desc": "Заряжает сущности и предметы в контейнерах над ним.",
   "block.oc2.creative_energy": "Энергокуб бесконечности",
