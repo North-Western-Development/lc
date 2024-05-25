@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import li.cil.oc2.api.API;
@@ -34,6 +35,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.time.Duration;
 import java.util.List;
@@ -82,9 +85,8 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
         stack.pushPose();
 
         // Align with front face of block.
-        final Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(blockFacing.toYRot() + 180));
         stack.translate(0.5f, 0, 0.5f);
-        stack.mulPose(rotation);
+        stack.mulPose(Axis.YN.rotationDegrees(blockFacing.toYRot() + 180));
         stack.translate(-0.5f, 0, -0.5f);
 
         // Flip and align with top left corner.

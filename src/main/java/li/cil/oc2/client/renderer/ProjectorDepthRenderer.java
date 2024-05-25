@@ -13,7 +13,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import net.minecraftforge.client.event.ViewportEvent;
+import org.codehaus.plexus.util.dag.Vertex;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -75,11 +77,12 @@ public final class ProjectorDepthRenderer {
     private static final float PROJECTOR_FAR = ProjectorBlockEntity.MAX_RENDER_DISTANCE;
     private static final int HALF_FRUSTUM_WIDTH = (ProjectorBlockEntity.MAX_WIDTH - 1) / 2;
     private static final int FRUSTUM_HEIGHT = ProjectorBlockEntity.MAX_HEIGHT - 1;
-    private static final Matrix4f DEPTH_CAMERA_PROJECTION_MATRIX = getFrustumMatrix(
+    private static final Matrix4f DEPTH_CAMERA_PROJECTION_MATRIX = (new Matrix4f()).frustum(-HALF_FRUSTUM_WIDTH, HALF_FRUSTUM_WIDTH, FRUSTUM_HEIGHT, 0, PROJECTOR_NEAR, PROJECTOR_FAR);
+    /*getFrustumMatrix(
         PROJECTOR_NEAR, PROJECTOR_FAR,
         ProjectorBlockEntity.MAX_GOOD_RENDER_DISTANCE,
         -HALF_FRUSTUM_WIDTH, HALF_FRUSTUM_WIDTH,
-        FRUSTUM_HEIGHT, 0);
+        FRUSTUM_HEIGHT, 0);*/
 
     private static final Cache<ProjectorBlockEntity, RenderInfo> RENDER_INFO = CacheBuilder.newBuilder()
         .expireAfterAccess(Duration.ofSeconds(5))
@@ -205,7 +208,7 @@ public final class ProjectorDepthRenderer {
      * Suppresses fog rendering while rendering depth buffer for projectors.
      */
     @SubscribeEvent
-    public static void handleFog(final ViewportEvent.RenderFog event) {
+    public static void handleFog(final EntityRenderersEvent event) {
         if (isRenderingProjectorDepth) {
             FogRenderer.setupNoFog();
         }
@@ -251,7 +254,7 @@ public final class ProjectorDepthRenderer {
 
                 configureProjectorDepthCamera(level, projectorPos, facing.toYRot());
 
-                RenderSystem.setProjectionMatrix(DEPTH_CAMERA_PROJECTION_MATRIX, null);
+                RenderSystem.setProjectionMatrix(DEPTH_CAMERA_PROJECTION_MATRIX, VertexSorting.DISTANCE_TO_ORIGIN);
                 setupViewModelMatrix(viewModelStack);
 
                 storeProjectorMatrix(projectorIndex, projectorPos, mainCameraPosition, viewModelStack);
@@ -309,7 +312,7 @@ public final class ProjectorDepthRenderer {
 
     private static void setupViewModelMatrix(final PoseStack viewModelStack) {
         viewModelStack.setIdentity();
-        viewModelStack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(PROJECTOR_DEPTH_CAMERA.getYRot() + 180)));
+        viewModelStack.mulPose(Axis.YP.rotationDegrees(PROJECTOR_DEPTH_CAMERA.getYRot() + 180));
 
         final Matrix3f viewRotationMatrix = new Matrix3f(viewModelStack.last().normal());
         RenderSystem.setInverseViewRotationMatrix(viewRotationMatrix.invert());
@@ -336,7 +339,7 @@ public final class ProjectorDepthRenderer {
     }
 
     private static void renderProjectorDepthBuffer(final Minecraft minecraft, final float partialTicks, final PoseStack viewModelStack) {
-        final LevelRenderer levelRenderer = minecraft.levelRenderer;
+       final LevelRenderer levelRenderer = minecraft.levelRenderer;
         levelRenderer.prepareCullFrustum(
             viewModelStack,
             PROJECTOR_DEPTH_CAMERA.getPosition(),
@@ -345,8 +348,8 @@ public final class ProjectorDepthRenderer {
         levelRenderer.renderLevel(
             viewModelStack,
             partialTicks,
-            /* startNanos */ 0,
-            /* shouldRenderBlockOutline: */ false,
+            /*startNanos*/ 0,
+            /*shouldRenderBlockOutline*/  false,
             PROJECTOR_DEPTH_CAMERA,
             minecraft.gameRenderer,
             minecraft.gameRenderer.lightTexture(),
@@ -409,12 +412,16 @@ public final class ProjectorDepthRenderer {
     }
 
     private static void prepareOrthographicRendering(final Minecraft minecraft) {
-        final Matrix4f screenProjectionMatrix = new Matrix4f().orthoSymmetric(
+        float half_width = minecraft.getWindow().getWidth()/2f;
+        float half_height = minecraft.getWindow().getHeight()/2f;
+        final Matrix4f screenProjectionMatrix = (new Matrix4f()).setOrtho(0, minecraft.getWindow().getWidth(), 0, minecraft.getWindow().getHeight(), 1000, 3000);
+            /*new Matrix4f().orthoSymmetric(
             minecraft.getWindow().getWidth(),
-            -minecraft.getWindow().getHeight(),
-            1000, 3000
-        );
-        RenderSystem.setProjectionMatrix(screenProjectionMatrix, null);
+            minecraft.getWindow().getHeight(),
+            0, 5000
+        );*/
+
+        RenderSystem.setProjectionMatrix(screenProjectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
 
         final PoseStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.setIdentity();

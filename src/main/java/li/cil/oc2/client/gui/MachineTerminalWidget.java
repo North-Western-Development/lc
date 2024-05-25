@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraftforge.client.ForgeHooksClient;
 import org.joml.Matrix4f;
 import li.cil.oc2.client.gui.terminal.TerminalInput;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
@@ -69,8 +70,8 @@ public final class MachineTerminalWidget {
                 rendererView = terminal.getRenderer();
             }
 
-            final Matrix4f projectionMatrix = orthographic(0, parent.width, 0, parent.height, -10, 10f);
-            //final Matrix4f projectionMatrix = new Matrix4f().ortho(0, parent.width, 0, parent.height, -10, 10f);
+            //final Matrix4f projectionMatrix = orthographic(0, parent.width, 0, parent.height, -10, 10f);
+            final Matrix4f projectionMatrix = (new Matrix4f()).setOrtho(0, parent.width, parent.height, 0, -10f, 10f);
             rendererView.render(terminalStack, projectionMatrix);
         } else {
             final Font font = getClient().font;
