@@ -1,5 +1,5 @@
 {
-  "itemGroup.oc2.common": "OpenComputers II",
+  "item_group.oc2.common": "OpenComputers II",
 
   "block.oc2.computer": "Компьютер",
   "block.oc2.computer.desc": "Выполняет программы из карт памяти и жестких дисков.",

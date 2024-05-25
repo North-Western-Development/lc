@@ -4,8 +4,10 @@ package li.cil.oc2.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import li.cil.oc2.common.util.Vec3Utils;
+import net.minecraft.core.Vec3i;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import li.cil.oc2.api.API;
 import li.cil.oc2.common.blockentity.NetworkConnectorBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -183,13 +185,13 @@ public final class NetworkCableRenderer {
                 final Vec3 p = quadraticBezier(p0, p1, p2, t);
                 final Vec3 n = getExtrusionVector(eye, p, connection.forward);
 
-                final BlockPos blockPos = new BlockPos(p);
+                final BlockPos blockPos = new BlockPos(Vec3Utils.round(p));
                 final int blockLight = level.getBrightness(LightLayer.BLOCK, blockPos);
                 final int skyLight = level.getBrightness(LightLayer.SKY, blockPos);
                 final int packedLight = LightTexture.pack(blockLight, skyLight);
 
-                final Vector3f v0 = new Vector3f(p.subtract(n));
-                final Vector3f v1 = new Vector3f(p.add(n));
+                final Vector3f v0 = p.subtract(n).toVector3f();
+                final Vector3f v1 = p.add(n).toVector3f();
 
                 cablePoints.add(new CablePoint(v0, v1, packedLight));
             }

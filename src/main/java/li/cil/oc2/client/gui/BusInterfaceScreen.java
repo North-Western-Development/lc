@@ -10,7 +10,9 @@ import li.cil.oc2.common.blockentity.BusCableBlockEntity;
 import li.cil.oc2.common.item.Items;
 import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.BusInterfaceNameMessage;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -48,7 +50,7 @@ public final class BusInterfaceScreen extends Screen {
     protected void init() {
         super.init();
 
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
+        //getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
 
         left = (width - Sprites.BUS_INTERFACE_SCREEN.width) / 2;
         top = (height - Sprites.BUS_INTERFACE_SCREEN.height) / 2;
@@ -69,6 +71,10 @@ public final class BusInterfaceScreen extends Screen {
             Sprites.CONFIRM_PRESSED
         ) {
             @Override
+            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
+            }
+
+            @Override
             public void onPress() {
                 super.onPress();
                 setInterfaceName(nameField.getValue());
@@ -83,6 +89,10 @@ public final class BusInterfaceScreen extends Screen {
             Sprites.CANCEL_PRESSED
         ) {
             @Override
+            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
+            }
+
+            @Override
             public void onPress() {
                 super.onPress();
                 onClose();
@@ -94,7 +104,7 @@ public final class BusInterfaceScreen extends Screen {
     public void onClose() {
         super.onClose();
 
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+        //getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override
@@ -123,14 +133,14 @@ public final class BusInterfaceScreen extends Screen {
     }
 
     @Override
-    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(stack);
-        Sprites.BUS_INTERFACE_SCREEN.draw(stack, left, top);
+    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        renderBackground(graphics);
+        Sprites.BUS_INTERFACE_SCREEN.draw(graphics, left, top);
 
-        super.render(stack, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         RenderSystem.disableBlend();
-        nameField.render(stack, mouseX, mouseY, partialTicks);
+        nameField.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

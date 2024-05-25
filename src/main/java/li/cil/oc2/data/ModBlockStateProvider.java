@@ -9,8 +9,10 @@ import li.cil.oc2.common.item.Items;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -32,8 +34,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
     private static final ResourceLocation PCI_CARD_CAGE_MODEL = new ResourceLocation(API.MOD_ID, "block/pci_card_cage");
 
 
-    public ModBlockStateProvider(final DataGenerator generator, final ExistingFileHelper existingFileHelper) {
-        super(generator, API.MOD_ID, existingFileHelper);
+    public ModBlockStateProvider(final PackOutput output, final ExistingFileHelper existingFileHelper) {
+        super(output, API.MOD_ID, existingFileHelper);
     }
 
     @Override
@@ -45,12 +47,12 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(Blocks.KEYBOARD, Items.KEYBOARD, KEYBOARD_MODEL);
         horizontalFaceBlock(Blocks.NETWORK_CONNECTOR, Items.NETWORK_CONNECTOR, NETWORK_CONNECTOR_MODEL)
             .transforms()
-            .transform(ItemTransforms.TransformType.GUI)
+            .transform(ItemDisplayContext.GUI)
             .rotation(30, 315, 0)
             .translation(0, 2, 0)
             .scale(0.75f, 0.75f, 0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIXED)
+            .transform(ItemDisplayContext.FIXED)
             .rotation(270, 0, 0)
             .translation(0, 0, -5)
             .scale(1, 1, 1)
@@ -114,28 +116,28 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         itemModels().getBuilder(Items.BUS_CABLE.getId().getPath())
             .parent(straightModel)
             .transforms()
-            .transform(ItemTransforms.TransformType.GUI)
+            .transform(ItemDisplayContext.GUI)
             .rotation(30, 225, 0)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.GROUND)
+            .transform(ItemDisplayContext.GROUND)
             .translation(0, 3, 0)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIXED)
+            .transform(ItemDisplayContext.FIXED)
             .rotation(0, 180, 0)
             .scale(1.0f)
             .end()
-            .transform(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
+            .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
             .rotation(75, 45, 0)
             .translation(0, 2.5f, 0)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+            .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             .rotation(0, 45, 0)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND)
+            .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
             .rotation(0, 225, 0)
             .scale(0.75f)
             .end();
@@ -143,31 +145,31 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         itemModels().getBuilder(Items.BUS_INTERFACE.getId().getPath())
             .parent(plugModel)
             .transforms()
-            .transform(ItemTransforms.TransformType.GUI)
+            .transform(ItemDisplayContext.GUI)
             .rotation(30, 315, 0)
             .translation(2, 1, 0)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.GROUND)
+            .transform(ItemDisplayContext.GROUND)
             .translation(0, 3, -5)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIXED)
+            .transform(ItemDisplayContext.FIXED)
             .rotation(0, 180, 0)
             .translation(0, 0, 4)
             .scale(1.0f)
             .end()
-            .transform(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
+            .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
             .rotation(75, 180, 0)
             .translation(0, -1, 0)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+            .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             .rotation(0, 180, 0)
             .translation(0, 0, 2)
             .scale(0.75f)
             .end()
-            .transform(ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND)
+            .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
             .rotation(0, 180, 0)
             .translation(0, 0, 2)
             .scale(0.75f)

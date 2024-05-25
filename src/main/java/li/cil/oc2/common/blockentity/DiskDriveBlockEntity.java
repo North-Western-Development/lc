@@ -18,6 +18,7 @@ import li.cil.oc2.common.util.ThrottledSoundEmitter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -85,7 +86,7 @@ public final class DiskDriveBlockEntity extends ModBlockEntity implements DiskDr
             ItemStackUtils.spawnAsEntity(level, getBlockPos().relative(facing), stack, facing).ifPresent(entity -> {
                 if (player != null) {
                     entity.setNoPickUpDelay();
-                    entity.setOwner(player.getUUID());
+                    entity.setThrower(player.getUUID());
                 }
             });
         }

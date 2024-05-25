@@ -7,10 +7,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import li.cil.oc2.api.API;
 import li.cil.oc2.client.renderer.ModRenderType;
 import li.cil.oc2.common.block.ComputerBlock;
@@ -82,7 +82,7 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
         stack.pushPose();
 
         // Align with front face of block.
-        final Quaternion rotation = new Quaternion(Vector3f.YN, blockFacing.toYRot() + 180, true);
+        final Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(blockFacing.toYRot() + 180));
         stack.translate(0.5f, 0, 0.5f);
         stack.mulPose(rotation);
         stack.translate(-0.5f, 0, -0.5f);
@@ -206,14 +206,26 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
         final List<FormattedText> wrappedText = fontRenderer.getSplitter().splitLines(text, maxWidth, Style.EMPTY);
         if (wrappedText.size() == 1) {
             final int textWidth = fontRenderer.width(text);
-            fontRenderer.draw(stack, text, (maxWidth - textWidth) * 0.5f, 0, 0xEE3322);
+            draw(fontRenderer, stack, text, (maxWidth - textWidth) * 0.5f, 0, 0xEE3322);
         } else {
             for (int i = 0; i < wrappedText.size(); i++) {
-                fontRenderer.draw(stack, wrappedText.get(i).getString(), 0, i * fontRenderer.lineHeight, 0xEE3322);
+                draw(fontRenderer, stack, wrappedText.get(i).getString(), 0, i * fontRenderer.lineHeight, 0xEE3322);
             }
         }
 
         stack.popPose();
+    }
+
+    private void draw(Font font, PoseStack stack, Component text, float x, float y, int color) {
+        var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        font.drawInBatch(text, x, y, color, false, stack.last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880);
+        batch.endBatch();
+    }
+
+    private void draw(Font font, PoseStack stack, String text, float x, float y, int color) {
+        var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        font.drawInBatch(text, x, y, color, false, stack.last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880, false);
+        batch.endBatch();
     }
 
     private void renderStatus(final Matrix4f matrix, final MultiBufferSource bufferSource) {

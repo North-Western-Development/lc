@@ -19,8 +19,4 @@ public final class Texture {
         this.width = width;
         this.height = height;
     }
-
-    public void bind() {
-        RenderSystem.setShaderTexture(0, location);
-    }
 }

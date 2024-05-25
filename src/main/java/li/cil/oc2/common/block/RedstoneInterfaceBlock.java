@@ -16,14 +16,15 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import javax.annotation.Nullable;
 
 public final class RedstoneInterfaceBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public RedstoneInterfaceBlock() {
         super(Properties
-            .of(Material.METAL)
+            .of()
+            .mapColor(MapColor.METAL)
             .sound(SoundType.METAL)
             .strength(1.5f, 6.0f));
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
@@ -53,11 +54,6 @@ public final class RedstoneInterfaceBlock extends HorizontalDirectionalBlock imp
         }
 
         return super.getSignal(state, level, pos, side);
-    }
-
-    @Override
-    public boolean shouldCheckWeakPower(final BlockState state, final LevelReader level, final BlockPos pos, final Direction side) {
-        return false;
     }
 
     @SuppressWarnings("deprecation")

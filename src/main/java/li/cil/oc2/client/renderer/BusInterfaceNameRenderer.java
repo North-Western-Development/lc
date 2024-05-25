@@ -4,7 +4,7 @@ package li.cil.oc2.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Matrix4f;
+import org.joml.Matrix4f;
 import li.cil.oc2.common.block.BusCableBlock;
 import li.cil.oc2.common.blockentity.BusCableBlockEntity;
 import li.cil.oc2.common.integration.Wrenches;
@@ -45,7 +45,7 @@ public enum BusInterfaceNameRenderer {
             return;
         }
 
-        final Level level = player.level;
+        final Level level = player.level();
 
         if (!Wrenches.isHoldingWrench(player)) {
             return;
@@ -99,9 +99,9 @@ public enum BusInterfaceNameRenderer {
         final int packedLight = LightTexture.pack(15, 15);
 
         font.drawInBatch(name, horizontalTextOffset, 0, 0xffffffff,
-            false, matrix, buffer, true, backgroundColor, packedLight);
+            false, matrix, buffer, Font.DisplayMode.POLYGON_OFFSET, backgroundColor, packedLight);
         font.drawInBatch(name, horizontalTextOffset, 0, 0xffffffff,
-            false, matrix, buffer, false, 0, packedLight);
+            false, matrix, buffer, Font.DisplayMode.NORMAL, 0, packedLight);
 
         buffer.endBatch();
 

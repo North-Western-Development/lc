@@ -4,7 +4,7 @@ package li.cil.oc2.client.renderer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.math.Matrix4f;
+import org.joml.Matrix4f;
 import li.cil.oc2.api.API;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -67,7 +67,7 @@ public final class ModShaders {
     @SubscribeEvent
     public static void handleRegisterShaders(final RegisterShadersEvent event) throws IOException {
         event.registerShader(new ShaderInstance(
-            event.getResourceManager(),
+            event.getResourceProvider(),
             PROJECTORS_SHADER_LOCATION,
             DefaultVertexFormat.POSITION_TEX
         ), instance -> projectorsShader = instance);

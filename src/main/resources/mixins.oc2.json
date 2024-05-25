@@ -10,7 +10,8 @@
   "client": [
     "FrustumMixin",
     "LevelRendererMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "AtlasAdder"
   ],
   "injectors": {
     "defaultRequire": 1

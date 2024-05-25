@@ -1,5 +1,5 @@
 {
-  "itemGroup.oc2.common": "开放式电脑 II",
+  "item_group.oc2.common": "开放式电脑 II",
 
   "block.oc2.computer": "电脑",
   "block.oc2.computer.desc": "使用螺丝刀扳手或者兼容的扳手来添加或移除组件。",

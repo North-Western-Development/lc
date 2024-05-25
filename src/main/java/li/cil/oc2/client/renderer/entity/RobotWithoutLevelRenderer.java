@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public final class RobotWithoutLevelRenderer extends BlockEntityWithoutLevelRenderer {
@@ -26,7 +27,7 @@ public final class RobotWithoutLevelRenderer extends BlockEntityWithoutLevelRend
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    public void renderByItem(final ItemStack itemStack, final ItemTransforms.TransformType transformType, final PoseStack poseStack, final MultiBufferSource bufferSource, final int combinedLight, final int combinedOverlay) {
+    public void renderByItem(final ItemStack itemStack, final ItemDisplayContext transformType, final PoseStack poseStack, final MultiBufferSource bufferSource, final int combinedLight, final int combinedOverlay) {
         poseStack.pushPose();
 
         poseStack.translate(0.5, 0, 0.5);

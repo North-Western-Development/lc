@@ -69,13 +69,6 @@ public final class BusInterfaceItem extends ModBlockItem {
     }
 
     @Override
-    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> items) {
-        if (this.allowedIn(tab)) {
-            items.add(new ItemStack(this));
-        }
-    }
-
-    @Override
     public void registerBlocks(final Map<Block, Item> map, final Item item) {
     }
 

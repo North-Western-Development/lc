@@ -35,8 +35,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -123,7 +124,8 @@ public final class BusCableBlock extends BaseEntityBlock {
 
     public BusCableBlock() {
         super(Properties
-            .of(Material.METAL)
+            .of()
+            .mapColor(MapColor.METAL)
             .sound(SoundType.METAL)
             .strength(1.5f, 6.0f));
 
@@ -267,7 +269,7 @@ public final class BusCableBlock extends BaseEntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public List<ItemStack> getDrops(final BlockState state, final LootContext.Builder builder) {
+    public List<ItemStack> getDrops(final BlockState state, final LootParams.Builder builder) {
         final List<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
 
         if (state.getValue(HAS_FACADE)) {

@@ -30,20 +30,6 @@ public final class HardDriveWithExternalDataItem extends AbstractBlockDeviceItem
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> items) {
-        super.fillItemCategory(tab, items);
-
-        BlockDeviceDataRegistry.values().forEach(data -> {
-            if (!Objects.equals(BlockDeviceDataRegistry.getKey(data), getDefaultData())) {
-                final ItemStack stack = withData(data);
-                if (!stack.isEmpty()) {
-                    items.add(stack);
-                }
-            }
-        });
-    }
-
-    @Override
     public int getColor(final ItemStack stack) {
         return hasCustomColor(stack) ? DyeableLeatherItem.super.getColor(stack) : defaultColor;
     }

@@ -58,7 +58,7 @@ public abstract class AbstractContainer extends AbstractContainerMenu {
                 }
 
                 final ItemStack intoStack = into.getItem();
-                final boolean itemsAreEqual = fromStack.sameItem(intoStack) && ItemStack.tagMatches(fromStack, intoStack);
+                final boolean itemsAreEqual = fromStack.equals(intoStack, false);
                 if (!itemsAreEqual) {
                     continue;
                 }

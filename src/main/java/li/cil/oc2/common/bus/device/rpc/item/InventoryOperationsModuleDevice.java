@@ -9,6 +9,7 @@ import li.cil.oc2.api.util.RobotOperationSide;
 import li.cil.oc2.common.capabilities.Capabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -220,15 +221,16 @@ public final class InventoryOperationsModuleDevice extends AbstractItemRPCDevice
 
     private Stream<IItemHandler> getEntityItemHandlersAt(final Vec3 position, final Direction side) {
         final AABB bounds = AABB.unitCubeFromLowerCorner(position.subtract(0.5, 0.5, 0.5));
-        return entity.level.getEntities(entity, bounds).stream()
+        return entity.level().getEntities(entity, bounds).stream()
             .map(e -> e.getCapability(Capabilities.itemHandler(), side))
             .filter(LazyOptional::isPresent)
             .map(c -> c.orElseThrow(AssertionError::new));
     }
 
     private Stream<IItemHandler> getBlockItemHandlersAt(final Vec3 position, final Direction side) {
-        final BlockPos pos = new BlockPos(position);
-        final BlockEntity blockEntity = entity.level.getBlockEntity(pos);
+        Vec3i posi = new Vec3i((int) position.x, (int) position.y, (int) position.z);
+        final BlockPos pos = new BlockPos(posi);
+        final BlockEntity blockEntity = entity.level().getBlockEntity(pos);
         if (blockEntity == null) {
             return Stream.empty();
         }
@@ -242,7 +244,7 @@ public final class InventoryOperationsModuleDevice extends AbstractItemRPCDevice
     }
 
     private List<ItemEntity> getItemsInRange() {
-        return entity.level.getEntitiesOfClass(ItemEntity.class, entity.getBoundingBox().inflate(1));
+        return entity.level().getEntitiesOfClass(ItemEntity.class, entity.getBoundingBox().inflate(1));
     }
 
     private int takeFromWorld(final int count) {

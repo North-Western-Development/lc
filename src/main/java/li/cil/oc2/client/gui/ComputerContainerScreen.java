@@ -4,6 +4,7 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.oc2.common.container.ComputerInventoryContainer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,8 +22,8 @@ public final class ComputerContainerScreen extends AbstractMachineInventoryScree
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    protected void renderBg(final PoseStack stack, final float partialTicks, final int mouseX, final int mouseY) {
-        super.renderBg(stack, partialTicks, mouseX, mouseY);
-        Sprites.COMPUTER_CONTAINER.draw(stack, leftPos, topPos);
+    protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
+        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+        Sprites.COMPUTER_CONTAINER.draw(graphics, leftPos, topPos);
     }
 }

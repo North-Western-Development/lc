@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
@@ -31,10 +32,17 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public final class ClientSetup {
+    private static final Set<ResourceLocation> sprites = new HashSet<ResourceLocation>();
+
     @SubscribeEvent
     public static void handleSetupEvent(final FMLClientSetupEvent event) {
         BusInterfaceNameRenderer.initialize();
@@ -59,6 +67,16 @@ public final class ClientSetup {
 
             // We need to register this manually, because static init throws errors when running data generation.
             MinecraftForge.EVENT_BUS.register(ProjectorDepthRenderer.class);
+
+            for (final DeviceType deviceType : DeviceTypes.DEVICE_TYPE_REGISTRY.get().getValues()) {
+                sprites.add(deviceType.getBackgroundIcon());
+            }
+
+            sprites.add(ComputerRenderer.OVERLAY_POWER_LOCATION);
+            sprites.add(ComputerRenderer.OVERLAY_STATUS_LOCATION);
+            sprites.add(ComputerRenderer.OVERLAY_TERMINAL_LOCATION);
+
+            sprites.add(ChargerRenderer.EFFECT_LOCATION);
         });
     }
 
@@ -76,21 +94,11 @@ public final class ClientSetup {
         }
     }
 
-    @SubscribeEvent
-    public static void handleTextureStitchEvent(final TextureStitchEvent.Pre event) {
-        if (!Objects.equals(event.getAtlas().location(), InventoryMenu.BLOCK_ATLAS)) {
-            return;
-        }
+    @ApiStatus.Internal
+    public static void collectSprites(ResourceLocation atlas, Consumer<ResourceLocation> spriteConsumer) {
+        if(!Objects.equals(atlas, InventoryMenu.BLOCK_ATLAS)) return;
 
-        for (final DeviceType deviceType : DeviceTypes.DEVICE_TYPE_REGISTRY.get().getValues()) {
-            event.addSprite(deviceType.getBackgroundIcon());
-        }
-
-        event.addSprite(ComputerRenderer.OVERLAY_POWER_LOCATION);
-        event.addSprite(ComputerRenderer.OVERLAY_STATUS_LOCATION);
-        event.addSprite(ComputerRenderer.OVERLAY_TERMINAL_LOCATION);
-
-        event.addSprite(ChargerRenderer.EFFECT_LOCATION);
+        sprites.forEach(spriteConsumer);
     }
 
     @SubscribeEvent

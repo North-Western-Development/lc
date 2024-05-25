@@ -13,9 +13,11 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import net.minecraftforge.client.event.ViewportEvent;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import li.cil.oc2.common.block.ProjectorBlock;
 import li.cil.oc2.common.blockentity.ProjectorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.ProjectorDevice;
@@ -203,7 +205,7 @@ public final class ProjectorDepthRenderer {
      * Suppresses fog rendering while rendering depth buffer for projectors.
      */
     @SubscribeEvent
-    public static void handleFog(final EntityRenderersEvent event) {
+    public static void handleFog(final ViewportEvent.RenderFog event) {
         if (isRenderingProjectorDepth) {
             FogRenderer.setupNoFog();
         }
@@ -249,7 +251,7 @@ public final class ProjectorDepthRenderer {
 
                 configureProjectorDepthCamera(level, projectorPos, facing.toYRot());
 
-                RenderSystem.setProjectionMatrix(DEPTH_CAMERA_PROJECTION_MATRIX);
+                RenderSystem.setProjectionMatrix(DEPTH_CAMERA_PROJECTION_MATRIX, null);
                 setupViewModelMatrix(viewModelStack);
 
                 storeProjectorMatrix(projectorIndex, projectorPos, mainCameraPosition, viewModelStack);
@@ -307,25 +309,23 @@ public final class ProjectorDepthRenderer {
 
     private static void setupViewModelMatrix(final PoseStack viewModelStack) {
         viewModelStack.setIdentity();
-        viewModelStack.mulPose(Vector3f.YP.rotationDegrees(PROJECTOR_DEPTH_CAMERA.getYRot() + 180));
+        viewModelStack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(PROJECTOR_DEPTH_CAMERA.getYRot() + 180)));
 
-        final Matrix3f viewRotationMatrix = viewModelStack.last().normal().copy();
-        if (viewRotationMatrix.invert()) {
-            RenderSystem.setInverseViewRotationMatrix(viewRotationMatrix);
-        }
+        final Matrix3f viewRotationMatrix = new Matrix3f(viewModelStack.last().normal());
+        RenderSystem.setInverseViewRotationMatrix(viewRotationMatrix.invert());
     }
 
     private static void storeProjectorMatrix(final int projectorIndex, final Vec3 projectorPos, final Vec3 mainCameraPosition, final PoseStack viewModelStack) {
         // Save model-view-projection matrix for mapping in compositing shader. We use the position relative to the
         // main camera here, so that the main camera can sit at the origin. This avoids loss of precision.
-        PROJECTOR_CAMERA_MATRICES[projectorIndex].load(DEPTH_CAMERA_PROJECTION_MATRIX);
+        PROJECTOR_CAMERA_MATRICES[projectorIndex] = new Matrix4f(DEPTH_CAMERA_PROJECTION_MATRIX);
         viewModelStack.pushPose();
         viewModelStack.translate(
             mainCameraPosition.x() - projectorPos.x(),
             mainCameraPosition.y() - projectorPos.y(),
             mainCameraPosition.z() - projectorPos.z()
         );
-        PROJECTOR_CAMERA_MATRICES[projectorIndex].multiply(viewModelStack.last().pose());
+        PROJECTOR_CAMERA_MATRICES[projectorIndex].mul(viewModelStack.last().pose());
         viewModelStack.popPose();
     }
 
@@ -409,12 +409,12 @@ public final class ProjectorDepthRenderer {
     }
 
     private static void prepareOrthographicRendering(final Minecraft minecraft) {
-        final Matrix4f screenProjectionMatrix = Matrix4f.orthographic(
+        final Matrix4f screenProjectionMatrix = new Matrix4f().orthoSymmetric(
             minecraft.getWindow().getWidth(),
             -minecraft.getWindow().getHeight(),
             1000, 3000
         );
-        RenderSystem.setProjectionMatrix(screenProjectionMatrix);
+        RenderSystem.setProjectionMatrix(screenProjectionMatrix, null);
 
         final PoseStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.setIdentity();
@@ -423,8 +423,8 @@ public final class ProjectorDepthRenderer {
     }
 
     private static Matrix4f constructInverseMainCameraMatrix(final Matrix4f modelViewMatrix, final Matrix4f projectionMatrix) {
-        final Matrix4f inverseModelViewMatrix = projectionMatrix.copy();
-        inverseModelViewMatrix.multiply(modelViewMatrix);
+        final Matrix4f inverseModelViewMatrix = new Matrix4f(projectionMatrix);
+        inverseModelViewMatrix.mul(modelViewMatrix);
         inverseModelViewMatrix.invert();
         return inverseModelViewMatrix;
     }
@@ -444,12 +444,12 @@ public final class ProjectorDepthRenderer {
     private static Matrix4f getFrustumMatrix(final float near, final float far, final float dist,
                                              final float left, final float right,
                                              final float top, final float bottom) {
-        return new Matrix4f(new float[]{
+        return new Matrix4f(
             2 * dist / (right - left), 0, (right + left) / (right - left), 0,
             0, 2 * dist / (top - bottom), (top + bottom) / (top - bottom), 0,
             0, 0, -(far + near) / (far - near), -(2 * far * near) / (far - near),
-            0, 0, -1, 0,
-        });
+            0, 0, -1, 0
+        );
     }
 
     private static DynamicTexture getColorBuffer(final ProjectorBlockEntity projector) {
@@ -559,14 +559,14 @@ public final class ProjectorDepthRenderer {
                 instance = new ProjectorCameraEntity(level, BlockPos.ZERO, rotationY);
             }
 
-            instance.level = level;
+            instance.setLevel(level);
             instance.moveTo(pos.x(), pos.y(), pos.z(), rotationY, 0);
 
             return instance;
         }
 
         private ProjectorCameraEntity(final Level level, final BlockPos blockPos, final float rotationY) {
-            super(level, blockPos, rotationY, FakePlayerUtils.getFakePlayerProfile(), null);
+            super(level, blockPos, rotationY, FakePlayerUtils.getFakePlayerProfile());
         }
 
         @Override

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
@@ -44,11 +45,6 @@ import static li.cil.oc2.common.util.NBTUtils.makeInventoryTag;
 import static li.cil.oc2.common.util.RegistryUtils.key;
 
 public final class RobotItem extends ModItem {
-    @Override
-    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> items) {
-        items.add(getRobotWithFlash());
-    }
-
     @Override
     public void appendHoverText(final ItemStack stack, @Nullable final Level level, final List<Component> tooltip, final TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
@@ -95,7 +91,8 @@ public final class RobotItem extends ModItem {
             robot.importFromItemStack(context.getItemInHand());
 
             level.addFreshEntity(robot);
-            LevelUtils.playSound(level, new BlockPos(position), SoundType.METAL, SoundType::getPlaceSound);
+            Vec3i posi = new Vec3i((int) position.x, (int) position.y, (int) position.z);
+            LevelUtils.playSound(level, new BlockPos(posi), SoundType.METAL, SoundType::getPlaceSound);
 
             if (context.getPlayer() == null || !context.getPlayer().isCreative()) {
                 context.getItemInHand().shrink(1);

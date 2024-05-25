@@ -10,6 +10,7 @@ import li.cil.oc2.common.container.DeviceTypeSlotItemHandler;
 import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -36,20 +37,20 @@ public final class GuiUtils {
 
     ///////////////////////////////////////////////////////////////////
 
-    public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoIcon(final PoseStack stack, final AbstractContainerScreen<TContainer> screen, final DeviceType type, final Sprite icon) {
-        stack.pushPose();
-        stack.translate(0, 0, 100);
-        findFirstSlotOfTypeIfAllSlotsOfTypeEmpty(screen.getMenu(), type).ifPresent(slot -> icon.draw(stack,
+    public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoIcon(final GuiGraphics graphics, final AbstractContainerScreen<TContainer> screen, final DeviceType type, final Sprite icon) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 100);
+        findFirstSlotOfTypeIfAllSlotsOfTypeEmpty(screen.getMenu(), type).ifPresent(slot -> icon.draw(graphics,
             screen.getGuiLeft() + slot.x - 1 + RELATIVE_ICON_POSITION,
             screen.getGuiTop() + slot.y - 1 + RELATIVE_ICON_POSITION));
-        stack.popPose();
+        graphics.pose().popPose();
     }
 
-    public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoTooltip(final PoseStack stack, final AbstractContainerScreen<TContainer> screen, final int mouseX, final int mouseY, final DeviceType type) {
-        renderMissingDeviceInfoTooltip(stack, screen, mouseX, mouseY, type, Objects.requireNonNull(WARNING_BY_DEVICE_TYPE.get(type)));
+    public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoTooltip(final GuiGraphics graphics, final AbstractContainerScreen<TContainer> screen, final int mouseX, final int mouseY, final DeviceType type) {
+        renderMissingDeviceInfoTooltip(graphics, screen, mouseX, mouseY, type, Objects.requireNonNull(WARNING_BY_DEVICE_TYPE.get(type)));
     }
 
-    public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoTooltip(final PoseStack stack, final AbstractContainerScreen<TContainer> screen, final int mouseX, final int mouseY, final DeviceType type, final Component tooltip) {
+    public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoTooltip(final GuiGraphics graphics, final AbstractContainerScreen<TContainer> screen, final int mouseX, final int mouseY, final DeviceType type, final Component tooltip) {
         final Minecraft minecraft = screen.getMinecraft();
         if (minecraft.player == null) {
             return;
@@ -67,7 +68,7 @@ public final class GuiUtils {
 
         findFirstSlotOfTypeIfAllSlotsOfTypeEmpty(screen.getMenu(), type).ifPresent(slot -> {
             if (slot == hoveredSlot) {
-                TooltipUtils.drawTooltip(stack, Collections.singletonList(tooltip), mouseX, mouseY);
+                //TooltipUtils.drawTooltip(graphics, Collections.singletonList(tooltip), mouseX, mouseY);
             }
         });
     }

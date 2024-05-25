@@ -11,6 +11,7 @@ import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.KeyboardInputMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -90,14 +91,19 @@ public final class KeyboardScreen extends Screen {
     }
 
     @Override
-    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
-        super.render(stack, mouseX, mouseY, partialTicks);
+    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
-        renderBorderOverlay(stack);
+        renderBorderOverlay(graphics);
 
-        font.drawWordWrap(CLOSE_INFO,
-            BORDER_SIZE * 3, height - BORDER_SIZE * 3 - font.lineHeight,
-            width - BORDER_SIZE * 6, 0x88FFFFFF);
+        graphics.drawWordWrap(
+            font,
+            CLOSE_INFO,
+            BORDER_SIZE * 3,
+            height - BORDER_SIZE * 3 - font.lineHeight,
+            width - BORDER_SIZE * 6,
+            0x88FFFFFF
+        );
     }
 
     @Override
@@ -114,22 +120,22 @@ public final class KeyboardScreen extends Screen {
 
     ///////////////////////////////////////////////////////////////////
 
-    private void renderBorderOverlay(final PoseStack stack) {
-        blitQuad(stack, BORDER_SIZE, BORDER_SIZE, width - BORDER_SIZE, BORDER_SIZE * 2, BORDER_COLOR);
-        blitQuad(stack, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE * 2, height - BORDER_SIZE, BORDER_COLOR);
-        blitQuad(stack, BORDER_SIZE, height - BORDER_SIZE * 2, width - BORDER_SIZE, height - BORDER_SIZE, BORDER_COLOR);
-        blitQuad(stack, width - BORDER_SIZE * 2, BORDER_SIZE, width - BORDER_SIZE, height - BORDER_SIZE, BORDER_COLOR);
+    private void renderBorderOverlay(final GuiGraphics graphics) {
+        blitQuad(graphics, BORDER_SIZE, BORDER_SIZE, width - BORDER_SIZE, BORDER_SIZE * 2, BORDER_COLOR);
+        blitQuad(graphics, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE * 2, height - BORDER_SIZE, BORDER_COLOR);
+        blitQuad(graphics, BORDER_SIZE, height - BORDER_SIZE * 2, width - BORDER_SIZE, height - BORDER_SIZE, BORDER_COLOR);
+        blitQuad(graphics, width - BORDER_SIZE * 2, BORDER_SIZE, width - BORDER_SIZE, height - BORDER_SIZE, BORDER_COLOR);
     }
 
-    private void blitQuad(final PoseStack stack, final int x0, final int y0, final int x1, final int y1, final int color) {
+    private void blitQuad(final GuiGraphics graphics, final int x0, final int y0, final int x1, final int y1, final int color) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         final Tesselator tesselator = Tesselator.getInstance();
         final BufferBuilder builder = tesselator.getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        builder.vertex(stack.last().pose(), x0, y1, getBlitOffset()).color(color).endVertex();
-        builder.vertex(stack.last().pose(), x1, y1, getBlitOffset()).color(color).endVertex();
-        builder.vertex(stack.last().pose(), x1, y0, getBlitOffset()).color(color).endVertex();
-        builder.vertex(stack.last().pose(), x0, y0, getBlitOffset()).color(color).endVertex();
+        builder.vertex(graphics.pose().last().pose(), x0, y1, 0).color(color).endVertex();
+        builder.vertex(graphics.pose().last().pose(), x1, y1, 0).color(color).endVertex();
+        builder.vertex(graphics.pose().last().pose(), x1, y0, 0).color(color).endVertex();
+        builder.vertex(graphics.pose().last().pose(), x0, y0, 0).color(color).endVertex();
         tesselator.end();
     }
 

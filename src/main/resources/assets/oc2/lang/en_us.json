@@ -1,5 +1,5 @@
 {
-  "itemGroup.oc2.common": "OpenComputers II",
+  "item_group.oc2.common": "OpenComputers II",
 
   "block.oc2.computer": "Computer",
   "block.oc2.computer.desc": "Runs software from Flash Memory and Hard Disks.",

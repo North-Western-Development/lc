@@ -8,6 +8,8 @@ import li.cil.oc2.client.gui.widget.ImageButton;
 import li.cil.oc2.common.container.NetworkTunnelContainer;
 import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.NetworkTunnelLinkMessage;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -35,13 +37,13 @@ public final class NetworkTunnelScreen extends AbstractModContainerScreen<Networ
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(stack);
+    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        renderBackground(graphics);
 
         linkButton.active = getMenu().hasLinkSlotItem();
 
-        super.render(stack, mouseX, mouseY, partialTicks);
-        renderTooltip(stack, mouseX, mouseY);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -56,6 +58,10 @@ public final class NetworkTunnelScreen extends AbstractModContainerScreen<Networ
             Sprites.NETWORK_TUNNEL_LINK_BUTTON_INACTIVE,
             Sprites.NETWORK_TUNNEL_LINK_BUTTON_ACTIVE) {
             @Override
+            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
+            }
+
+            @Override
             public void onPress() {
                 super.onPress();
                 createTunnel();
@@ -64,11 +70,11 @@ public final class NetworkTunnelScreen extends AbstractModContainerScreen<Networ
     }
 
     @Override
-    protected void renderBg(final PoseStack stack, final float partialTicks, final int mouseX, final int mouseY) {
+    protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        Sprites.NETWORK_TUNNEL_SCREEN.draw(stack, leftPos, topPos);
+        Sprites.NETWORK_TUNNEL_SCREEN.draw(graphics, leftPos, topPos);
     }
 
     ///////////////////////////////////////////////////////////////////

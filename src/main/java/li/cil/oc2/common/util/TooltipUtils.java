@@ -16,7 +16,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -26,6 +29,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -44,15 +49,15 @@ public final class TooltipUtils {
 
     ///////////////////////////////////////////////////////////////////
 
-    public static void drawTooltip(final PoseStack poseStack, final List<? extends FormattedText> tooltip, final int x, final int y) {
-        drawTooltip(poseStack, tooltip, x, y, 200, ItemStack.EMPTY);
+    public static void drawTooltip(final GuiGraphics graphics, final List<? extends FormattedText> tooltip, final int x, final int y) {
+        drawTooltip(graphics, tooltip, x, y, 200, ItemStack.EMPTY);
     }
 
-    public static void drawTooltip(final PoseStack poseStack, final List<? extends FormattedText> tooltip, final int x, final int y, final int widthHint) {
-        drawTooltip(poseStack, tooltip, x, y, widthHint, ItemStack.EMPTY);
+    public static void drawTooltip(final GuiGraphics graphics, final List<? extends FormattedText> tooltip, final int x, final int y, final int widthHint) {
+        drawTooltip(graphics, tooltip, x, y, widthHint, ItemStack.EMPTY);
     }
 
-    public static void drawTooltip(final PoseStack poseStack, final List<? extends FormattedText> tooltip, final int x, final int y, final int widthHint, final ItemStack itemStack) {
+    public static void drawTooltip(final GuiGraphics graphics, final List<? extends FormattedText> tooltip, final int x, final int y, final int widthHint, final ItemStack itemStack) {
         final Minecraft minecraft = Minecraft.getInstance();
         final Screen screen = minecraft.screen;
         if (screen == null) {
@@ -61,16 +66,16 @@ public final class TooltipUtils {
 
         final int availableWidth = Math.max(x, screen.width - x);
         final int targetWidth = Math.min(availableWidth, widthHint);
-        final Font font = ForgeHooksClient.getTooltipFont(null, itemStack, minecraft.font);
+        final Font font = ForgeHooksClient.getTooltipFont(itemStack, minecraft.font);
 
         final boolean needsWrapping = tooltip.stream().anyMatch(line -> font.width(line) > targetWidth);
         if (!needsWrapping) {
-            screen.renderComponentTooltip(poseStack, tooltip, x, y, font, itemStack);
+            graphics.renderComponentTooltip(font, tooltip, x, y, itemStack);
         } else {
             final StringSplitter splitter = font.getSplitter();
             final List<? extends FormattedText> wrappedTooltip = tooltip.stream().flatMap(line ->
                 splitter.splitLines(line, targetWidth, Style.EMPTY).stream()).toList();
-            screen.renderComponentTooltip(poseStack, wrappedTooltip, x, y, font, itemStack);
+            graphics.renderComponentTooltip(font, wrappedTooltip, x, y, itemStack);
         }
     }
 

@@ -39,7 +39,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -74,19 +74,14 @@ public final class ComputerBlock extends HorizontalDirectionalBlock implements E
 
     public ComputerBlock() {
         super(Properties
-            .of(Material.METAL)
+            .of()
+            .mapColor(MapColor.METAL)
             .sound(SoundType.METAL)
             .strength(1.5f, 6.0f));
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
     ///////////////////////////////////////////////////////////////////
-
-    @Override
-    public void fillItemCategory(final CreativeModeTab group, final NonNullList<ItemStack> items) {
-        items.add(getComputerWithFlash());
-        items.add(getPreconfiguredComputer());
-    }
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -121,11 +116,6 @@ public final class ComputerBlock extends HorizontalDirectionalBlock implements E
     @Override
     public int getDirectSignal(final BlockState state, final BlockGetter level, final BlockPos pos, final Direction side) {
         return getSignal(state, level, pos, side);
-    }
-
-    @Override
-    public boolean shouldCheckWeakPower(final BlockState state, final LevelReader level, final BlockPos pos, final Direction side) {
-        return false;
     }
 
     @SuppressWarnings("deprecation")

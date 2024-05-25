@@ -15,6 +15,7 @@ import li.cil.oc2.common.bus.device.data.FirmwareRegistry;
 import li.cil.oc2.common.bus.device.provider.ProviderRegistry;
 import li.cil.oc2.common.container.Containers;
 import li.cil.oc2.common.entity.Entities;
+import li.cil.oc2.common.item.ItemGroup;
 import li.cil.oc2.common.item.Items;
 import li.cil.oc2.common.item.crafting.RecipeSerializers;
 import li.cil.oc2.common.serialization.ceres.Serializers;
@@ -65,5 +66,7 @@ public final class Main {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manuals::initialize);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
             FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class));
+
+        ItemGroup.TAB_REGISTER.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 }
