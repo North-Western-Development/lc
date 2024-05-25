@@ -29,17 +29,22 @@ public final class ModItemModelProvider extends ItemModelProvider {
         simple(Items.MEMORY_SMALL);
         simple(Items.MEMORY_MEDIUM);
         simple(Items.MEMORY_LARGE);
+        simple(Items.MEMORY_EXTRA_LARGE);
         simple(Items.HARD_DRIVE_SMALL, "item/hard_drive_base")
             .texture("layer1", "item/hard_drive_tint");
         simple(Items.HARD_DRIVE_MEDIUM, "item/hard_drive_base")
             .texture("layer1", "item/hard_drive_tint");
         simple(Items.HARD_DRIVE_LARGE, "item/hard_drive_base")
             .texture("layer1", "item/hard_drive_tint");
+        simple(Items.HARD_DRIVE_EXTRA_LARGE, "item/hard_drive_base")
+            .texture("layer1", "item/hard_drive_tint");
         simple(Items.HARD_DRIVE_CUSTOM, "item/hard_drive_base")
             .texture("layer1", "item/hard_drive_tint");
         simple(Items.FLASH_MEMORY);
         simple(Items.FLASH_MEMORY_CUSTOM, "item/flash_memory");
         simple(Items.FLOPPY, "item/floppy_base")
+            .texture("layer1", "item/floppy_tint");
+        simple(Items.FLOPPY_MODERN, "item/floppy_base")
             .texture("layer1", "item/floppy_tint");
 
         simple(Items.REDSTONE_INTERFACE_CARD);

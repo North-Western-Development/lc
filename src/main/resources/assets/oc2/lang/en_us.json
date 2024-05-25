@@ -39,6 +39,8 @@
   "item.oc2.hard_drive.desc": "Mass storage for operating systems and data.",
   "item.oc2.floppy": "Floppy Disk",
   "item.oc2.floppy.desc": "Portable storage used to transfer data between Computers.",
+  "item.oc2.floppy_modern": "Modern Floppy Disk",
+  "item.oc2.floppy_modern.desc": "Newer version of portable storage used to transfer data between Computers.",
   "item.oc2.flash_memory": "Flash Memory",
   "item.oc2.flash_memory.desc": "Readonly storage for firmware.",
   "item.oc2.redstone_interface_card": "Redstone Interface Card",

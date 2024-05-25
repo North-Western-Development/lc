@@ -19,9 +19,13 @@ public final class CustomItemModelProperties {
             (stack, level, entity, seed) -> CustomItemColors.getColor(stack));
         ItemProperties.register(Items.HARD_DRIVE_LARGE.get(), CustomItemModelProperties.COLOR_PROPERTY,
             (stack, leve, entity, seed) -> CustomItemColors.getColor(stack));
+        ItemProperties.register(Items.HARD_DRIVE_EXTRA_LARGE.get(), CustomItemModelProperties.COLOR_PROPERTY,
+            (stack, leve, entity, seed) -> CustomItemColors.getColor(stack));
         ItemProperties.register(Items.HARD_DRIVE_CUSTOM.get(), CustomItemModelProperties.COLOR_PROPERTY,
             (stack, level, entity, seed) -> CustomItemColors.getColor(stack));
         ItemProperties.register(Items.FLOPPY.get(), CustomItemModelProperties.COLOR_PROPERTY,
+            (stack, level, entity, seed) -> CustomItemColors.getColor(stack));
+        ItemProperties.register(Items.FLOPPY_MODERN.get(), CustomItemModelProperties.COLOR_PROPERTY,
             (stack, level, entity, seed) -> CustomItemColors.getColor(stack));
     }
 }

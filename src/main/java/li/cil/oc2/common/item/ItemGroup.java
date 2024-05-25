@@ -87,13 +87,16 @@ public final class ItemGroup {
             output.accept(Items.MEMORY_SMALL.get());
             output.accept(Items.MEMORY_MEDIUM.get());
             output.accept(Items.MEMORY_LARGE.get());
+            output.accept(Items.MEMORY_EXTRA_LARGE.get());
             output.accept(Items.HARD_DRIVE_SMALL.get());
             output.accept(Items.HARD_DRIVE_MEDIUM.get());
             output.accept(Items.HARD_DRIVE_LARGE.get());
+            output.accept(Items.HARD_DRIVE_EXTRA_LARGE.get());
             output.accept(Items.HARD_DRIVE_CUSTOM.get());
             output.accept(Items.FLASH_MEMORY.get());
             output.accept(Items.FLASH_MEMORY_CUSTOM.get());
             output.accept(Items.FLOPPY.get());
+            output.accept(Items.FLOPPY_MODERN.get());
             output.accept(Items.REDSTONE_INTERFACE_CARD.get());
             output.accept(Items.NETWORK_INTERFACE_CARD.get());
             output.accept(Items.NETWORK_TUNNEL_CARD.get());

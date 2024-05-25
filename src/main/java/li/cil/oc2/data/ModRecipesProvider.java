@@ -220,6 +220,19 @@ public final class ModRecipesProvider extends RecipeProvider {
             .save(consumer);
 
         ShapedRecipeBuilder
+            .shaped(RecipeCategory.MISC, Items.MEMORY_EXTRA_LARGE.get(), 2)
+            .pattern("DTD")
+            .pattern("EBE")
+            .pattern("DTD")
+            .define('D', Tags.Items.GEMS_DIAMOND)
+            .define('T', Items.TRANSISTOR.get())
+            .define('B', Items.CIRCUIT_BOARD.get())
+            .define('E', Tags.Items.GEMS_EMERALD)
+            .unlockedBy("has_computer", inventoryChange(Items.COMPUTER.get()))
+            .unlockedBy("has_robot", inventoryChange(Items.ROBOT.get()))
+            .save(consumer);
+
+        ShapedRecipeBuilder
             .shaped(RecipeCategory.MISC, Items.HARD_DRIVE_SMALL.get())
             .pattern("ITI")
             .pattern("EBE")
@@ -246,6 +259,19 @@ public final class ModRecipesProvider extends RecipeProvider {
         ShapedRecipeBuilder
             .shaped(RecipeCategory.MISC, Items.HARD_DRIVE_LARGE.get())
             .pattern("DTD")
+            .pattern("EBE")
+            .define('D', Tags.Items.GEMS_DIAMOND)
+            .define('T', Items.TRANSISTOR.get())
+            .define('B', Items.CIRCUIT_BOARD.get())
+            .define('E', Tags.Items.GEMS_EMERALD)
+            .unlockedBy("has_computer", inventoryChange(Items.COMPUTER.get()))
+            .unlockedBy("has_robot", inventoryChange(Items.ROBOT.get()))
+            .save(consumer);
+
+        ShapedRecipeBuilder
+            .shaped(RecipeCategory.MISC, Items.HARD_DRIVE_EXTRA_LARGE.get())
+            .pattern("ETE")
+            .pattern("DBD")
             .pattern("EBE")
             .define('D', Tags.Items.GEMS_DIAMOND)
             .define('T', Items.TRANSISTOR.get())
@@ -347,6 +373,17 @@ public final class ModRecipesProvider extends RecipeProvider {
             .unlockedBy("has_disk_drive", inventoryChange(Items.DISK_DRIVE.get()))
             .save(consumer);
 
+        ShapedRecipeBuilder
+            .shaped(RecipeCategory.MISC, Items.FLOPPY_MODERN.get())
+            .pattern("ITI")
+            .pattern("QBQ")
+            .pattern("QBQ")
+            .define('I', Tags.Items.INGOTS_IRON)
+            .define('T', Items.TRANSISTOR.get())
+            .define('Q', Tags.Items.GEMS_QUARTZ)
+            .define('B', Items.CIRCUIT_BOARD.get())
+            .unlockedBy("has_disk_drive", inventoryChange(Items.DISK_DRIVE.get()))
+            .save(consumer);
 
         ShapedRecipeBuilder
             .shaped(RecipeCategory.MISC, Items.INVENTORY_OPERATIONS_MODULE.get())

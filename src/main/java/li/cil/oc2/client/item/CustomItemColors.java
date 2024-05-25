@@ -41,8 +41,10 @@ public final class CustomItemColors {
             Items.HARD_DRIVE_SMALL.get(),
             Items.HARD_DRIVE_MEDIUM.get(),
             Items.HARD_DRIVE_LARGE.get(),
+            Items.HARD_DRIVE_EXTRA_LARGE.get(),
             Items.HARD_DRIVE_CUSTOM.get(),
-            Items.FLOPPY.get());
+            Items.FLOPPY.get(),
+            Items.FLOPPY_MODERN.get());
     }
 
     public static int getColorByDye(final DyeColor dye) {

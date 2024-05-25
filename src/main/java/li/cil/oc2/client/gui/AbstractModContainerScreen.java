@@ -55,8 +55,8 @@ public abstract class AbstractModContainerScreen<T extends AbstractContainerMenu
 
         for (final Renderable widget : renderables) {
             if (widget instanceof AbstractWidget abstractWidget) {
+                if(!abstractWidget.isHovered()) continue;
                 if(abstractWidget.getTooltip() == null) continue;
-                System.out.println(abstractWidget.getTooltip());
                 graphics.renderTooltip(Minecraft.getInstance().font, abstractWidget.getTooltip().toCharSequence(Minecraft.getInstance()), mouseX, mouseY);
             }
         }

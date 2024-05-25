@@ -9,10 +9,19 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -83,5 +92,18 @@ public abstract class ImageButton extends AbstractButton {
                 x + width / 2, y + (height - 8) / 2,
                 getFGColor() | Mth.ceil(alpha * 255) << 24);
         }
+    }
+
+    @Override
+    @Nullable
+    public Tooltip getTooltip()
+    {
+        if (tooltip.stream().findFirst().isEmpty()) return null;
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i < tooltip.size(); i++) {
+            builder.append(tooltip.get(i).getString() + (i == tooltip.size() - 1 ? "" : "\n"));
+        }
+        Component component = Component.literal(builder.toString());
+        return Tooltip.create(component);
     }
 }

@@ -125,9 +125,9 @@ public abstract class AbstractMachineInventoryScreen<T extends AbstractMachineTe
     protected void renderFg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
         super.renderFg(graphics, partialTicks, mouseX, mouseY);
 
-        //GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.FLASH_MEMORY, Sprites.WARN_ICON);
-        //GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.MEMORY, Sprites.WARN_ICON);
-        //GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.HARD_DRIVE, Sprites.INFO_ICON);
+        GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.FLASH_MEMORY, Sprites.WARN_ICON);
+        GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.MEMORY, Sprites.WARN_ICON);
+        GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.HARD_DRIVE, Sprites.INFO_ICON);
 
         if (shouldRenderEnergyBar()) {
             final int x = leftPos - Sprites.SIDEBAR_2.width + 4;

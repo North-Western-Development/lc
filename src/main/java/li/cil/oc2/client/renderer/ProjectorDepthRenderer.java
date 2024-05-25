@@ -419,7 +419,7 @@ public final class ProjectorDepthRenderer {
             0, 5000
         );*/
 
-        RenderSystem.setProjectionMatrix(screenProjectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
+        RenderSystem.setProjectionMatrix(screenProjectionMatrix, VertexSorting.DISTANCE_TO_ORIGIN);
 
         final PoseStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.setIdentity();

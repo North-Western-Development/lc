@@ -38,9 +38,9 @@ public final class GuiUtils {
     ///////////////////////////////////////////////////////////////////
 
     public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoIcon(final GuiGraphics graphics, final AbstractContainerScreen<TContainer> screen, final DeviceType type, final Sprite icon) {
-        /*findFirstSlotOfTypeIfAllSlotsOfTypeEmpty(screen.getMenu(), type).ifPresent(slot -> icon.draw(graphics,
+        findFirstSlotOfTypeIfAllSlotsOfTypeEmpty(screen.getMenu(), type).ifPresent(slot -> icon.draw(graphics,
             screen.getGuiLeft() + slot.x - 1 + RELATIVE_ICON_POSITION,
-            screen.getGuiTop() + slot.y - 1 + RELATIVE_ICON_POSITION));*/
+            screen.getGuiTop() + slot.y - 1 + RELATIVE_ICON_POSITION));
     }
 
     public static <TContainer extends AbstractContainerMenu> void renderMissingDeviceInfoTooltip(final GuiGraphics graphics, final AbstractContainerScreen<TContainer> screen, final int mouseX, final int mouseY, final DeviceType type) {

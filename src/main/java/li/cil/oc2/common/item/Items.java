@@ -54,6 +54,8 @@ public final class Items {
         new MemoryItem(4 * Constants.MEGABYTE));
     public static final RegistryObject<MemoryItem> MEMORY_LARGE = register("memory_large", () ->
         new MemoryItem(8 * Constants.MEGABYTE));
+    public static final RegistryObject<MemoryItem> MEMORY_EXTRA_LARGE = register("memory_extra_large", () ->
+        new MemoryItem(16 * Constants.MEGABYTE));
 
     public static final RegistryObject<HardDriveItem> HARD_DRIVE_SMALL = register("hard_drive_small", () ->
         new HardDriveItem(2 * Constants.MEGABYTE, DyeColor.LIGHT_GRAY));
@@ -61,6 +63,8 @@ public final class Items {
         new HardDriveItem(4 * Constants.MEGABYTE, DyeColor.GREEN));
     public static final RegistryObject<HardDriveItem> HARD_DRIVE_LARGE = register("hard_drive_large", () ->
         new HardDriveItem(8 * Constants.MEGABYTE, DyeColor.CYAN));
+    public static final RegistryObject<HardDriveItem> HARD_DRIVE_EXTRA_LARGE = register("hard_drive_extra_large", () ->
+        new HardDriveItem(16 * Constants.MEGABYTE, DyeColor.YELLOW));
     public static final RegistryObject<HardDriveWithExternalDataItem> HARD_DRIVE_CUSTOM = register("hard_drive_custom", () ->
         new HardDriveWithExternalDataItem(BlockDeviceDataRegistry.BUILDROOT.getId(), DyeColor.BROWN));
 
@@ -71,6 +75,8 @@ public final class Items {
 
     public static final RegistryObject<FloppyItem> FLOPPY = register("floppy", () ->
         new FloppyItem(512 * Constants.KILOBYTE));
+    public static final RegistryObject<FloppyItem> FLOPPY_MODERN = register("floppy_modern", () ->
+        new FloppyItem(1440 * Constants.KILOBYTE));
 
     public static final RegistryObject<Item> REDSTONE_INTERFACE_CARD = register("redstone_interface_card");
     public static final RegistryObject<Item> NETWORK_INTERFACE_CARD = register("network_interface_card", NetworkInterfaceCardItem::new);

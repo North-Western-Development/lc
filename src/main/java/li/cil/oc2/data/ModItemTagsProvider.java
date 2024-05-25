@@ -9,6 +9,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -45,12 +46,14 @@ public final class ModItemTagsProvider extends ItemTagsProvider {
         tag(DEVICES_MEMORY).add(
             Items.MEMORY_SMALL.get(),
             Items.MEMORY_MEDIUM.get(),
-            Items.MEMORY_LARGE.get()
+            Items.MEMORY_LARGE.get(),
+            Items.MEMORY_EXTRA_LARGE.get()
         );
         tag(DEVICES_HARD_DRIVE).add(
             Items.HARD_DRIVE_SMALL.get(),
             Items.HARD_DRIVE_MEDIUM.get(),
             Items.HARD_DRIVE_LARGE.get(),
+            Items.HARD_DRIVE_EXTRA_LARGE.get(),
             Items.HARD_DRIVE_CUSTOM.get()
         );
         tag(DEVICES_FLASH_MEMORY).add(
@@ -58,7 +61,8 @@ public final class ModItemTagsProvider extends ItemTagsProvider {
             Items.FLASH_MEMORY_CUSTOM.get()
         );
         tag(DEVICES_FLOPPY).add(
-            Items.FLOPPY.get()
+            Items.FLOPPY.get(),
+            Items.FLOPPY_MODERN.get()
         );
         tag(DEVICES_CARD).add(
             Items.REDSTONE_INTERFACE_CARD.get(),
@@ -86,11 +90,13 @@ public final class ModItemTagsProvider extends ItemTagsProvider {
             Items.HARD_DRIVE_SMALL.get(),
             Items.HARD_DRIVE_MEDIUM.get(),
             Items.HARD_DRIVE_LARGE.get(),
+            Items.HARD_DRIVE_EXTRA_LARGE.get(),
             Items.HARD_DRIVE_CUSTOM.get(),
             Items.KEYBOARD.get(),
             Items.MEMORY_SMALL.get(),
             Items.MEMORY_MEDIUM.get(),
             Items.MEMORY_LARGE.get(),
+            Items.MEMORY_EXTRA_LARGE.get(),
             Items.NETWORK_INTERFACE_CARD.get(),
             Items.NETWORK_TUNNEL_CARD.get(),
             Items.NETWORK_TUNNEL_MODULE.get(),
