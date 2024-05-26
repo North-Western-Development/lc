@@ -3,11 +3,13 @@
 package li.cil.oc2.common.vm;
 
 import li.cil.ceres.api.Serialized;
+import li.cil.oc2.api.bus.device.Device;
 import li.cil.oc2.api.bus.device.vm.FirmwareLoader;
 import li.cil.oc2.api.bus.device.vm.VMDeviceLoadResult;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.bus.CommonDeviceBusController;
 import li.cil.oc2.common.bus.RPCDeviceBusAdapter;
+import li.cil.oc2.common.bus.device.rpc.item.CPUItemDevice;
 import li.cil.oc2.common.serialization.NBTSerialization;
 import li.cil.oc2.common.util.NBTTagIds;
 import li.cil.oc2.common.util.NBTUtils;
@@ -24,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.util.Optional;
 
 public abstract class AbstractVirtualMachine implements VirtualMachine {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -294,6 +297,18 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
         if (busController.getDevices().stream().noneMatch(device -> device instanceof FirmwareLoader)) {
             error(Component.translatable(Constants.COMPUTER_ERROR_MISSING_FIRMWARE));
             return;
+        }
+
+        if (busController.getDevices().stream().noneMatch(device -> device instanceof CPUItemDevice)) {
+            error(Component.translatable(Constants.COMPUTER_ERROR_MISSING_CPU));
+            return;
+        } else {
+            Optional<Device> cpu = busController.getDevices().stream().filter(device -> device instanceof CPUItemDevice).findFirst();
+            if(cpu.isEmpty()) {
+                error(Component.translatable(Constants.COMPUTER_ERROR_MISSING_CPU));
+                return;
+            }
+            state.board.getCpu().setFrequency(((CPUItemDevice) cpu.get()).getFrequency());
         }
 
         assert runner == null : "Runner active while still in load phase.";

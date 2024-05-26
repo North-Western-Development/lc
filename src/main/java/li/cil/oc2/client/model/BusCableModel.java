@@ -2,7 +2,6 @@
 
 package li.cil.oc2.client.model;
 
-import com.mojang.datafixers.util.Pair;
 import li.cil.oc2.api.API;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -11,9 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
@@ -46,6 +42,6 @@ public final class BusCableModel implements IUnbakedGeometry<BusCableModel> {
             requireNonNull(baker.bake(BUS_CABLE_SUPPORT_MODEL, BlockModelRotation.X0_Y270, spriteGetter)) // +x
         };
 
-        return new BusCableBakedModel(proxy.bake(owner, baker, spriteGetter, modelTransform, overrides, modelLocation), straightModelByAxis, supportModelByFace);
+        return new BusCableBakedModel(bakedBaseModel, straightModelByAxis, supportModelByFace);
     }
 }

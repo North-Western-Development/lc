@@ -9,9 +9,6 @@ import li.cil.oc2.api.util.Registries;
 import li.cil.oc2.common.bus.device.provider.block.BlockEntityCapabilityDeviceProvider;
 import li.cil.oc2.common.bus.device.provider.item.*;
 import li.cil.oc2.common.bus.device.rpc.block.*;
-import li.cil.oc2.common.util.RegistryUtils;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -44,6 +41,7 @@ public final class ProviderRegistry {
         ITEM_DEVICE_PROVIDERS.register("network_tunnel_card", NetworkTunnelCardItemDeviceProvider::new);
         ITEM_DEVICE_PROVIDERS.register("file_import_export_card", FileImportExportCardItemDeviceProvider::new);
         ITEM_DEVICE_PROVIDERS.register("sound_card", SoundCardItemDeviceProvider::new);
+        ITEM_DEVICE_PROVIDERS.register("cpu", CPUItemDeviceProvider::new);
 
         ITEM_DEVICE_PROVIDERS.register("inventory_operations_module", InventoryOperationsModuleDeviceProvider::new);
         ITEM_DEVICE_PROVIDERS.register("block_operations_module", BlockOperationsModuleDeviceProvider::new);

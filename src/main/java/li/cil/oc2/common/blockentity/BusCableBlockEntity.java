@@ -4,6 +4,7 @@ package li.cil.oc2.common.blockentity;
 
 import li.cil.oc2.api.bus.DeviceBus;
 import li.cil.oc2.api.bus.DeviceBusElement;
+import li.cil.oc2.client.model.BusCableBakedModel;
 import li.cil.oc2.common.Config;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.block.BusCableBlock;
@@ -18,6 +19,9 @@ import li.cil.oc2.common.util.ItemStackUtils;
 import li.cil.oc2.common.util.LevelUtils;
 import li.cil.oc2.common.util.NBTTagIds;
 import li.cil.oc2.common.util.ServerScheduler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -29,11 +33,13 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
@@ -41,6 +47,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
+import static li.cil.oc2.client.model.BusCableBakedModel.*;
 
 public final class BusCableBlockEntity extends ModBlockEntity {
     public enum FacadeType {
@@ -48,6 +55,8 @@ public final class BusCableBlockEntity extends ModBlockEntity {
         INVALID_BLOCK,
         VALID_BLOCK,
     }
+
+    private ModelData currentModelData = ModelData.EMPTY;
 
     private static final String BUS_ELEMENT_TAG_NAME = "busElement";
     private static final String INTERFACE_NAMES_TAG_NAME = "interfaceNames";
@@ -68,6 +77,8 @@ public final class BusCableBlockEntity extends ModBlockEntity {
         for (final Direction side : Direction.values()) {
             neighborTrackers[side.get3DDataValue()] = new NeighborTracker(side);
         }
+
+        requestModelDataUpdate();
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -145,6 +156,8 @@ public final class BusCableBlockEntity extends ModBlockEntity {
             final BusCableFacadeMessage message = new BusCableFacadeMessage(getBlockPos(), facade);
             Network.sendToClientsTrackingBlockEntity(message, this);
         }
+
+        requestModelDataUpdate();
     }
 
     public void removeFacade() {
@@ -163,6 +176,8 @@ public final class BusCableBlockEntity extends ModBlockEntity {
             final BusCableFacadeMessage message = new BusCableFacadeMessage(getBlockPos(), facade);
             Network.sendToClientsTrackingBlockEntity(message, this);
         }
+
+        requestModelDataUpdate();
     }
 
     public void handleNeighborChanged(final BlockPos pos) {
@@ -190,6 +205,56 @@ public final class BusCableBlockEntity extends ModBlockEntity {
         if (neighborConnectivityChanged) {
             busElement.scheduleScan();
         }
+    }
+
+    @Override
+    public ModelData getModelData()
+    {
+        if (level == null) return ModelData.EMPTY;
+        BlockState state = getBlockState();
+        BlockPos pos = getBlockPos();
+        if (state.hasProperty(BusCableBlock.HAS_FACADE) && state.getValue(BusCableBlock.HAS_FACADE)) {
+            BlockState facadeState;
+            final ItemStack facadeItem = getFacade();
+
+            facadeState = ItemStackUtils.getBlockState(facadeItem);
+            if (facadeState == null) {
+                facadeState = Blocks.IRON_BLOCK.defaultBlockState();
+            }
+
+            final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
+            final BakedModel model = shapes.getBlockModel(facadeState);
+            ModelData data = model.getModelData(level, pos, facadeState, currentModelData);
+
+            currentModelData = ModelData.builder()
+                .with(BUS_CABLE_FACADE_PROPERTY, new BusCableBakedModel.BusCableFacade(facadeState, model, data))
+                .build();
+
+            return currentModelData;
+        }
+
+        Direction supportSide = null;
+        for (final Direction direction : Constants.DIRECTIONS) {
+            if (isNeighborInDirectionSolid(level, pos, direction)) {
+                final EnumProperty<BusCableBlock.ConnectionType> property = BusCableBlock.FACING_TO_CONNECTION_MAP.get(direction);
+                if (state.hasProperty(property) && state.getValue(property) == BusCableBlock.ConnectionType.INTERFACE) {
+                    return currentModelData; // Plug is already supporting us, bail.
+                }
+
+                if (supportSide == null) { // Prefer vertical supports.
+                    supportSide = direction;
+                }
+            }
+        }
+
+        if (supportSide != null) {
+            currentModelData = ModelData.builder()
+                .with(BUS_CABLE_SUPPORT_PROPERTY, new BusCableBakedModel.BusCableSupportSide(supportSide))
+                .build();
+            return currentModelData;
+        }
+
+        return currentModelData;
     }
 
     @Override
@@ -223,6 +288,8 @@ public final class BusCableBlockEntity extends ModBlockEntity {
         busElement.load(tag.getCompound(BUS_ELEMENT_TAG_NAME));
         deserializeInterfaceNames(tag.getList(INTERFACE_NAMES_TAG_NAME, NBTTagIds.TAG_STRING));
         facade = ItemStack.of(tag.getCompound(FACADE_TAG_NAME));
+
+        requestModelDataUpdate();
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -244,6 +311,8 @@ public final class BusCableBlockEntity extends ModBlockEntity {
         }
 
         scheduleBusScanInAdjacentBusElements();
+
+        requestModelDataUpdate();
     }
 
     @Override
