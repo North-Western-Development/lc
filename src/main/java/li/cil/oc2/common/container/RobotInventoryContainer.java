@@ -74,6 +74,12 @@ public final class RobotInventoryContainer extends AbstractRobotContainer {
             }
         });
 
+        handlers.getItemHandler(DeviceTypes.CPU).ifPresent(itemHandler -> {
+            if(itemHandler.getSlots() > 0) {
+                addSlot(new DeviceTypeSlotItemHandler(itemHandler, DeviceTypes.CPU, 0, 34, 52));
+            }
+        });
+
         final ItemStackHandler inventory = robot.getInventory();
         for (int slot = 0; slot < inventory.getSlots(); slot++) {
             final int x = 116 + (slot % 3) * SLOT_SIZE;

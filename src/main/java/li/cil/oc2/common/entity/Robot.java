@@ -11,6 +11,7 @@ import li.cil.oc2.api.bus.device.object.Parameter;
 import li.cil.oc2.api.bus.device.provider.ItemDeviceQuery;
 import li.cil.oc2.api.capabilities.TerminalUserProvider;
 import li.cil.oc2.common.Config;
+import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.bus.AbstractDeviceBusElement;
 import li.cil.oc2.common.bus.CommonDeviceBusController;
 import li.cil.oc2.common.bus.device.util.Devices;
@@ -21,6 +22,7 @@ import li.cil.oc2.common.container.RobotTerminalContainer;
 import li.cil.oc2.common.energy.FixedEnergyStorage;
 import li.cil.oc2.common.entity.robot.*;
 import li.cil.oc2.common.integration.Wrenches;
+import li.cil.oc2.common.item.CPUItem;
 import li.cil.oc2.common.item.Items;
 import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.*;
@@ -106,6 +108,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
     private static final int FLASH_MEMORY_SLOTS = 1;
     private static final int MODULE_SLOTS = 4;
     private static final int INVENTORY_SIZE = 12;
+    private static final int CPU_SLOTS = 1;
 
     ///////////////////////////////////////////////////////////////////
 
@@ -206,6 +209,12 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
 
     public void start() {
         if (!level().isClientSide()) {
+            if (deviceItems.getItemHandler(DeviceTypes.CPU).get().getStackInSlot(0).isEmpty())
+            {
+                virtualMachine.error(Component.translatable(Constants.COMPUTER_ERROR_MISSING_CPU));
+                return;
+            }
+            virtualMachine.state.board.getCpu().setFrequency(((CPUItem) deviceItems.getItemHandler(DeviceTypes.CPU).get().getStackInSlot(0).getItem()).getFrequency());
             virtualMachine.start();
         }
     }
@@ -736,7 +745,8 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
                 new GroupDefinition(DeviceTypes.MEMORY, MEMORY_SLOTS),
                 new GroupDefinition(DeviceTypes.HARD_DRIVE, HARD_DRIVE_SLOTS),
                 new GroupDefinition(DeviceTypes.FLASH_MEMORY, FLASH_MEMORY_SLOTS),
-                new GroupDefinition(DeviceTypes.ROBOT_MODULE, MODULE_SLOTS)
+                new GroupDefinition(DeviceTypes.ROBOT_MODULE, MODULE_SLOTS),
+                new GroupDefinition(DeviceTypes.CPU, CPU_SLOTS)
             );
         }
 

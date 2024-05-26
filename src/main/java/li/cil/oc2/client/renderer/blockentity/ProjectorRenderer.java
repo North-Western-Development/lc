@@ -4,6 +4,7 @@ package li.cil.oc2.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -91,7 +92,7 @@ public final class ProjectorRenderer implements BlockEntityRenderer<ProjectorBlo
 
     private void alignToFrontFace(final ProjectorBlockEntity projector, final PoseStack stack) {
         final Direction blockFacing = projector.getBlockState().getValue(ProjectorBlock.FACING);
-        final Quaternionf rotation = new Quaternionf().rotateAxis((float)Math.toRadians(blockFacing.toYRot()), new Vector3f(0, -1, 0));
+        final Quaternionf rotation = Axis.YN.rotationDegrees(blockFacing.toYRot());
         stack.translate(0.5f, 0, 0.5f);
         stack.mulPose(rotation);
     }

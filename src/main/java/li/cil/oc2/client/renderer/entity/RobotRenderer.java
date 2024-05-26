@@ -4,6 +4,7 @@ package li.cil.oc2.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import li.cil.oc2.client.renderer.entity.model.RobotModel;
@@ -44,10 +45,7 @@ public final class RobotRenderer extends EntityRenderer<Robot> {
         //     alternatively prevent this wrapping or patch the prev value instead.
         final float partialRotation = Mth.degreesDifferenceAbs(entity.yRotO, entity.getYRot()) * partialTicks;
         final float rotation = Mth.approachDegrees(entity.yRotO, entity.getYRot(), partialRotation);
-
-        var axis = new Vector3f(0, -1, 0);
-        var rotationQuaternion = new Quaternionf().rotationAxis((float)Math.toRadians(rotation), axis.x, axis.y, axis.z);
-        stack.mulPose(rotationQuaternion);
+        stack.mulPose(Axis.YN.rotationDegrees(rotation));
 
         model.setupAnim(entity, 0, 0, 0, 0, 0);
 
