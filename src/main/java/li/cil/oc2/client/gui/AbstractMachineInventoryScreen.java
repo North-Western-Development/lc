@@ -128,6 +128,7 @@ public abstract class AbstractMachineInventoryScreen<T extends AbstractMachineTe
         GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.FLASH_MEMORY, Sprites.WARN_ICON);
         GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.MEMORY, Sprites.WARN_ICON);
         GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.HARD_DRIVE, Sprites.INFO_ICON);
+        GuiUtils.renderMissingDeviceInfoIcon(graphics, this, DeviceTypes.CPU, Sprites.INFO_ICON);
 
         if (shouldRenderEnergyBar()) {
             final int x = leftPos - Sprites.SIDEBAR_2.width + 4;
@@ -143,6 +144,7 @@ public abstract class AbstractMachineInventoryScreen<T extends AbstractMachineTe
         GuiUtils.renderMissingDeviceInfoTooltip(graphics, this, mouseX, mouseY, DeviceTypes.FLASH_MEMORY);
         GuiUtils.renderMissingDeviceInfoTooltip(graphics, this, mouseX, mouseY, DeviceTypes.MEMORY);
         GuiUtils.renderMissingDeviceInfoTooltip(graphics, this, mouseX, mouseY, DeviceTypes.HARD_DRIVE);
+        GuiUtils.renderMissingDeviceInfoTooltip(graphics, this, mouseX, mouseY, DeviceTypes.CPU);
 
         if (!shouldRenderEnergyBar()) {
             return;

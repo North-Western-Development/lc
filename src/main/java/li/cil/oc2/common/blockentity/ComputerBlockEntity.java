@@ -4,11 +4,13 @@ package li.cil.oc2.common.blockentity;
 
 import li.cil.oc2.api.bus.DeviceBusElement;
 import li.cil.oc2.api.bus.device.Device;
+import li.cil.oc2.api.bus.device.DeviceType;
 import li.cil.oc2.api.bus.device.DeviceTypes;
 import li.cil.oc2.api.bus.device.provider.ItemDeviceQuery;
 import li.cil.oc2.api.capabilities.TerminalUserProvider;
 import li.cil.oc2.client.audio.LoopingSoundManager;
 import li.cil.oc2.common.Config;
+import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.block.ComputerBlock;
 import li.cil.oc2.common.bus.AbstractBlockDeviceBusElement;
 import li.cil.oc2.common.bus.BlockDeviceBusController;
@@ -17,7 +19,9 @@ import li.cil.oc2.common.bus.device.util.Devices;
 import li.cil.oc2.common.capabilities.Capabilities;
 import li.cil.oc2.common.container.ComputerInventoryContainer;
 import li.cil.oc2.common.container.ComputerTerminalContainer;
+import li.cil.oc2.common.container.DeviceTypeSlotItemHandler;
 import li.cil.oc2.common.energy.FixedEnergyStorage;
+import li.cil.oc2.common.item.CPUItem;
 import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.ComputerBootErrorMessage;
 import li.cil.oc2.common.network.message.ComputerBusStateMessage;
@@ -32,6 +36,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -60,6 +65,7 @@ public final class ComputerBlockEntity extends ModBlockEntity implements Termina
     private static final int HARD_DRIVE_SLOTS = 4;
     private static final int FLASH_MEMORY_SLOTS = 1;
     private static final int CARD_SLOTS = 4;
+    private static final int CPU_SLOTS = 1;
 
     private static final int MAX_RUNNING_SOUND_DELAY = TickUtils.toTicks(Duration.ofSeconds(2));
 
@@ -101,6 +107,12 @@ public final class ComputerBlockEntity extends ModBlockEntity implements Termina
 
     public void start() {
         if (level != null && !level.isClientSide()) {
+            if (deviceItems.getItemHandler(DeviceTypes.CPU).get().getStackInSlot(0).isEmpty())
+            {
+                virtualMachine.error(Component.translatable(Constants.COMPUTER_ERROR_MISSING_CPU));
+                return;
+            }
+            virtualMachine.state.board.getCpu().setFrequency(((CPUItem) deviceItems.getItemHandler(DeviceTypes.CPU).get().getStackInSlot(0).getItem()).getFrequency());
             virtualMachine.start();
         }
     }
@@ -308,7 +320,7 @@ public final class ComputerBlockEntity extends ModBlockEntity implements Termina
 
     private final class ComputerItemStackHandlers extends AbstractVMItemStackHandlers {
         public ComputerItemStackHandlers() {
-            super(new GroupDefinition(DeviceTypes.MEMORY, MEMORY_SLOTS), new GroupDefinition(DeviceTypes.HARD_DRIVE, HARD_DRIVE_SLOTS), new GroupDefinition(DeviceTypes.FLASH_MEMORY, FLASH_MEMORY_SLOTS), new GroupDefinition(DeviceTypes.CARD, CARD_SLOTS));
+            super(new GroupDefinition(DeviceTypes.MEMORY, MEMORY_SLOTS), new GroupDefinition(DeviceTypes.HARD_DRIVE, HARD_DRIVE_SLOTS), new GroupDefinition(DeviceTypes.FLASH_MEMORY, FLASH_MEMORY_SLOTS), new GroupDefinition(DeviceTypes.CARD, CARD_SLOTS), new GroupDefinition(DeviceTypes.CPU, CPU_SLOTS));
         }
 
         @Override

@@ -3,6 +3,7 @@
 package li.cil.oc2.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -40,9 +41,9 @@ public final class DiskDriveRenderer implements BlockEntityRenderer<DiskDriveBlo
         stack.pushPose();
 
         stack.translate(0.5f, 0.5f, 0.5f);
-        stack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(blockFacing.toYRot())));
+        stack.mulPose(Axis.YN.rotationDegrees(blockFacing.toYRot()));
         stack.translate(0.0f, 0.0f, 0.5f);
-        stack.mulPose(new Quaternionf().rotateX((float) Math.toRadians(90)));
+        stack.mulPose(Axis.XN.rotationDegrees(90));
         stack.translate(0.0f, 0.2375f, 2.5f / 16f);
         stack.scale(0.55f, 0.55f, 0.55f);
 

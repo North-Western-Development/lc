@@ -44,6 +44,7 @@ public final class DeviceTypes {
         register(ItemTags.DEVICES_ROBOT_MODULE);
         register(ItemTags.DEVICES_FLOPPY);
         register(ItemTags.DEVICES_NETWORK_TUNNEL);
+        register(ItemTags.DEVICES_CPU);
     }
 
     ///////////////////////////////////////////////////////////////////

@@ -68,6 +68,15 @@ public final class Items {
     public static final RegistryObject<HardDriveWithExternalDataItem> HARD_DRIVE_CUSTOM = register("hard_drive_custom", () ->
         new HardDriveWithExternalDataItem(BlockDeviceDataRegistry.BUILDROOT.getId(), DyeColor.BROWN));
 
+    public static final RegistryObject<CPUItem> CPU_TIER_1 = register("cpu_tier_1", () ->
+        new CPUItem(25_000_000));
+    public static final RegistryObject<CPUItem> CPU_TIER_2 = register("cpu_tier_2", () ->
+        new CPUItem(50_000_000));
+    public static final RegistryObject<CPUItem> CPU_TIER_3 = register("cpu_tier_3", () ->
+        new CPUItem(100_000_000));
+    public static final RegistryObject<CPUItem> CPU_TIER_4 = register("cpu_tier_4", () ->
+        new CPUItem(200_000_000));
+
     public static final RegistryObject<FlashMemoryItem> FLASH_MEMORY = register("flash_memory", () ->
         new FlashMemoryItem(12 * Constants.MEGABYTE));
     public static final RegistryObject<FlashMemoryWithExternalDataItem> FLASH_MEMORY_CUSTOM = register("flash_memory_custom", () ->

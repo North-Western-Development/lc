@@ -244,7 +244,7 @@ public abstract class AbstractVirtualMachine implements VirtualMachine {
     protected void handleBootErrorChanged(@Nullable final Component value) {
     }
 
-    protected void error(@Nullable final Component message) {
+    public void error(@Nullable final Component message) {
         error(message, true);
     }
 

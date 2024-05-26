@@ -27,6 +27,7 @@ public final class GuiUtils {
         map.put(DeviceTypes.FLASH_MEMORY, text("tooltip.{mod}.flash_memory_missing"));
         map.put(DeviceTypes.MEMORY, text("tooltip.{mod}.memory_missing"));
         map.put(DeviceTypes.HARD_DRIVE, text("tooltip.{mod}.hard_drive_missing"));
+        map.put(DeviceTypes.CPU, text("tooltip.{mod}.cpu_missing"));
 
         return map;
     });
@@ -65,7 +66,7 @@ public final class GuiUtils {
 
         findFirstSlotOfTypeIfAllSlotsOfTypeEmpty(screen.getMenu(), type).ifPresent(slot -> {
             if (slot == hoveredSlot) {
-                //TooltipUtils.drawTooltip(graphics, Collections.singletonList(tooltip), mouseX, mouseY);
+                TooltipUtils.drawTooltip(graphics, Collections.singletonList(tooltip), mouseX, mouseY);
             }
         });
     }

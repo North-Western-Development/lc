@@ -3,6 +3,7 @@
 package li.cil.oc2.data;
 
 import li.cil.oc2.api.API;
+import li.cil.oc2.common.item.CPUItem;
 import li.cil.oc2.common.item.Items;
 import li.cil.oc2.common.tags.BlockTags;
 import net.minecraft.data.DataGenerator;
@@ -92,6 +93,10 @@ public final class ModItemTagsProvider extends ItemTagsProvider {
             Items.HARD_DRIVE_LARGE.get(),
             Items.HARD_DRIVE_EXTRA_LARGE.get(),
             Items.HARD_DRIVE_CUSTOM.get(),
+            Items.CPU_TIER_1.get(),
+            Items.CPU_TIER_2.get(),
+            Items.CPU_TIER_3.get(),
+            Items.CPU_TIER_4.get(),
             Items.KEYBOARD.get(),
             Items.MEMORY_SMALL.get(),
             Items.MEMORY_MEDIUM.get(),
@@ -101,6 +106,13 @@ public final class ModItemTagsProvider extends ItemTagsProvider {
             Items.NETWORK_TUNNEL_CARD.get(),
             Items.NETWORK_TUNNEL_MODULE.get(),
             Items.PROJECTOR.get()
+        );
+
+        tag(DEVICES_CPU).add(
+            Items.CPU_TIER_1.get(),
+            Items.CPU_TIER_2.get(),
+            Items.CPU_TIER_3.get(),
+            Items.CPU_TIER_4.get()
         );
     }
 }

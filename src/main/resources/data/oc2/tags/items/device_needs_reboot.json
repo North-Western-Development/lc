@@ -17,6 +17,10 @@
     "oc2:network_interface_card",
     "oc2:network_tunnel_card",
     "oc2:network_tunnel_module",
-    "oc2:projector"
+    "oc2:projector",
+    "oc2:cpu_tier_1",
+    "oc2:cpu_tier_2",
+    "oc2:cpu_tier_3",
+    "oc2:cpu_tier_4"
   ]
 }

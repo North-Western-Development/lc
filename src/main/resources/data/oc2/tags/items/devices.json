@@ -10,6 +10,7 @@
     "#oc2:devices/flash_memory",
     "#oc2:devices/card",
     "#oc2:devices/robot_module",
-    "#oc2:devices/floppy"
+    "#oc2:devices/floppy",
+    "#oc2:devices/cpu"
   ]
 }

@@ -18,6 +18,7 @@ public final class ItemTags {
     public static final TagKey<Item> DEVICES_ROBOT_MODULE = tag("devices/robot_module");
     public static final TagKey<Item> DEVICES_FLOPPY = tag("devices/floppy");
     public static final TagKey<Item> DEVICES_NETWORK_TUNNEL = tag("devices/network_tunnel");
+    public static final TagKey<Item> DEVICES_CPU = tag("devices/cpu");
 
     public static final TagKey<Item> CABLES = tag("cables");
     public static final TagKey<Item> WRENCHES = tag("wrenches");

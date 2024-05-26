@@ -20,4 +20,5 @@ public final class DeviceTypes {
 
     public static DeviceType FLOPPY = (DeviceType) RegistryObject.create(new ResourceLocation(API.MOD_ID, "floppy"), new ResourceLocation("oc2", "device_type"), API.MOD_ID).get();
     public static DeviceType NETWORK_TUNNEL = (DeviceType) RegistryObject.create(new ResourceLocation(API.MOD_ID, "network_tunnel"), new ResourceLocation("oc2", "device_type"), API.MOD_ID).get();
+    public static DeviceType CPU = (DeviceType) RegistryObject.create(new ResourceLocation(API.MOD_ID, "cpu"), new ResourceLocation("oc2", "device_type"), API.MOD_ID).get();
 }

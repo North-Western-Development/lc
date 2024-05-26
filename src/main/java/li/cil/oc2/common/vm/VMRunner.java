@@ -150,7 +150,7 @@ public class VMRunner implements Runnable {
 
     ///////////////////////////////////////////////////////////////////
 
-    private static int getCyclesPerTick() {
-        return Constants.CPU_FREQUENCY / TICKS_PER_SECOND;
+    private int getCyclesPerTick() {
+        return board.getCpu().getFrequency() / TICKS_PER_SECOND;
     }
 }

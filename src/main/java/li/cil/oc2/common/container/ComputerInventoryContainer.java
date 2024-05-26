@@ -74,6 +74,12 @@ public final class ComputerInventoryContainer extends AbstractComputerContainer 
             }
         });
 
+        handlers.getItemHandler(DeviceTypes.CPU).ifPresent(itemHandler -> {
+            if(itemHandler.getSlots() > 0) {
+                addSlot(new DeviceTypeSlotItemHandler(itemHandler, DeviceTypes.CPU, 0, 64, 52));
+            }
+        });
+
         createPlayerInventoryAndHotbarSlots(player.getInventory(), 8, 115);
     }
 }
