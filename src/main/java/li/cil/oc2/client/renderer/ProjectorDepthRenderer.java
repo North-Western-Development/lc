@@ -75,14 +75,9 @@ public final class ProjectorDepthRenderer {
     private static final float PROJECTOR_FORWARD_SHIFT = 7 / 16f; // From center of projector block.
     private static final float PROJECTOR_NEAR = 0.5f - PROJECTOR_FORWARD_SHIFT;
     private static final float PROJECTOR_FAR = ProjectorBlockEntity.MAX_RENDER_DISTANCE;
-    private static final int HALF_FRUSTUM_WIDTH = (ProjectorBlockEntity.MAX_WIDTH - 1) / 2;
+    private static final int FRUSTUM_WIDTH = (ProjectorBlockEntity.MAX_WIDTH - 1) / 2;
     private static final int FRUSTUM_HEIGHT = ProjectorBlockEntity.MAX_HEIGHT - 1;
-    private static final Matrix4f DEPTH_CAMERA_PROJECTION_MATRIX = (new Matrix4f()).setFrustum(-HALF_FRUSTUM_WIDTH*2, HALF_FRUSTUM_WIDTH*2, FRUSTUM_HEIGHT, -FRUSTUM_HEIGHT, PROJECTOR_NEAR, PROJECTOR_FAR);
-    /*getFrustumMatrix(
-        PROJECTOR_NEAR, PROJECTOR_FAR,
-        ProjectorBlockEntity.MAX_GOOD_RENDER_DISTANCE,
-        -HALF_FRUSTUM_WIDTH, HALF_FRUSTUM_WIDTH,
-        FRUSTUM_HEIGHT, 0);*/
+    private static final Matrix4f DEPTH_CAMERA_PROJECTION_MATRIX = (new Matrix4f()).frustum(-calculateFrustumComponent(FRUSTUM_WIDTH), calculateFrustumComponent(FRUSTUM_WIDTH), 0, calculateFrustumComponent(FRUSTUM_HEIGHT), PROJECTOR_NEAR, PROJECTOR_FAR);
 
     private static final Cache<ProjectorBlockEntity, RenderInfo> RENDER_INFO = CacheBuilder.newBuilder()
         .expireAfterAccess(Duration.ofSeconds(5))
@@ -94,6 +89,11 @@ public final class ProjectorDepthRenderer {
     private static boolean entityShadowsBak;
     private static Entity minecraftCameraEntityBak;
     private static Camera gameRendererMainCameraBak;
+
+    private static float calculateFrustumComponent(float originalValue)
+    {
+        return (originalValue / (ProjectorBlockEntity.MAX_GOOD_RENDER_DISTANCE + 4f)) / ProjectorBlockEntity.MAX_GOOD_RENDER_DISTANCE;
+    }
 
     private static void handleProjectorNoLongerRendering(final RemovalNotification<ProjectorBlockEntity, RenderInfo> notification) {
         final ProjectorBlockEntity projector = notification.getKey();
@@ -412,17 +412,7 @@ public final class ProjectorDepthRenderer {
     }
 
     private static void prepareOrthographicRendering(final Minecraft minecraft) {
-        float f = 3000 - 1000;
-        final Matrix4f screenProjectionMatrix = (new Matrix4f()).setOrtho(0f, minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), 0f, 1000, 3000);
-
-        // new Matrix4f(2.0F / minecraft.getWindow().getWidth(), 0f, 0f, -1f, 0f, 2.0f / -minecraft.getWindow().getHeight(), 0f, 1f, 0f, 0f, -2.0f / f, -(3000 + 1000) / f, 0f, 0f, 0f, 1f);
-        /*new Matrix4f().orthoSymmetric(
-            minecraft.getWindow().getWidth(),
-            -minecraft.getWindow().getHeight(),
-            0, 5000
-        );*/
-
-        //screenProjectionMatrix.reflect(new Vector3f(), new Vector3f());
+        final Matrix4f screenProjectionMatrix = (new Matrix4f()).setOrtho(0f, minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), 0, 1000, 3000);
 
         RenderSystem.setProjectionMatrix(screenProjectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
 
