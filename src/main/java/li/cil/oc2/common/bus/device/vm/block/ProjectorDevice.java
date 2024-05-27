@@ -27,7 +27,7 @@ public final class ProjectorDevice extends IdentityProxy<BlockEntity> implements
     private static final String BLOB_HANDLE_TAG_NAME = "blob";
 
     public static final int WIDTH = 640;
-    public static final int HEIGHT = 480;
+    public static final int HEIGHT = 360;
 
     ///////////////////////////////////////////////////////////////
 

@@ -4,10 +4,8 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import li.cil.oc2.client.gui.terminal.TerminalInput;
 import li.cil.oc2.client.renderer.MonitorGUIRenderer;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
-import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
 import li.cil.oc2.common.container.AbstractMonitorContainer;
 import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.MonitorInputMessage;
@@ -23,10 +21,6 @@ import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
-
-import static dev.architectury.utils.GameInstance.getClient;
-import static java.awt.SystemColor.menu;
 
 @OnlyIn(Dist.CLIENT)
 public final class MonitorDisplayWidget {
@@ -47,14 +41,12 @@ public final class MonitorDisplayWidget {
     private int leftPos, topPos;
     private boolean isMouseOverTerminal;
     private MonitorGUIRenderer.RendererView rendererView;
-    private MonitorGUIRenderer monitor;
 
     ///////////////////////////////////////////////////////////////////
 
     public MonitorDisplayWidget(final AbstractMonitorDisplayScreen<?> parent) {
         this.parent = parent;
         this.container = this.parent.getMenu();
-        this.monitor = new MonitorGUIRenderer();
     }
 
     public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY) {
@@ -68,18 +60,18 @@ public final class MonitorDisplayWidget {
     }
 
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, @Nullable final Component error) {
-        if (container.getPowerState() && container.isMounted()) {
+        if (container.getPowerState() && container.isMounted() && container.hasPower()) {
             final PoseStack terminalStack = new PoseStack();
             terminalStack.translate(leftPos + TERMINAL_X, topPos + TERMINAL_Y, 0);
             terminalStack.scale((Sprites.TERMINAL_SCREEN.width - 16f) / MonitorDevice.WIDTH, (Sprites.TERMINAL_SCREEN.height - 16f) / MonitorDevice.HEIGHT, 1f);
 
             if (rendererView == null) {
-                rendererView = monitor.getRenderer(container.getMonitor());
+                rendererView = container.getMonitor().getMonitor().getRenderer(container.getMonitor());
             }
 
             final Matrix4f projectionMatrix = (new Matrix4f()).setOrtho(0, parent.width, parent.height, 0, -10f, 10f);
             rendererView.render(terminalStack, projectionMatrix, MonitorDevice.WIDTH, MonitorDevice.HEIGHT);
-        } else {
+        } else if (container.getPowerState()) {
             final Font font = getClient().font;
             if (error != null) {
                 final int textWidth = font.width(error);
@@ -147,7 +139,6 @@ public final class MonitorDisplayWidget {
         if (KeyCodeMapping.MAPPING.containsKey(keycode)) {
             final int evdevCode = KeyCodeMapping.MAPPING.get(keycode);
             Network.sendToServer(new MonitorInputMessage(container.getMonitor(), evdevCode, isDown));
-            System.out.println("SENDING KEY");
         }
     }
 

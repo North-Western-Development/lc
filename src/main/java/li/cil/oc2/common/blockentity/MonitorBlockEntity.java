@@ -2,35 +2,19 @@
 
 package li.cil.oc2.common.blockentity;
 
-import li.cil.oc2.api.bus.DeviceBusElement;
-import li.cil.oc2.api.bus.device.Device;
-import li.cil.oc2.api.bus.device.DeviceTypes;
-import li.cil.oc2.api.bus.device.provider.ItemDeviceQuery;
-import li.cil.oc2.api.capabilities.TerminalUserProvider;
-import li.cil.oc2.client.audio.LoopingSoundManager;
+import li.cil.oc2.client.renderer.MonitorGUIRenderer;
 import li.cil.oc2.common.Config;
-import li.cil.oc2.common.block.ComputerBlock;
 import li.cil.oc2.common.block.ProjectorBlock;
-import li.cil.oc2.common.bus.AbstractBlockDeviceBusElement;
-import li.cil.oc2.common.bus.BlockDeviceBusController;
-import li.cil.oc2.common.bus.CommonDeviceBusController;
 import li.cil.oc2.common.bus.device.BlockDeviceBusElement;
-import li.cil.oc2.common.bus.device.util.Devices;
 import li.cil.oc2.common.bus.device.vm.block.KeyboardDevice;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
-import li.cil.oc2.common.bus.device.vm.block.ProjectorDevice;
 import li.cil.oc2.common.capabilities.Capabilities;
-import li.cil.oc2.common.container.ComputerInventoryContainer;
-import li.cil.oc2.common.container.ComputerTerminalContainer;
 import li.cil.oc2.common.container.MonitorDisplayContainer;
 import li.cil.oc2.common.energy.FixedEnergyStorage;
 import li.cil.oc2.common.network.MonitorLoadBalancer;
 import li.cil.oc2.common.network.Network;
-import li.cil.oc2.common.network.ProjectorLoadBalancer;
 import li.cil.oc2.common.network.message.*;
-import li.cil.oc2.common.serialization.NBTSerialization;
-import li.cil.oc2.common.util.*;
-import li.cil.oc2.common.vm.*;
+import li.cil.oc2.common.vm.device.SimpleFramebufferDevice;
 import li.cil.oc2.jcodec.codecs.h264.H264Decoder;
 import li.cil.oc2.jcodec.codecs.h264.H264Encoder;
 import li.cil.oc2.jcodec.codecs.h264.encode.CQPRateControl;
@@ -39,26 +23,14 @@ import li.cil.oc2.jcodec.common.model.Picture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -68,8 +40,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import static li.cil.oc2.common.Constants.BLOCK_ENTITY_TAG_NAME_IN_ITEM;
-import static li.cil.oc2.common.Constants.ITEMS_TAG_NAME;
+import static li.cil.oc2.common.bus.device.vm.block.MonitorDevice.HEIGHT;
+import static li.cil.oc2.common.bus.device.vm.block.MonitorDevice.WIDTH;
 
 public final class MonitorBlockEntity extends ModBlockEntity implements TickableBlockEntity {
     private static final String STATE_TAG_NAME = "state";
@@ -96,17 +68,18 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
 
     @Nullable private CompletableFuture<?> runningDecode;
     private final H264Decoder decoder = new H264Decoder();
-    private final ByteBuffer decoderBuffer = ByteBuffer.allocateDirect(1024 * 1024);
+    private final ByteBuffer decoderBuffer = ByteBuffer.allocateDirect(WIDTH * HEIGHT * SimpleFramebufferDevice.STRIDE);
     @Nullable private ProjectorBlockEntity.FrameConsumer frameConsumer;
 
     private boolean needsIDR;
     private final BlockDeviceBusElement busElement = new BlockDeviceBusElement();
     private final MonitorDevice monitorDevice = new MonitorDevice(this, this::handleMountedChanged);
     private final KeyboardDevice<BlockEntity> keyboardDevice = new KeyboardDevice<>(this);
-    private final Picture picture = Picture.create(MonitorDevice.WIDTH, MonitorDevice.HEIGHT, ColorSpace.YUV420J);
+    private final Picture picture = Picture.create(WIDTH, HEIGHT, ColorSpace.YUV420J);
+    private final MonitorGUIRenderer monitor = new MonitorGUIRenderer();
 
     private final H264Encoder encoder = new H264Encoder(new CQPRateControl(12));
-    private final ByteBuffer encoderBuffer = ByteBuffer.allocateDirect(1024 * 1024);
+    private final ByteBuffer encoderBuffer = ByteBuffer.allocateDirect(WIDTH * HEIGHT * SimpleFramebufferDevice.STRIDE);
 
 
     ///////////////////////////////////////////////////////////////////
@@ -115,9 +88,16 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
         needsIDR = true;
     }
 
+    public boolean hasPower() {
+        return true;
+        //return energy.extractEnergy(Config.projectorEnergyPerTick, true) >= Config.projectorEnergyPerTick || !Config.projectorsUseEnergy();
+    }
+
     public boolean getPowerState() { return isPowered; }
 
     public boolean isMounted() { return isMounted; }
+
+    public MonitorGUIRenderer getMonitor() { return monitor; }
 
     private long lastKeepAliveSentAt;
 
@@ -300,7 +280,6 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
         tag.putBoolean(IS_PROJECTING_TAG_NAME, isMounted);
         tag.putBoolean(HAS_ENERGY_TAG_NAME, hasEnergy);
         tag.putBoolean(STATE_TAG_NAME, isPowered);
-
         return tag;
     }
 

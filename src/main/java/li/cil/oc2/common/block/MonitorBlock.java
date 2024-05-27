@@ -49,9 +49,9 @@ public final class MonitorBlock extends HorizontalDirectionalBlock implements En
     private static final VoxelShape NEG_Z_SHAPE = Shapes.or(
         Block.box(0, 0, 1, 16, 16, 16), // main body
         Block.box(0, 15, 0, 16, 16, 1), // across top
-        Block.box(0, 0, 0, 16, 6, 1), // across bottom
-        Block.box(0, 0, 0, 1, 16, 1), // up left
-        Block.box(15, 0, 0, 16, 16, 1) // up right
+        Block.box(0, 0, 0, 16, 4, 1), // across bottom
+        Block.box(0, 0, 0, 2, 16, 1), // up left
+        Block.box(14, 0, 0, 16, 16, 1) // up right
     );
     private static final VoxelShape NEG_X_SHAPE = VoxelShapeUtils.rotateHorizontalClockwise(NEG_Z_SHAPE);
     private static final VoxelShape POS_Z_SHAPE = VoxelShapeUtils.rotateHorizontalClockwise(NEG_X_SHAPE);

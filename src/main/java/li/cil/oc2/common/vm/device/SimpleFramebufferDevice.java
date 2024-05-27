@@ -68,7 +68,8 @@ public final class SimpleFramebufferDevice implements MemoryMappedDevice {
         }
 
         synchronized (buffer) {
-            final int[][] quadrant = conversionBuffer.get();
+            convertR5G6B5ToYUV420J(buffer, width, height, picture);
+            /*final int[][] quadrant = conversionBuffer.get();
             final byte[][] pictureData = picture.getData();
             for (int halfRow = dirtyLines.nextSetBit(0); halfRow >= 0; halfRow = dirtyLines.nextSetBit(halfRow + 1)) {
                 dirtyLines.clear(halfRow);
@@ -92,10 +93,53 @@ public final class SimpleFramebufferDevice implements MemoryMappedDevice {
                     pictureData[1][chromaIndex] = (byte) ((quadrant[0][1] + quadrant[1][1] + quadrant[2][1] + quadrant[3][1] + 2) >> 2);
                     pictureData[2][chromaIndex] = (byte) ((quadrant[0][2] + quadrant[1][2] + quadrant[2][2] + quadrant[3][2] + 2) >> 2);
                 }
-            }
+            }*/
         }
 
         return true;
+    }
+
+    public static void convertR5G6B5ToYUV420J(ByteBuffer rgbBuffer, int width, int height, Picture yuvPicture) {
+
+        // Retrieve the YUV planes from the Picture object
+        byte[][] yuvData = yuvPicture.getData();
+        byte[] yPlane = yuvData[0];
+        byte[] uPlane = yuvData[1];
+        byte[] vPlane = yuvData[2];
+
+        int uvWidth = width / 2;
+
+        // Iterate through each pixel
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                int index = j * width + i;
+
+                // Extract pixel data from ByteBuffer
+                short pixel = rgbBuffer.getShort(index * 2);
+
+                // Extract R, G, B from R5G6B5 with correct endianness
+                final int r5 = (pixel >>> 11) & 0b11111;
+                final int g6 = (pixel >>> 5) & 0b111111;
+                final int b5 = pixel & 0b11111;
+                final byte r = (byte) ((r5 * 255 / 0b11111) - 128);
+                final byte g = (byte) ((g6 * 255 / 0b111111) - 128);
+                final byte b = (byte) ((b5 * 255 / 0b11111) - 128);
+
+                int[] yuv = new int[3];
+
+                RgbToYuv420j.rgb2yuv(r, g, b, yuv);
+
+                // Set Y plane
+                yPlane[index] = (byte) yuv[0];
+
+                // Set U and V planes (subsampled)
+                if (j % 2 == 0 && i % 2 == 0) {
+                    int uvIndex = (j / 2) * uvWidth + (i / 2);
+                    uPlane[uvIndex] = (byte) yuv[1];
+                    vPlane[uvIndex] = (byte) yuv[2];
+                }
+            }
+        }
     }
 
     @Override
@@ -133,17 +177,6 @@ public final class SimpleFramebufferDevice implements MemoryMappedDevice {
     }
 
     ///////////////////////////////////////////////////////////////
-
-    private static void r5g6b5ToYuv420(final int r5g6b5, final int[] yuv) {
-        final int r5 = (r5g6b5 >>> 11) & 0b11111;
-        final int g6 = (r5g6b5 >>> 5) & 0b111111;
-        final int b5 = r5g6b5 & 0b11111;
-        final byte r = (byte) ((r5 * 255 / 0b11111) - 128);
-        final byte g = (byte) ((g6 * 255 / 0b111111) - 128);
-        final byte b = (byte) ((b5 * 255 / 0b11111) - 128);
-        RgbToYuv420j.rgb2yuv(r, g, b, yuv);
-
-    }
 
     private void setDirty(final int offset) {
         final int pixelY = offset / (width * STRIDE);

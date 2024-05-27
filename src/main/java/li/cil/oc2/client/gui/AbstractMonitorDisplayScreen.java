@@ -6,21 +6,18 @@ import com.mojang.blaze3d.platform.InputConstants;
 import li.cil.oc2.client.gui.widget.ImageButton;
 import li.cil.oc2.client.gui.widget.ToggleImageButton;
 import li.cil.oc2.common.Constants;
-import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
 import li.cil.oc2.common.container.AbstractMonitorContainer;
 import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -45,27 +42,6 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
     }
 
     ///////////////////////////////////////////////////////////////////
-
-    public static boolean isInputCaptureEnabled() {
-        return isInputCaptureEnabled;
-    }
-
-    public List<Rect2i> getExtraAreas() {
-        final List<Rect2i> list = new ArrayList<>();
-        list.add(new Rect2i(
-            leftPos - Sprites.SIDEBAR_3.width, topPos + CONTROLS_TOP,
-            Sprites.SIDEBAR_3.width, Sprites.SIDEBAR_3.height
-        ));
-
-        if (shouldRenderEnergyBar()) {
-            list.add(new Rect2i(
-                leftPos - Sprites.SIDEBAR_2.width, topPos + ENERGY_TOP,
-                Sprites.SIDEBAR_2.width, Sprites.SIDEBAR_2.height
-            ));
-        }
-
-        return list;
-    }
 
     @Override
     public void containerTick() {
@@ -213,7 +189,7 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
             Sprites.ENERGY_BAR.drawFillY(graphics, x, y, menu.getEnergy() / (float) menu.getEnergyCapacity());
         }
 
-        terminalWidget.render(graphics, mouseX, mouseY, Component.literal("RENDERING"));
+        terminalWidget.render(graphics, mouseX, mouseY, Component.translatable(Constants.COMPUTER_ERROR_NOT_ENOUGH_ENERGY));
     }
 
     @Override

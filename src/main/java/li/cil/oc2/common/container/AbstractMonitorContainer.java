@@ -3,12 +3,10 @@
 package li.cil.oc2.common.container;
 
 import li.cil.oc2.common.block.Blocks;
-import li.cil.oc2.common.blockentity.ComputerBlockEntity;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.bus.CommonDeviceBusController;
 import li.cil.oc2.common.network.Network;
 import li.cil.oc2.common.network.message.*;
-import li.cil.oc2.common.vm.Terminal;
 import li.cil.oc2.common.vm.VirtualMachine;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -17,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
 
 public abstract class AbstractMonitorContainer extends AbstractMachineContainer {
     private final MonitorBlockEntity monitor;
@@ -38,7 +35,9 @@ public abstract class AbstractMonitorContainer extends AbstractMachineContainer 
     @Nullable
     public VirtualMachine getVirtualMachine() { return null; }
 
-    public MonitorBlockEntity getMonitor() { return monitor; };
+    public MonitorBlockEntity getMonitor() { return monitor; }
+
+    public boolean hasPower() { return monitor.hasPower(); }
 
     public boolean getPowerState() { return monitor.getPowerState(); }
 

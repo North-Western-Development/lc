@@ -5,22 +5,16 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import li.cil.oc2.api.API;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.blockentity.ProjectorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
-import li.cil.oc2.common.bus.device.vm.block.ProjectorDevice;
-import li.cil.oc2.common.vm.Terminal;
 import li.cil.oc2.jcodec.common.model.Picture;
 import li.cil.oc2.jcodec.scale.Yuv420jToRgb;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -31,7 +25,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 public class MonitorGUIRenderer {
     private final transient Set<RendererModel> renderers = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
@@ -41,6 +34,14 @@ public class MonitorGUIRenderer {
         final Renderer renderer = new Renderer(this, monitor);
         renderers.add(renderer);
         return renderer;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void releaseRenderer(final MonitorGUIRenderer.RendererView renderer) {
+        if (renderer instanceof final MonitorGUIRenderer.RendererModel rendererModel) {
+            rendererModel.close();
+            renderers.remove(rendererModel);
+        }
     }
 
     private static void handleProjectorNoLongerRendering(final RemovalNotification<MonitorBlockEntity, Renderer.RenderInfo> notification) {
@@ -68,6 +69,7 @@ public class MonitorGUIRenderer {
     private static final class Renderer implements RendererModel, RendererView {
         private record RenderInfo(DynamicTexture texture) implements ProjectorBlockEntity.FrameConsumer {
             private static final ThreadLocal<byte[]> RGB = ThreadLocal.withInitial(() -> new byte[3]);
+            private static boolean HasRun = true;
 
             public synchronized void close() {
                 texture.close();
@@ -87,17 +89,17 @@ public class MonitorGUIRenderer {
                 // Convert in quads, based on the half resolution of UV. As such, skip every other row, since
                 // we're setting the current and the next.
                 int lumaIndex = 0, chromaIndex = 0;
-                for (int halfRow = 0; halfRow < ProjectorDevice.HEIGHT / 2; halfRow++, lumaIndex += ProjectorDevice.WIDTH * 2) {
+                for (int halfRow = 0; halfRow < MonitorDevice.HEIGHT / 2; halfRow++, lumaIndex += MonitorDevice.WIDTH * 2) {
                     final int row = halfRow * 2;
-                    for (int halfCol = 0; halfCol < ProjectorDevice.WIDTH / 2; halfCol++, chromaIndex++) {
+                    for (int halfCol = 0; halfCol < MonitorDevice.WIDTH / 2; halfCol++, chromaIndex++) {
                         final int col = halfCol * 2;
                         final int yIndex = lumaIndex + col;
                         final byte cb = u[chromaIndex];
                         final byte cr = v[chromaIndex];
                         setFromYUV420(image, col, row, y[yIndex], cb, cr);
                         setFromYUV420(image, col + 1, row, y[yIndex + 1], cb, cr);
-                        setFromYUV420(image, col, row + 1, y[yIndex + ProjectorDevice.WIDTH], cb, cr);
-                        setFromYUV420(image, col + 1, row + 1, y[yIndex + ProjectorDevice.WIDTH + 1], cb, cr);
+                        setFromYUV420(image, col, row + 1, y[yIndex + MonitorDevice.WIDTH], cb, cr);
+                        setFromYUV420(image, col + 1, row + 1, y[yIndex + MonitorDevice.WIDTH + 1], cb, cr);
                     }
                 }
 

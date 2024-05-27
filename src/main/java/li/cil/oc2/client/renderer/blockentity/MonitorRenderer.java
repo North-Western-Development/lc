@@ -12,12 +12,12 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import li.cil.oc2.api.API;
 import li.cil.oc2.client.renderer.ModRenderType;
-import li.cil.oc2.common.block.ComputerBlock;
+import li.cil.oc2.client.renderer.MonitorGUIRenderer;
+import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.block.MonitorBlock;
-import li.cil.oc2.common.blockentity.ComputerBlockEntity;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
+import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
 import li.cil.oc2.common.util.ChainableVertexConsumer;
-import li.cil.oc2.common.vm.Terminal;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -51,7 +51,7 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
     private static final Material TEXTURE_STATUS = new Material(InventoryMenu.BLOCK_ATLAS, OVERLAY_STATUS_LOCATION);
     private static final Material TEXTURE_TERMINAL = new Material(InventoryMenu.BLOCK_ATLAS, OVERLAY_TERMINAL_LOCATION);
 
-    private static final Cache<Terminal, Terminal.RendererView> rendererViews = CacheBuilder.newBuilder()
+    private static final Cache<MonitorGUIRenderer, MonitorGUIRenderer.RendererView> rendererViews = CacheBuilder.newBuilder()
         .expireAfterAccess(Duration.ofSeconds(5))
         .removalListener(MonitorRenderer::handleNoLongerRendering)
         .build();
@@ -96,9 +96,9 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
         final float pixelScale = 1 / 16f;
         stack.scale(pixelScale, pixelScale, pixelScale);
 
-        if (false) {
-            //renderTerminal(monitor, stack, bufferSource, cameraPosition);
-        } else {
+        if (monitor.getPowerState() && monitor.isMounted() && monitor.hasPower()) {
+            renderTerminal(monitor, stack, bufferSource, cameraPosition);
+        } else if (monitor.getPowerState()) {
             renderStatusText(monitor, stack, cameraPosition);
         }
 
@@ -106,30 +106,31 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
         final Matrix4f matrix = stack.last().pose();
 
         renderStatus(matrix, bufferSource);
+        renderPower(matrix, bufferSource);
 
         stack.popPose();
     }
 
     ///////////////////////////////////////////////////////////////////
 
-    /*private void renderTerminal(final MonitorBlockEntity computer, final PoseStack stack, final MultiBufferSource bufferSource, final Vec3 cameraPosition) {
+    private void renderTerminal(final MonitorBlockEntity monitor, final PoseStack stack, final MultiBufferSource bufferSource, final Vec3 cameraPosition) {
         // Render terminal content if close enough.
-        if (Vec3.atCenterOf(computer.getBlockPos()).closerThan(cameraPosition, 6f)) {
+        if (Vec3.atCenterOf(monitor.getBlockPos()).closerThan(cameraPosition, 6f)) {
             stack.pushPose();
             stack.translate(2, 2, -0.9f);
 
             // Scale to make terminal fit fully.
-            final Terminal terminal = computer.getTerminal();
-            final float textScaleX = 12f / terminal.getWidth();
-            final float textScaleY = 7f / terminal.getHeight();
+            final MonitorGUIRenderer terminal = monitor.getMonitor();
+            final float textScaleX = 12f / MonitorDevice.WIDTH;
+            final float textScaleY = 9f / MonitorDevice.HEIGHT;
             final float scale = Math.min(textScaleX, textScaleY) * 0.95f;
 
             // Center it on both axes.
             final float scaleDeltaX = textScaleX - scale;
             final float scaleDeltaY = textScaleY - scale;
             stack.translate(
-                terminal.getWidth() * scaleDeltaX * 0.5f,
-                terminal.getHeight() * scaleDeltaY * 0.5f,
+                MonitorDevice.WIDTH * scaleDeltaX * 0.5f,
+                MonitorDevice.HEIGHT * scaleDeltaY * 0.5f,
                 0f);
 
             stack.scale(scale, scale, 1f);
@@ -139,7 +140,7 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
             RenderSystem.enableDepthTest();
 
             try {
-                rendererViews.get(terminal, terminal::getRenderer).render(stack, RenderSystem.getProjectionMatrix());
+                rendererViews.get(terminal, () -> terminal.getRenderer(monitor)).render(stack, RenderSystem.getProjectionMatrix(), MonitorDevice.WIDTH, MonitorDevice.HEIGHT);
             } catch (final ExecutionException e) {
                 throw new RuntimeException(e);
             }
@@ -154,14 +155,14 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
 
             stack.popPose();
         }
-    }*/
+    }
 
     private void renderStatusText(final MonitorBlockEntity monitor, final PoseStack stack, final Vec3 cameraPosition) {
         if (!Vec3.atCenterOf(monitor.getBlockPos()).closerThan(cameraPosition, 12f)) {
             return;
         }
 
-        final Component bootError = Component.literal("RENDERING");
+        final Component bootError = Component.translatable(Constants.COMPUTER_ERROR_NOT_ENOUGH_ENERGY);
 
         stack.pushPose();
         stack.translate(3, 3, -0.9f);
@@ -241,9 +242,9 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
         rendererViews.cleanUp();
     }
 
-    private static void handleNoLongerRendering(final RemovalNotification<Terminal, Terminal.RendererView> notification) {
-        final Terminal key = notification.getKey();
-        final Terminal.RendererView value = notification.getValue();
+    private static void handleNoLongerRendering(final RemovalNotification<MonitorGUIRenderer, MonitorGUIRenderer.RendererView> notification) {
+        final MonitorGUIRenderer key = notification.getKey();
+        final MonitorGUIRenderer.RendererView value = notification.getValue();
         if (key != null && value != null) {
             key.releaseRenderer(value);
         }
