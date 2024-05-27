@@ -4,25 +4,32 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraftforge.client.ForgeHooksClient;
-import org.joml.Matrix4f;
 import li.cil.oc2.client.gui.terminal.TerminalInput;
+import li.cil.oc2.client.renderer.MonitorGUIRenderer;
+import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
+import li.cil.oc2.common.container.AbstractMonitorContainer;
+import li.cil.oc2.common.network.Network;
+import li.cil.oc2.common.network.message.MonitorInputMessage;
 import li.cil.oc2.common.vm.Terminal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
+import static dev.architectury.utils.GameInstance.getClient;
+import static java.awt.SystemColor.menu;
+
 @OnlyIn(Dist.CLIENT)
-public final class MachineTerminalWidget {
+public final class MonitorDisplayWidget {
     private static final int TERMINAL_WIDTH = Terminal.WIDTH * Terminal.CHAR_WIDTH / 2;
     private static final int TERMINAL_HEIGHT = Terminal.HEIGHT * Terminal.CHAR_HEIGHT / 2;
 
@@ -35,19 +42,19 @@ public final class MachineTerminalWidget {
 
     ///////////////////////////////////////////////////////////////////
 
-    private final AbstractMachineTerminalScreen<?> parent;
-    private final AbstractMachineTerminalContainer container;
-    private final Terminal terminal;
+    private final AbstractMonitorDisplayScreen<?> parent;
+    private final AbstractMonitorContainer container;
     private int leftPos, topPos;
     private boolean isMouseOverTerminal;
-    private Terminal.RendererView rendererView;
+    private MonitorGUIRenderer.RendererView rendererView;
+    private MonitorGUIRenderer monitor;
 
     ///////////////////////////////////////////////////////////////////
 
-    public MachineTerminalWidget(final AbstractMachineTerminalScreen<?> parent) {
+    public MonitorDisplayWidget(final AbstractMonitorDisplayScreen<?> parent) {
         this.parent = parent;
         this.container = this.parent.getMenu();
-        this.terminal = this.container.getTerminal();
+        this.monitor = new MonitorGUIRenderer();
     }
 
     public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY) {
@@ -61,18 +68,17 @@ public final class MachineTerminalWidget {
     }
 
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, @Nullable final Component error) {
-        if (container.getVirtualMachine().isRunning()) {
+        if (container.getPowerState() && container.isMounted()) {
             final PoseStack terminalStack = new PoseStack();
             terminalStack.translate(leftPos + TERMINAL_X, topPos + TERMINAL_Y, 0);
-            terminalStack.scale(TERMINAL_WIDTH / (float) terminal.getWidth(), TERMINAL_HEIGHT / (float) terminal.getHeight(), 1f);
+            terminalStack.scale((Sprites.TERMINAL_SCREEN.width - 16f) / MonitorDevice.WIDTH, (Sprites.TERMINAL_SCREEN.height - 16f) / MonitorDevice.HEIGHT, 1f);
 
             if (rendererView == null) {
-                rendererView = terminal.getRenderer();
+                rendererView = monitor.getRenderer(container.getMonitor());
             }
 
-            //final Matrix4f projectionMatrix = orthographic(0, parent.width, 0, parent.height, -10, 10f);
             final Matrix4f projectionMatrix = (new Matrix4f()).setOrtho(0, parent.width, parent.height, 0, -10f, 10f);
-            rendererView.render(terminalStack, projectionMatrix);
+            rendererView.render(terminalStack, projectionMatrix, MonitorDevice.WIDTH, MonitorDevice.HEIGHT);
         } else {
             final Font font = getClient().font;
             if (error != null) {
@@ -97,68 +103,51 @@ public final class MachineTerminalWidget {
         batch.endBatch();
     }
 
-    private static Matrix4f orthographic(float pMinX, float pMaxX, float pMinY, float pMaxY, float pMinZ, float pMaxZ) {
-        Matrix4f matrix4f = new Matrix4f();
-        float f = pMaxX - pMinX;
-        float f1 = pMinY - pMaxY;
-        float f2 = pMaxZ - pMinZ;
-        matrix4f.set(
-            2.0F / f, 0, 0, -(pMaxX + pMinX) / f,
-            0, 2.0F / f1, 0, -(pMinY + pMaxY) / f1,
-            0, 0, -2.0F / f2, -(pMaxZ + pMinZ) / f2,
-            0, 0, 0, 1.0F
-        );
-        return matrix4f;
-    }
-
     public void tick() {
-        final ByteBuffer input = terminal.getInput();
-        if (input != null) {
-            container.sendTerminalInputToServer(input);
-        }
+
     }
 
     public boolean charTyped(final char ch, final int modifier) {
         if (modifier == 0 || modifier == GLFW.GLFW_MOD_SHIFT) {
-            terminal.putInput((byte) ch);
-        }
-        return true;
-    }
 
-    public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
-        if (!shouldCaptureInput() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            return false;
         }
-
-        if ((modifiers & GLFW.GLFW_MOD_CONTROL) != 0 && keyCode == GLFW.GLFW_KEY_V) {
-            final String value = getClient().keyboardHandler.getClipboard();
-            for (final char ch : value.toCharArray()) {
-                terminal.putInput((byte) ch);
-            }
-        } else {
-            final byte[] sequence = TerminalInput.getSequence(keyCode, modifiers);
-            if (sequence != null) {
-                for (final byte b : sequence) {
-                    terminal.putInput(b);
-                }
-            }
-        }
-
         return true;
     }
 
     public void init() {
         this.leftPos = (parent.width - WIDTH) / 2;
         this.topPos = (parent.height - HEIGHT) / 2;
-
-        //getClient().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     public void onClose() {
-        //getClient().keyboardHandler.setSendRepeatsToGui(false);
         if (rendererView != null) {
-            terminal.releaseRenderer(rendererView);
             rendererView = null;
+        }
+    }
+
+    public boolean keyPressed(final int keycode, final int scancode, final int modifiers) {
+        if (keycode == GLFW.GLFW_KEY_ESCAPE && !shouldCaptureInput())
+        {
+            return false;
+        }
+        sendInputMessage(keycode, true);
+        return true;
+    }
+
+    public boolean keyReleased(final int keycode, final int scancode, final int modifiers) {
+        if (keycode == GLFW.GLFW_KEY_ESCAPE && !shouldCaptureInput())
+        {
+            return false;
+        }
+        sendInputMessage(keycode, false);
+        return true;
+    }
+
+    private void sendInputMessage(final int keycode, final boolean isDown) {
+        if (KeyCodeMapping.MAPPING.containsKey(keycode)) {
+            final int evdevCode = KeyCodeMapping.MAPPING.get(keycode);
+            Network.sendToServer(new MonitorInputMessage(container.getMonitor(), evdevCode, isDown));
+            System.out.println("SENDING KEY");
         }
     }
 
@@ -169,13 +158,12 @@ public final class MachineTerminalWidget {
     }
 
     private boolean shouldCaptureInput() {
-        return isMouseOverTerminal && AbstractMachineTerminalScreen.isInputCaptureEnabled() &&
-            container.getVirtualMachine().isRunning();
+        return isMouseOverTerminal && AbstractMachineTerminalScreen.isInputCaptureEnabled();
     }
 
     private boolean isMouseOverTerminal(final int mouseX, final int mouseY) {
         return parent.isMouseOver(mouseX, mouseY,
-            MachineTerminalWidget.TERMINAL_X, MachineTerminalWidget.TERMINAL_Y,
-            MachineTerminalWidget.TERMINAL_WIDTH, MachineTerminalWidget.TERMINAL_HEIGHT);
+            MonitorDisplayWidget.TERMINAL_X, MonitorDisplayWidget.TERMINAL_Y,
+            MonitorDisplayWidget.TERMINAL_WIDTH, MonitorDisplayWidget.TERMINAL_HEIGHT);
     }
 }

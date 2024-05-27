@@ -3,24 +3,25 @@
 package li.cil.oc2.common.network.message;
 
 import li.cil.oc2.common.blockentity.ComputerBlockEntity;
+import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.network.MessageUtils;
 import li.cil.oc2.common.network.Network;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-public final class ComputerPowerMessage extends AbstractMessage {
+public final class MonitorPowerMessage extends AbstractMessage {
     private BlockPos pos;
     private boolean power;
 
     ///////////////////////////////////////////////////////////////////
 
-    public ComputerPowerMessage(final ComputerBlockEntity computer, final boolean power) {
-        this.pos = computer.getBlockPos();
+    public MonitorPowerMessage(final MonitorBlockEntity monitor, final boolean power) {
+        this.pos = monitor.getBlockPos();
         this.power = power;
     }
 
-    public ComputerPowerMessage(final FriendlyByteBuf buffer) {
+    public MonitorPowerMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -42,13 +43,14 @@ public final class ComputerPowerMessage extends AbstractMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        MessageUtils.withNearbyServerBlockEntityForInteraction(context, pos, ComputerBlockEntity.class,
-            (player, computer) -> {
+        MessageUtils.withNearbyServerBlockEntityForInteraction(context, pos, MonitorBlockEntity.class,
+            (player, monitor) -> {
                 if (power) {
-                    computer.start();
+                    monitor.start();
                 } else {
-                    computer.stop();
+                    monitor.stop();
                 }
+                Network.sendToClientsTrackingBlockEntity(new MonitorPowerMessageForwarded(monitor, power), monitor);
             });
     }
 }

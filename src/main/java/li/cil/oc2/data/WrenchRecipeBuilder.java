@@ -105,10 +105,7 @@ public final class WrenchRecipeBuilder {
     public void save(final Consumer<FinishedRecipe> consumerIn, final ResourceLocation id) {
         this.validate(id);
         this.advancementBuilder.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(RequirementsStrategy.OR);
-        //final CreativeModeTab itemCategory = this.result.; TODO: FIX THIS
-        //if (itemCategory != null) {
-        //    consumerIn.accept(new WrenchRecipeBuilder.Result(id, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancementBuilder, new ResourceLocation(id.getNamespace(), "recipes/" + itemCategory.getRecipeFolderName() + "/" + id.getPath())));
-        //}
+        consumerIn.accept(new WrenchRecipeBuilder.Result(id, this.result, this.count, "", this.ingredients, this.advancementBuilder, new ResourceLocation(id.getNamespace(), "recipes/misc/" + id.getPath())));
     }
 
     private void validate(final ResourceLocation id) {

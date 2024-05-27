@@ -3,14 +3,13 @@
 package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.oc2.client.gui.widget.ImageButton;
 import li.cil.oc2.client.gui.widget.ToggleImageButton;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
+import li.cil.oc2.common.container.AbstractMonitorContainer;
 import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -28,19 +27,19 @@ import static java.util.Arrays.asList;
 import static li.cil.oc2.common.util.TextFormatUtils.withFormat;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTerminalContainer> extends AbstractModContainerScreen<T> {
+public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorContainer> extends AbstractModContainerScreen<T> {
     private static final int CONTROLS_TOP = 8;
     private static final int ENERGY_TOP = CONTROLS_TOP + Sprites.SIDEBAR_3.height + 4;
 
     private static boolean isInputCaptureEnabled;
 
-    private final MachineTerminalWidget terminalWidget;
+    private final MonitorDisplayWidget terminalWidget;
 
     ///////////////////////////////////////////////////////////////////
 
-    protected AbstractMachineTerminalScreen(final T container, final Inventory playerInventory, final Component title) {
+    protected AbstractMonitorDisplayScreen(final T container, final Inventory playerInventory, final Component title) {
         super(container, playerInventory, title);
-        this.terminalWidget = new MachineTerminalWidget(this);
+        this.terminalWidget = new MonitorDisplayWidget(this);
         imageWidth = Sprites.TERMINAL_SCREEN.width;
         imageHeight = Sprites.TERMINAL_SCREEN.height;
     }
@@ -98,6 +97,22 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
     }
 
     @Override
+    public boolean keyReleased(final int keyCode, final int scanCode, final int modifiers) {
+        if (terminalWidget.keyReleased(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+
+        // Don't close with inventory binding since we usually want to use that as terminal input
+        // even without input capture enabled.
+        final InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
+        if (getMinecraft().options.keyInventory.isActiveAndMatches(input)) {
+            return true;
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     public void init() {
         super.init();
         terminalWidget.init();
@@ -120,12 +135,12 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
             @Override
             public void onPress() {
                 super.onPress();
-                menu.sendPowerStateToServer(!menu.getVirtualMachine().isRunning());
+                menu.sendPowerStateToServer(!menu.getPowerState());
             }
 
             @Override
             public boolean isToggled() {
-                return menu.getVirtualMachine().isRunning();
+                return menu.getPowerState();
             }
         }).withTooltip(
             Component.translatable(Constants.COMPUTER_SCREEN_POWER_CAPTION),
@@ -198,7 +213,7 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
             Sprites.ENERGY_BAR.drawFillY(graphics, x, y, menu.getEnergy() / (float) menu.getEnergyCapacity());
         }
 
-        terminalWidget.render(graphics, mouseX, mouseY, menu.getVirtualMachine().getError());
+        terminalWidget.render(graphics, mouseX, mouseY, Component.literal("RENDERING"));
     }
 
     @Override

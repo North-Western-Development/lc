@@ -27,7 +27,7 @@
     "nbt": {
       "BlockEntityTag": {
         "items": {
-          "oc2:flash_memory": {
+          "translation{key='gui.oc2.device_type.flash_memory', args=[]}": {
             "Items": [
               {
                 "Slot": 0,

@@ -37,41 +37,8 @@ public final class ItemGroup {
             output.accept(Items.BUS_CABLE.get());
             output.accept(Items.BUS_INTERFACE.get());
             output.accept(Items.CHARGER.get());
-            // Computer With Flash
-            ItemStack computerWithFlash = new ItemStack(Blocks.COMPUTER.get());
-
-            final CompoundTag itemsTag = NBTUtils.getOrCreateChildTag(computerWithFlash.getOrCreateTag(), BLOCK_ENTITY_TAG_NAME_IN_ITEM, ITEMS_TAG_NAME);
-            itemsTag.put(key(DeviceTypes.FLASH_MEMORY), makeInventoryTag(
-                new ItemStack(Items.FLASH_MEMORY_CUSTOM.get())
-            ));
-
-            output.accept(computerWithFlash);
-
-            // Preconfigured Computer
-            ItemStack preconfiguredComputer = new ItemStack(Blocks.COMPUTER.get());
-
-            final CompoundTag preconfiguredItemsTag = NBTUtils.getOrCreateChildTag(preconfiguredComputer.getOrCreateTag(), BLOCK_ENTITY_TAG_NAME_IN_ITEM, ITEMS_TAG_NAME);
-            preconfiguredItemsTag.put(key(DeviceTypes.FLASH_MEMORY), makeInventoryTag(
-                new ItemStack(Items.FLASH_MEMORY_CUSTOM.get())
-            ));
-            preconfiguredItemsTag.put(key(DeviceTypes.MEMORY), makeInventoryTag(
-                new ItemStack(Items.MEMORY_LARGE.get()),
-                new ItemStack(Items.MEMORY_LARGE.get()),
-                new ItemStack(Items.MEMORY_LARGE.get()),
-                new ItemStack(Items.MEMORY_LARGE.get())
-            ));
-            preconfiguredItemsTag.put(key(DeviceTypes.HARD_DRIVE), makeInventoryTag(
-                new ItemStack(Items.HARD_DRIVE_CUSTOM.get())
-            ));
-            preconfiguredItemsTag.put(key(DeviceTypes.CARD), makeInventoryTag(
-                new ItemStack(Items.NETWORK_INTERFACE_CARD.get())
-            ));
-
-            preconfiguredComputer.setHoverName(text("block.{mod}.computer.preconfigured"));
-
-            output.accept(preconfiguredComputer);
-
-            // Normal Items Again
+            output.accept(ComputerBlock.getComputerWithFlash());
+            output.accept(ComputerBlock.getPreconfiguredComputer());
             output.accept(Items.CREATIVE_ENERGY.get());
             output.accept(Items.DISK_DRIVE.get());
             output.accept(Items.FLASH_MEMORY_FLASHER.get());
@@ -82,7 +49,7 @@ public final class ItemGroup {
             output.accept(Items.REDSTONE_INTERFACE.get());
             output.accept(Items.WRENCH.get());
             output.accept(Items.MANUAL.get());
-            output.accept(Items.ROBOT.get());
+            output.accept(RobotItem.getRobotWithFlash());
             output.accept(Items.NETWORK_CABLE.get());
             output.accept(Items.MEMORY_SMALL.get());
             output.accept(Items.MEMORY_MEDIUM.get());

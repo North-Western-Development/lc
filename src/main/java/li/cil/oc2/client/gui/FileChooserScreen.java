@@ -14,6 +14,8 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -160,7 +162,9 @@ public final class FileChooserScreen extends Screen {
         final int buttonTop = fileNameTop + TEXT_FIELD_HEIGHT + WIDGET_SPACING;
         final int buttonCount = 2;
         final int buttonWidth = widgetsWidth / buttonCount - (buttonCount - 1) * WIDGET_SPACING;
-        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed, null));
+        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed, (p_253298_) -> {
+            return (MutableComponent)p_253298_.get();
+        }));
         addRenderableWidget(new Button(MARGIN + buttonWidth + WIDGET_SPACING, buttonTop, buttonWidth, BUTTON_HEIGHT, CANCEL_TEXT, this::handleCancelPressed, null));
 
         fileList.refreshFiles(directory);

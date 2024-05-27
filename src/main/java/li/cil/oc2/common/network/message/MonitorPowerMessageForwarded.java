@@ -2,25 +2,24 @@
 
 package li.cil.oc2.common.network.message;
 
-import li.cil.oc2.common.blockentity.ComputerBlockEntity;
+import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.network.MessageUtils;
-import li.cil.oc2.common.network.Network;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-public final class ComputerPowerMessage extends AbstractMessage {
+public final class MonitorPowerMessageForwarded extends AbstractMessage {
     private BlockPos pos;
     private boolean power;
 
     ///////////////////////////////////////////////////////////////////
 
-    public ComputerPowerMessage(final ComputerBlockEntity computer, final boolean power) {
-        this.pos = computer.getBlockPos();
+    public MonitorPowerMessageForwarded(final MonitorBlockEntity monitor, final boolean power) {
+        this.pos = monitor.getBlockPos();
         this.power = power;
     }
 
-    public ComputerPowerMessage(final FriendlyByteBuf buffer) {
+    public MonitorPowerMessageForwarded(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -42,12 +41,12 @@ public final class ComputerPowerMessage extends AbstractMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        MessageUtils.withNearbyServerBlockEntityForInteraction(context, pos, ComputerBlockEntity.class,
-            (player, computer) -> {
+        MessageUtils.withClientBlockEntityAt(pos, MonitorBlockEntity.class,
+            (monitor) -> {
                 if (power) {
-                    computer.start();
+                    monitor.start();
                 } else {
-                    computer.stop();
+                    monitor.stop();
                 }
             });
     }

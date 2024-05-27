@@ -11,11 +11,21 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
+import org.checkerframework.framework.qual.Unused;
+
+import java.util.function.Supplier;
 
 import static li.cil.oc2.common.util.TranslationUtils.text;
 
 public final class DeviceTypes {
     private static final DeferredRegister<DeviceType> DEVICE_TYPES = DeferredRegister.create(DeviceType.REGISTRY, API.MOD_ID);
+
+    ///////////////////////////////////////////////////////////////////
+
+    @SuppressWarnings("unused")
+    public static final Supplier<IForgeRegistry<DeviceType>> DEVICE_TYPE_REGISTRY = DEVICE_TYPES.makeRegistry(RegistryBuilder::new);
 
     ///////////////////////////////////////////////////////////////////
 
