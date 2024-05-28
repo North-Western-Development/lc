@@ -15,8 +15,6 @@ import java.util.BitSet;
 public final class SimpleFramebufferDevice implements MemoryMappedDevice {
     public static final int STRIDE = 2;
 
-    private static final ThreadLocal<int[][]> conversionBuffer = ThreadLocal.withInitial(() -> new int[4][3]);
-
     ///////////////////////////////////////////////////////////////
 
     private final int width, height;
@@ -69,31 +67,6 @@ public final class SimpleFramebufferDevice implements MemoryMappedDevice {
 
         synchronized (buffer) {
             convertR5G6B5ToYUV420J(buffer, width, height, picture);
-            /*final int[][] quadrant = conversionBuffer.get();
-            final byte[][] pictureData = picture.getData();
-            for (int halfRow = dirtyLines.nextSetBit(0); halfRow >= 0; halfRow = dirtyLines.nextSetBit(halfRow + 1)) {
-                dirtyLines.clear(halfRow);
-
-                final int row = halfRow * 2;
-                int bufferIndex = row * width * STRIDE, lumaIndex = row * width, chromaIndex = halfRow * (width / 2);
-                for (int halfCol = 0; halfCol < width / 2; halfCol++, bufferIndex += STRIDE * 2, lumaIndex += 2, chromaIndex++) {
-                    r5g6b5ToYuv420(this.buffer.getShort(bufferIndex) & 0xFFFF, quadrant[0]);
-                    pictureData[0][lumaIndex] = (byte) quadrant[0][0];
-
-                    r5g6b5ToYuv420(this.buffer.getShort(bufferIndex + STRIDE) & 0xFFFF, quadrant[1]);
-                    pictureData[0][lumaIndex + 1] = (byte) quadrant[1][0];
-
-                    r5g6b5ToYuv420(this.buffer.getShort(bufferIndex + width * STRIDE) & 0xFFFF, quadrant[2]);
-                    pictureData[0][lumaIndex + width] = (byte) quadrant[2][0];
-
-                    r5g6b5ToYuv420(this.buffer.getShort(bufferIndex + width * STRIDE + STRIDE) & 0xFFFF, quadrant[3]);
-                    pictureData[0][lumaIndex + width + 1] = (byte) quadrant[3][0];
-
-                    // Average chroma values for quadrant.
-                    pictureData[1][chromaIndex] = (byte) ((quadrant[0][1] + quadrant[1][1] + quadrant[2][1] + quadrant[3][1] + 2) >> 2);
-                    pictureData[2][chromaIndex] = (byte) ((quadrant[0][2] + quadrant[1][2] + quadrant[2][2] + quadrant[3][2] + 2) >> 2);
-                }
-            }*/
         }
 
         return true;
@@ -117,7 +90,6 @@ public final class SimpleFramebufferDevice implements MemoryMappedDevice {
                 // Extract pixel data from ByteBuffer
                 short pixel = rgbBuffer.getShort(index * 2);
 
-                // Extract R, G, B from R5G6B5 with correct endianness
                 final int r5 = (pixel >>> 11) & 0b11111;
                 final int g6 = (pixel >>> 5) & 0b111111;
                 final int b5 = pixel & 0b11111;

@@ -31,8 +31,8 @@ public final class MonitorDisplayWidget {
     private static final int TERMINAL_X = MARGIN_SIZE;
     private static final int TERMINAL_Y = MARGIN_SIZE;
 
-    public static final int WIDTH = Sprites.TERMINAL_SCREEN.width;
-    public static final int HEIGHT = Sprites.TERMINAL_SCREEN.height;
+    public static final int WIDTH = Sprites.MONITOR_SCREEN.width;
+    public static final int HEIGHT = Sprites.MONITOR_SCREEN.height;
 
     ///////////////////////////////////////////////////////////////////
 
@@ -52,7 +52,7 @@ public final class MonitorDisplayWidget {
     public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         isMouseOverTerminal = isMouseOverTerminal(mouseX, mouseY);
 
-        Sprites.TERMINAL_SCREEN.draw(graphics, leftPos, topPos);
+        Sprites.MONITOR_SCREEN.draw(graphics, leftPos, topPos);
 
         if (shouldCaptureInput()) {
             Sprites.TERMINAL_FOCUSED.draw(graphics, leftPos, topPos);
@@ -63,7 +63,7 @@ public final class MonitorDisplayWidget {
         if (container.getPowerState() && container.isMounted() && container.hasPower()) {
             final PoseStack terminalStack = new PoseStack();
             terminalStack.translate(leftPos + TERMINAL_X, topPos + TERMINAL_Y, 0);
-            terminalStack.scale((Sprites.TERMINAL_SCREEN.width - 16f) / MonitorDevice.WIDTH, (Sprites.TERMINAL_SCREEN.height - 16f) / MonitorDevice.HEIGHT, 1f);
+            terminalStack.scale((Sprites.MONITOR_SCREEN.width - 16f) / MonitorDevice.WIDTH, (Sprites.MONITOR_SCREEN.height - 16f) / MonitorDevice.HEIGHT, 1f);
 
             if (rendererView == null) {
                 rendererView = container.getMonitor().getMonitor().getRenderer(container.getMonitor());

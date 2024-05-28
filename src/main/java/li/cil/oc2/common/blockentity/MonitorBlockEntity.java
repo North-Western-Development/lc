@@ -162,8 +162,6 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
         if (level != null && !level.isClientSide() && level.isLoaded(getBlockPos())) {
             if (this.isMounted && !isMounted) {
                 Arrays.fill(picture.getPlaneData(0), (byte) -128);
-                Arrays.fill(picture.getPlaneData(1), (byte) 0);
-                Arrays.fill(picture.getPlaneData(2), (byte) 0);
             }
 
             this.isMounted = isMounted;

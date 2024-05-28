@@ -101,10 +101,13 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
 }
 
+System.setProperty("line.separator", "\n")
+
 task packageScripts(type: Zip) {
     archiveFileName = "scripts.zip"
     destinationDirectory = file("$buildDir/resources/main/data/oc2/file_systems")
     from "src/main/scripts"
+    filter { line -> line }
 }
 
 task copyLicensesToResources(type: Copy) {

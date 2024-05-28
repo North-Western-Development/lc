@@ -3,7 +3,6 @@
 package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import li.cil.oc2.client.gui.widget.ImageButton;
 import li.cil.oc2.client.gui.widget.ToggleImageButton;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.container.AbstractMonitorContainer;
@@ -26,7 +25,7 @@ import static li.cil.oc2.common.util.TextFormatUtils.withFormat;
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorContainer> extends AbstractModContainerScreen<T> {
     private static final int CONTROLS_TOP = 8;
-    private static final int ENERGY_TOP = CONTROLS_TOP + Sprites.SIDEBAR_3.height + 4;
+    private static final int ENERGY_TOP = CONTROLS_TOP + Sprites.MONITOR_SIDEBAR_1.height + 4;
 
     private static boolean isInputCaptureEnabled;
 
@@ -37,8 +36,8 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
     protected AbstractMonitorDisplayScreen(final T container, final Inventory playerInventory, final Component title) {
         super(container, playerInventory, title);
         this.terminalWidget = new MonitorDisplayWidget(this);
-        imageWidth = Sprites.TERMINAL_SCREEN.width;
-        imageHeight = Sprites.TERMINAL_SCREEN.height;
+        imageWidth = Sprites.MONITOR_SCREEN.width;
+        imageHeight = Sprites.MONITOR_SCREEN.height;
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -98,7 +97,7 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
         setFocusIndicatorEditBox(focusIndicatorEditBox);
 
         addRenderableWidget(new ToggleImageButton(
-            leftPos - Sprites.SIDEBAR_3.width + 4, topPos + CONTROLS_TOP + 4,
+            leftPos - Sprites.MONITOR_SIDEBAR_1.width + 4, topPos + CONTROLS_TOP + 4,
             12, 12,
             Sprites.POWER_BUTTON_BASE,
             Sprites.POWER_BUTTON_PRESSED,
@@ -124,7 +123,7 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
         );
 
         addRenderableWidget(new ToggleImageButton(
-            leftPos - Sprites.SIDEBAR_3.width + 4, topPos + CONTROLS_TOP + 4 + 14,
+            leftPos - Sprites.MONITOR_SIDEBAR_1.width + 4, topPos + CONTROLS_TOP + 4 + 14,
             12, 12,
             Sprites.INPUT_BUTTON_BASE,
             Sprites.INPUT_BUTTON_PRESSED,
@@ -148,22 +147,6 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
             Component.translatable(Constants.TERMINAL_CAPTURE_INPUT_CAPTION),
             Component.translatable(Constants.TERMINAL_CAPTURE_INPUT_DESCRIPTION)
         );
-
-        addRenderableWidget(new ImageButton(
-            leftPos - Sprites.SIDEBAR_3.width + 4, topPos + CONTROLS_TOP + 4 + 14 + 14,
-            12, 12,
-            Sprites.INVENTORY_BUTTON_INACTIVE,
-            Sprites.INVENTORY_BUTTON_ACTIVE
-        ) {
-            @Override
-            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
-            }
-
-            @Override
-            public void onPress() {
-                menu.switchToInventory();
-            }
-        }).withTooltip(Component.translatable(Constants.MACHINE_OPEN_INVENTORY_CAPTION));
     }
 
     @Override
@@ -194,7 +177,7 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
 
     @Override
     protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
-        Sprites.SIDEBAR_3.draw(graphics, leftPos - Sprites.SIDEBAR_3.width, topPos + CONTROLS_TOP);
+        Sprites.MONITOR_SIDEBAR_1.draw(graphics, leftPos - Sprites.MONITOR_SIDEBAR_1.width, topPos + CONTROLS_TOP);
 
         if (shouldRenderEnergyBar()) {
             final int x = leftPos - Sprites.SIDEBAR_2.width;
