@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class ModBlockEntity extends BlockEntity {
     private final Runnable onWorldUnloaded = this::onWorldUnloaded;

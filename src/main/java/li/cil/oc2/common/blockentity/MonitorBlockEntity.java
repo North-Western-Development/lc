@@ -2,10 +2,14 @@
 
 package li.cil.oc2.common.blockentity;
 
+import li.cil.oc2.api.bus.device.Device;
+import li.cil.oc2.api.util.Side;
 import li.cil.oc2.client.renderer.MonitorGUIRenderer;
 import li.cil.oc2.common.Config;
+import li.cil.oc2.common.block.MonitorBlock;
 import li.cil.oc2.common.block.ProjectorBlock;
 import li.cil.oc2.common.bus.device.BlockDeviceBusElement;
+import li.cil.oc2.common.bus.device.DeviceGroup;
 import li.cil.oc2.common.bus.device.vm.block.KeyboardDevice;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
 import li.cil.oc2.common.capabilities.Capabilities;
@@ -72,7 +76,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     @Nullable private ProjectorBlockEntity.FrameConsumer frameConsumer;
 
     private boolean needsIDR;
-    private final BlockDeviceBusElement busElement = new BlockDeviceBusElement();
+    private final DeviceGroup deviceGroup = new DeviceGroup(this);
     private final MonitorDevice monitorDevice = new MonitorDevice(this, this::handleMountedChanged);
     private final KeyboardDevice<BlockEntity> keyboardDevice = new KeyboardDevice<>(this);
     private final Picture picture = Picture.create(WIDTH, HEIGHT, ColorSpace.YUV420J);
@@ -185,8 +189,8 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     public MonitorBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.MONITOR.get(), pos, state);
 
-        busElement.addDevice(keyboardDevice);
-        busElement.addDevice(monitorDevice);
+        deviceGroup.addDevice(monitorDevice);
+        deviceGroup.addDevice(keyboardDevice);
 
         encoder.setKeyInterval(100);
 
@@ -311,9 +315,12 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
 
     @Override
     protected void collectCapabilities(final CapabilityCollector collector, @Nullable final Direction direction) {
-        collector.offer(Capabilities.deviceBusElement(), busElement);
-        if (Config.computersUseEnergy()) {
-            collector.offer(Capabilities.energyStorage(), energy);
+        if(direction != getBlockState().getValue(MonitorBlock.FACING)) {
+            collector.offer(Capabilities.device(), deviceGroup);
+
+            if (Config.computersUseEnergy()) {
+                collector.offer(Capabilities.energyStorage(), energy);
+            }
         }
     }
 }

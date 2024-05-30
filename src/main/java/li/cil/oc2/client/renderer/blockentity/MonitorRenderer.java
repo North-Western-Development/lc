@@ -43,12 +43,10 @@ import java.util.concurrent.ExecutionException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = API.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEntity> {
-    public static final ResourceLocation OVERLAY_POWER_LOCATION = new ResourceLocation(API.MOD_ID, "block/computer/computer_overlay_power");
-    public static final ResourceLocation OVERLAY_STATUS_LOCATION = new ResourceLocation(API.MOD_ID, "block/computer/computer_overlay_status");
+    public static final ResourceLocation OVERLAY_POWER_LOCATION = new ResourceLocation(API.MOD_ID, "block/monitor/monitor_overlay_power");
     public static final ResourceLocation OVERLAY_TERMINAL_LOCATION = new ResourceLocation(API.MOD_ID, "block/computer/computer_overlay_terminal");
 
     private static final Material TEXTURE_POWER = new Material(InventoryMenu.BLOCK_ATLAS, OVERLAY_POWER_LOCATION);
-    private static final Material TEXTURE_STATUS = new Material(InventoryMenu.BLOCK_ATLAS, OVERLAY_STATUS_LOCATION);
     private static final Material TEXTURE_TERMINAL = new Material(InventoryMenu.BLOCK_ATLAS, OVERLAY_TERMINAL_LOCATION);
 
     private static final Cache<MonitorGUIRenderer, MonitorGUIRenderer.RendererView> rendererViews = CacheBuilder.newBuilder()
@@ -105,8 +103,8 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
         stack.translate(0, 0, -0.1f);
         final Matrix4f matrix = stack.last().pose();
 
-        renderStatus(matrix, bufferSource);
-        renderPower(matrix, bufferSource);
+        if(monitor.getPowerState() && monitor.hasPower())
+            renderPower(matrix, bufferSource);
 
         stack.popPose();
     }
@@ -202,16 +200,6 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
         var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         font.drawInBatch(text, x, y, color, false, stack.last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880, false);
         batch.endBatch();
-    }
-
-    private void renderStatus(final Matrix4f matrix, final MultiBufferSource bufferSource) {
-        renderStatus(matrix, bufferSource, 0);
-    }
-
-    private void renderStatus(final Matrix4f matrix, final MultiBufferSource bufferSource, final int frequency) {
-        if (frequency <= 0 || (((System.currentTimeMillis() + hashCode()) / frequency) % 2) == 1) {
-            renderQuad(matrix, TEXTURE_STATUS.buffer(bufferSource, ModRenderType::getUnlitBlock));
-        }
     }
 
     private void renderPower(final Matrix4f matrix, final MultiBufferSource bufferSource) {

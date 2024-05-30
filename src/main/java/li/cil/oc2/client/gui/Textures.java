@@ -22,7 +22,7 @@ public final class Textures {
     public static final Texture BLOCK_FACE_DISABLED_TEXTURE = new Texture("textures/gui/overlay/block_face_disabled.png", 16, 16);
 
     public static final Texture HOTBAR_TEXTURE = new Texture("textures/gui/widget/hotbar.png", 224, 26);
-    public static final Texture MONITOR_SIDEBAR_1_TEXTURE = new Texture("textures/gui/widget/monitor_sidebar_1.png", 19, 32);
+    public static final Texture MONITOR_SIDEBAR_1_TEXTURE = new Texture("textures/gui/widget/monitor_sidebar_1.png", 19, 34);
     public static final Texture SIDEBAR_2_TEXTURE = new Texture("textures/gui/widget/sidebar_2.png", 19, 34);
     public static final Texture SIDEBAR_3_TEXTURE = new Texture("textures/gui/widget/sidebar_3.png", 19, 48);
 

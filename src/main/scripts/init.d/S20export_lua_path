@@ -11,9 +11,9 @@ start() {
         LUA_LIB_PATH=$(readlink -f "$THIS_SCRIPT_DIR/../lib/lua")
 
         echo 'if [ -z "$LUA_PATH" ]; then' >>"$INIT_SCRIPT_PATH"
-        echo '    export LUA_PATH="'$LUA_LIB_PATH'/?.lua;'$LUA_LIB_PATH'/?/init.lua"' >>"$INIT_SCRIPT_PATH"
+        echo '    export LUA_PATH="/usr/share/lua/5.4/?.lua;'$LUA_LIB_PATH'/?.lua;'$LUA_LIB_PATH'/?/init.lua"' >>"$INIT_SCRIPT_PATH"
         echo 'else' >>"$INIT_SCRIPT_PATH"
-        echo '    export LUA_PATH="$LUA_PATH;'$LUA_LIB_PATH'/?.lua;'$LUA_LIB_PATH'/?/init.lua"' >>"$INIT_SCRIPT_PATH"
+        echo '    export LUA_PATH="$LUA_PATH;/usr/share/lua/5.4/?.lua;'$LUA_LIB_PATH'/?.lua;'$LUA_LIB_PATH'/?/init.lua"' >>"$INIT_SCRIPT_PATH"
         echo 'fi' >>"$INIT_SCRIPT_PATH"
     fi
     return 0

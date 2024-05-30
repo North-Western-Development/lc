@@ -75,14 +75,14 @@ public final class MonitorDisplayWidget {
             final Font font = getClient().font;
             if (error != null) {
                 final int textWidth = font.width(error);
-                final int textOffsetX = (TERMINAL_WIDTH - textWidth) / 2;
-                final int textOffsetY = (TERMINAL_HEIGHT - font.lineHeight) / 2;
+                final int textOffsetX = (Sprites.MONITOR_SCREEN.width - textWidth) / 2;
+                final int textOffsetY = (Sprites.MONITOR_SCREEN.height - font.lineHeight) / 2;
                 drawShadow(
                     font,
                     graphics,
                     error,
-                    leftPos + TERMINAL_X + textOffsetX,
-                    topPos + TERMINAL_Y + textOffsetY,
+                    leftPos + textOffsetX,
+                    topPos + textOffsetY,
                     0xEE3322
                 );
             }

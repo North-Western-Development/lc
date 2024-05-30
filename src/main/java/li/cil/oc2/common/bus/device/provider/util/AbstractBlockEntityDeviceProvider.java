@@ -8,6 +8,9 @@ import li.cil.oc2.api.util.Invalidatable;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AbstractBlockEntityDeviceProvider<T extends BlockEntity> extends AbstractBlockDeviceProvider {
     private final BlockEntityType<T> blockEntityType;
 

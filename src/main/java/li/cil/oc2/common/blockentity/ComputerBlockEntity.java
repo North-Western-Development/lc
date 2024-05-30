@@ -236,12 +236,12 @@ public final class ComputerBlockEntity extends ModBlockEntity implements Termina
         super.load(tag);
 
         energy.deserializeNBT(tag.getCompound(ENERGY_TAG_NAME));
-        virtualMachine.deserialize(tag.getCompound(STATE_TAG_NAME));
-        NBTSerialization.deserialize(tag.getCompound(TERMINAL_TAG_NAME), terminal);
         busElement.load(tag.getCompound(BUS_ELEMENT_TAG_NAME));
-
         deviceItems.loadItems(tag.getCompound(ITEMS_TAG_NAME));
         deviceItems.loadDevices(tag.getCompound(DEVICES_TAG_NAME));
+        virtualMachine.deserialize(tag.getCompound(STATE_TAG_NAME));
+        NBTSerialization.deserialize(tag.getCompound(TERMINAL_TAG_NAME), terminal);
+
     }
 
     public void exportToItemStack(final ItemStack stack) {

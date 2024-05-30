@@ -9,6 +9,8 @@ import li.cil.oc2.api.util.Invalidatable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.List;
+
 /**
  * This is used to query for devices given a block face.
  * <p>

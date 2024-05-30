@@ -3,9 +3,12 @@
 package li.cil.oc2.common.block;
 
 import li.cil.oc2.common.blockentity.BlockEntities;
+import li.cil.oc2.common.blockentity.BusCableBlockEntity;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.blockentity.TickableBlockEntity;
 import li.cil.oc2.common.integration.Wrenches;
+import li.cil.oc2.common.network.Network;
+import li.cil.oc2.common.network.message.MonitorPowerMessageForwarded;
 import li.cil.oc2.common.util.TooltipUtils;
 import li.cil.oc2.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -104,6 +107,7 @@ public final class MonitorBlock extends HorizontalDirectionalBlock implements En
             if (!level.isClientSide()) {
                 if (player.isShiftKeyDown()) {
                     monitor.start();
+                    Network.sendToClientsTrackingBlockEntity(new MonitorPowerMessageForwarded(monitor, true), monitor);
                 } else if (player instanceof final ServerPlayer serverPlayer) {
                     monitor.openTerminalScreen(serverPlayer);
                 }

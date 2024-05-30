@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class AbstractBlockEntityCapabilityDeviceProvider<TCapability, TBlockEntity extends BlockEntity> extends AbstractBlockEntityDeviceProvider<TBlockEntity> {
@@ -30,7 +31,7 @@ public abstract class AbstractBlockEntityCapabilityDeviceProvider<TCapability, T
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    protected final Invalidatable<Device> getBlockDevice(final BlockDeviceQuery query, final BlockEntity blockEntity) {
+    protected final Invalidatable<Device> getBlockDevice(final BlockDeviceQuery query, final TBlockEntity blockEntity) {
         final Capability<TCapability> capability = capabilitySupplier.get();
         if (capability == null) throw new IllegalStateException();
         final LazyOptional<TCapability> optional = blockEntity.getCapability(capability, query.getQuerySide());
