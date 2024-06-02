@@ -8,7 +8,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
-import li.cil.oc2.common.blockentity.ProjectorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
 import li.cil.oc2.jcodec.common.model.Picture;
 import li.cil.oc2.jcodec.scale.Yuv420jToRgb;
@@ -24,14 +23,13 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MonitorGUIRenderer {
     private final transient Set<RendererModel> renderers = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     @OnlyIn(Dist.CLIENT)
     public RendererView getRenderer(MonitorBlockEntity monitor) {
-        final Renderer renderer = new Renderer(this, monitor);
+        final Renderer renderer = new Renderer(monitor);
         renderers.add(renderer);
         return renderer;
     }
@@ -56,8 +54,6 @@ public class MonitorGUIRenderer {
     }
 
     private interface RendererModel {
-        AtomicInteger getDirtyMask();
-
         void close();
     }
 
@@ -67,9 +63,8 @@ public class MonitorGUIRenderer {
 
     @OnlyIn(Dist.CLIENT)
     private static final class Renderer implements RendererModel, RendererView {
-        private record RenderInfo(DynamicTexture texture) implements ProjectorBlockEntity.FrameConsumer {
+        private record RenderInfo(DynamicTexture texture) implements MonitorBlockEntity.FrameConsumer {
             private static final ThreadLocal<byte[]> RGB = ThreadLocal.withInitial(() -> new byte[3]);
-            private static boolean HasRun = true;
 
             public synchronized void close() {
                 texture.close();
@@ -118,7 +113,7 @@ public class MonitorGUIRenderer {
 
         private final MonitorBlockEntity monitorBlock;
 
-        public Renderer(MonitorGUIRenderer monitor, MonitorBlockEntity monitorBlock) {
+        public Renderer(MonitorBlockEntity monitorBlock) {
             this.monitorBlock = monitorBlock;
         }
 
@@ -142,56 +137,55 @@ public class MonitorGUIRenderer {
         }
 
         @Override
-        public AtomicInteger getDirtyMask() {
-            return null;
-        }
-
-        @Override
         public void close() {
 
         }
 
         @Override
         public void render(final PoseStack stack, final Matrix4f projectionMatrix, float width, float height) {
-            DynamicTexture texture = getColorBuffer(monitorBlock);
-            monitorBlock.onRendering();
+            if(monitorBlock.isValid()) {
+                DynamicTexture texture = getColorBuffer(monitorBlock);
+                monitorBlock.onRendering();
 
-            RenderSystem.backupProjectionMatrix();
-            RenderSystem.getModelViewStack().pushPose();
+                RenderSystem.backupProjectionMatrix();
+                RenderSystem.getModelViewStack().pushPose();
 
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+                RenderSystem.enableBlend();
+                RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
-            RenderSystem.colorMask(true, true, true, true);
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
+                RenderSystem.colorMask(true, true, true, true);
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
 
-            final ShaderInstance shader = GameRenderer.getPositionTexShader();
+                final ShaderInstance shader = GameRenderer.getPositionTexShader();
 
-            final BufferBuilder builder = Tesselator.getInstance().getBuilder();
+                if(shader == null) return;
 
-            RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
+                final BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
-            RenderSystem.setShaderTexture(0, texture.getId());
+                RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
 
-            VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+                RenderSystem.setShaderTexture(0, texture.getId());
 
-            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-            builder.vertex(0, 0, 0).uv(0, 0).endVertex();
-            builder.vertex(0, height, 0).uv(0, 1).endVertex();
-            builder.vertex(width, height, 0).uv(1, 1).endVertex();
-            builder.vertex(width, 0, 0).uv(1, 0).endVertex();
+                VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
 
-            buffer.bind();
-            buffer.upload(builder.end());
-            buffer.drawWithShader(stack.last().pose(), projectionMatrix, shader);
-            VertexBuffer.unbind();
+                builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                builder.vertex(0, 0, 0).uv(0, 0).endVertex();
+                builder.vertex(0, height, 0).uv(0, 1).endVertex();
+                builder.vertex(width, height, 0).uv(1, 1).endVertex();
+                builder.vertex(width, 0, 0).uv(1, 0).endVertex();
 
-            buffer.close();
+                buffer.bind();
+                buffer.upload(builder.end());
+                buffer.drawWithShader(stack.last().pose(), projectionMatrix, shader);
+                VertexBuffer.unbind();
 
-            RenderSystem.restoreProjectionMatrix();
-            RenderSystem.getModelViewStack().popPose();
-            RenderSystem.applyModelViewMatrix();
+                buffer.close();
+
+                RenderSystem.restoreProjectionMatrix();
+                RenderSystem.getModelViewStack().popPose();
+                RenderSystem.applyModelViewMatrix();
+            }
         }
     }
 }

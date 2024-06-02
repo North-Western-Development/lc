@@ -2,8 +2,8 @@
 
 package li.cil.oc2.common.block;
 
+import li.cil.oc2.common.Config;
 import li.cil.oc2.common.blockentity.BlockEntities;
-import li.cil.oc2.common.blockentity.BusCableBlockEntity;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.blockentity.TickableBlockEntity;
 import li.cil.oc2.common.integration.Wrenches;
@@ -80,7 +80,7 @@ public final class MonitorBlock extends HorizontalDirectionalBlock implements En
     @Override
     public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter level, final List<Component> tooltip, final TooltipFlag advanced) {
         super.appendHoverText(stack, level, tooltip, advanced);
-        TooltipUtils.addEnergyConsumption(2, tooltip);
+        TooltipUtils.addEnergyConsumption(Config.monitorEnergyPerTick, tooltip);
     }
 
     @SuppressWarnings("deprecation")
@@ -148,7 +148,7 @@ public final class MonitorBlock extends HorizontalDirectionalBlock implements En
 
     @Override
     public int getEnergyConsumption() {
-        return 2;
+        return Config.monitorEnergyPerTick;
     }
 
     ///////////////////////////////////////////////////////////////////

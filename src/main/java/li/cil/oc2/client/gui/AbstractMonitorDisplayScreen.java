@@ -4,6 +4,7 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import li.cil.oc2.client.gui.widget.ToggleImageButton;
+import li.cil.oc2.common.Config;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.container.AbstractMonitorContainer;
 import li.cil.oc2.common.util.TooltipUtils;
@@ -47,12 +48,6 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
         super.containerTick();
 
         terminalWidget.tick();
-    }
-
-    @Override
-    public boolean charTyped(final char ch, final int modifiers) {
-        return terminalWidget.charTyped(ch, modifiers) ||
-            super.charTyped(ch, modifiers);
     }
 
     @Override
@@ -172,7 +167,7 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
             Sprites.ENERGY_BAR.drawFillY(graphics, x, y, menu.getEnergy() / (float) menu.getEnergyCapacity());
         }
 
-        terminalWidget.render(graphics, mouseX, mouseY, Component.translatable(Constants.COMPUTER_ERROR_NOT_ENOUGH_ENERGY));
+        terminalWidget.render(graphics, Component.translatable(Constants.COMPUTER_ERROR_NOT_ENOUGH_ENERGY));
     }
 
     @Override
@@ -200,7 +195,7 @@ public abstract class AbstractMonitorDisplayScreen<T extends AbstractMonitorCont
                     Component.translatable(Constants.TOOLTIP_ENERGY,
                         withFormat(menu.getEnergy() + "/" + menu.getEnergyCapacity(), ChatFormatting.GREEN)),
                     Component.translatable(Constants.TOOLTIP_ENERGY_CONSUMPTION,
-                        withFormat(String.valueOf(menu.getEnergyConsumption()), ChatFormatting.GREEN))
+                        withFormat(String.valueOf(Config.monitorEnergyPerTick), ChatFormatting.GREEN))
                 );
                 TooltipUtils.drawTooltip(graphics, tooltip, mouseX, mouseY, 200);
             }

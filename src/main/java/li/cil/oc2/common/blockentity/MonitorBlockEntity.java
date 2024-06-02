@@ -2,13 +2,9 @@
 
 package li.cil.oc2.common.blockentity;
 
-import li.cil.oc2.api.bus.device.Device;
-import li.cil.oc2.api.util.Side;
 import li.cil.oc2.client.renderer.MonitorGUIRenderer;
 import li.cil.oc2.common.Config;
 import li.cil.oc2.common.block.MonitorBlock;
-import li.cil.oc2.common.block.ProjectorBlock;
-import li.cil.oc2.common.bus.device.BlockDeviceBusElement;
 import li.cil.oc2.common.bus.device.DeviceGroup;
 import li.cil.oc2.common.bus.device.vm.block.KeyboardDevice;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
@@ -48,21 +44,28 @@ import static li.cil.oc2.common.bus.device.vm.block.MonitorDevice.HEIGHT;
 import static li.cil.oc2.common.bus.device.vm.block.MonitorDevice.WIDTH;
 
 public final class MonitorBlockEntity extends ModBlockEntity implements TickableBlockEntity {
+    @FunctionalInterface
+    public interface FrameConsumer {
+        void processFrame(final Picture picture);
+    }
+
+    ///////////////////////////////////////////////////////////////////
+
     private static final String STATE_TAG_NAME = "state";
     private static final String ENERGY_TAG_NAME = "energy";
-    private static final String IS_PROJECTING_TAG_NAME = "projecting";
+    private static final String IS_RENDERING_TAG_NAME = "projecting";
     private static final String HAS_ENERGY_TAG_NAME = "has_energy";
 
     private static final ExecutorService DECODER_WORKERS = Executors.newCachedThreadPool(r -> {
         final Thread thread = new Thread(r);
         thread.setDaemon(true);
-        thread.setName("Projector Frame Decoder");
+        thread.setName("Monitor Frame Decoder");
         return thread;
     });
 
     ///////////////////////////////////////////////////////////////////
 
-    private final FixedEnergyStorage energy = new FixedEnergyStorage(Config.computerEnergyStorage);
+    private final FixedEnergyStorage energy = new FixedEnergyStorage(Config.monitorEnergyStorage);
 
     ///////////////////////////////////////////////////////////////////
 
@@ -73,7 +76,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     @Nullable private CompletableFuture<?> runningDecode;
     private final H264Decoder decoder = new H264Decoder();
     private final ByteBuffer decoderBuffer = ByteBuffer.allocateDirect(WIDTH * HEIGHT * SimpleFramebufferDevice.STRIDE);
-    @Nullable private ProjectorBlockEntity.FrameConsumer frameConsumer;
+    @Nullable private FrameConsumer frameConsumer;
 
     private boolean needsIDR;
     private final DeviceGroup deviceGroup = new DeviceGroup(this);
@@ -85,7 +88,6 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     private final H264Encoder encoder = new H264Encoder(new CQPRateControl(12));
     private final ByteBuffer encoderBuffer = ByteBuffer.allocateDirect(WIDTH * HEIGHT * SimpleFramebufferDevice.STRIDE);
 
-
     ///////////////////////////////////////////////////////////////////
 
     public void setRequiresKeyframe() {
@@ -93,8 +95,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     }
 
     public boolean hasPower() {
-        return true;
-        //return energy.extractEnergy(Config.projectorEnergyPerTick, true) >= Config.projectorEnergyPerTick || !Config.projectorsUseEnergy();
+        return hasEnergy;
     }
 
     public boolean getPowerState() { return isPowered; }
@@ -141,10 +142,10 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     }
 
     private void handleMountedChanged(final boolean value) {
-        updateProjectorState(value, hasEnergy);
+        updateMonitorState(value, hasEnergy);
     }
 
-    public void setFrameConsumer(@Nullable final ProjectorBlockEntity.FrameConsumer consumer) {
+    public void setFrameConsumer(@Nullable final FrameConsumer consumer) {
         if (consumer == frameConsumer) {
             return;
         }
@@ -156,8 +157,8 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
         }
     }
 
-    private void updateProjectorState(final boolean isMounted, final boolean hasEnergy) {
-        if (isMounted == this.isMounted && hasEnergy == this.hasEnergy) {
+    private void updateMonitorState(final boolean isMounted, final boolean hasEnergy) {
+        if ((isMounted == this.isMounted && hasEnergy == this.hasEnergy) || !isValid()) {
             return;
         }
 
@@ -171,18 +172,18 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
             this.isMounted = isMounted;
             this.hasEnergy = hasEnergy;
 
-            level.setBlock(getBlockPos(), getBlockState().setValue(ProjectorBlock.LIT, isMounted), Block.UPDATE_CLIENTS);
+            level.setBlock(getBlockPos(), getBlockState().setValue(MonitorBlock.LIT, isMounted), Block.UPDATE_CLIENTS);
 
             Network.sendToClientsTrackingBlockEntity(new MonitorStateMessage(this, isMounted, hasEnergy), this);
         }
     }
 
-    public void applyMonitorStateClient(final boolean isProjecting, final boolean hasEnergy) {
+    public void applyMonitorStateClient(final boolean isRendering, final boolean hasEnergy) {
         if (level == null || !level.isClientSide()) {
             return;
         }
 
-        this.isMounted = isProjecting;
+        this.isMounted = isRendering;
         this.hasEnergy = hasEnergy;
     }
 
@@ -220,21 +221,21 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
 
     @Override
     public void serverTick() {
-        if (level == null) {
+        if (level == null || !isValid()) {
             return;
         }
 
         final boolean hasPowered;
-        if (Config.projectorsUseEnergy()) {
-            hasPowered = energy.extractEnergy(Config.projectorEnergyPerTick, true) >= Config.projectorEnergyPerTick;
+        if (Config.monitorsUseEnergy()) {
+            hasPowered = energy.extractEnergy(Config.monitorEnergyPerTick, true) >= Config.monitorEnergyPerTick;
             if (hasPowered) {
-                energy.extractEnergy(Config.projectorEnergyPerTick, false);
+                energy.extractEnergy(Config.monitorEnergyPerTick, false);
             }
         } else {
             hasPowered = true;
         }
 
-        updateProjectorState(isMounted, isPowered);
+        updateMonitorState(isMounted, hasPowered);
 
         if (!hasEnergy || !isPowered || (!monitorDevice.hasChanges() && !needsIDR)) {
             return;
@@ -279,7 +280,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     public CompoundTag getUpdateTag() {
         final CompoundTag tag = super.getUpdateTag();
 
-        tag.putBoolean(IS_PROJECTING_TAG_NAME, isMounted);
+        tag.putBoolean(IS_RENDERING_TAG_NAME, isMounted);
         tag.putBoolean(HAS_ENERGY_TAG_NAME, hasEnergy);
         tag.putBoolean(STATE_TAG_NAME, isPowered);
         return tag;
@@ -289,7 +290,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
     public void handleUpdateTag(final CompoundTag tag) {
         super.handleUpdateTag(tag);
 
-        isMounted = tag.getBoolean(IS_PROJECTING_TAG_NAME);
+        isMounted = tag.getBoolean(IS_RENDERING_TAG_NAME);
         hasEnergy = tag.getBoolean(HAS_ENERGY_TAG_NAME);
         isPowered = tag.getBoolean(STATE_TAG_NAME);
     }
@@ -299,7 +300,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
         super.saveAdditional(tag);
 
         tag.put(ENERGY_TAG_NAME, energy.serializeNBT());
-        tag.putBoolean(IS_PROJECTING_TAG_NAME, isPowered);
+        tag.putBoolean(IS_RENDERING_TAG_NAME, isPowered);
     }
 
     @Override
@@ -308,7 +309,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
 
         energy.deserializeNBT(tag.getCompound(ENERGY_TAG_NAME));
         hasEnergy = tag.getBoolean(HAS_ENERGY_TAG_NAME);
-        isPowered = tag.getBoolean(IS_PROJECTING_TAG_NAME);
+        isPowered = tag.getBoolean(IS_RENDERING_TAG_NAME);
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -318,7 +319,7 @@ public final class MonitorBlockEntity extends ModBlockEntity implements Tickable
         if(direction != getBlockState().getValue(MonitorBlock.FACING)) {
             collector.offer(Capabilities.device(), deviceGroup);
 
-            if (Config.computersUseEnergy()) {
+            if (Config.monitorsUseEnergy()) {
                 collector.offer(Capabilities.energyStorage(), energy);
             }
         }

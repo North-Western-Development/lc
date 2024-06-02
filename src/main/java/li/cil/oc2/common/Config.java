@@ -20,6 +20,8 @@ public final class Config {
     @Path("energy.blocks") public static int chargerEnergyStorage = 10000;
     @Path("energy.blocks") public static int projectorEnergyPerTick = 20;
     @Path("energy.blocks") public static int projectorEnergyStorage = 2000;
+    @Path("energy.blocks") public static int monitorEnergyPerTick = 15;
+    @Path("energy.blocks") public static int monitorEnergyStorage = 2000;
     @Path("energy.blocks") public static int cardCageEnergyPerTick = 20;
     @Path("energy.blocks") public static int cardCageEnergyStorage = 2000;
 
@@ -44,7 +46,7 @@ public final class Config {
     @Path("admin.virtual_network") public static int ethernetFrameTimeToLive = 12;
     @Path("admin.virtual_network") public static int hubEthernetFramesPerTick = 32;
 
-    @Path("vxlan") public static boolean enable = true;
+    @Path("vxlan") public static boolean enable = false;
     @Path("vxlan") public static String remoteHost = "::1";
     @Path("vxlan") public static int remotePort = 4789;
     @Path("vxlan") public static String bindHost = "::1";
@@ -54,7 +56,7 @@ public final class Config {
         return computerEnergyPerTick > 0 && computerEnergyStorage > 0;
     }
 
-    public static boolean chargerUseEnergy() {
+    public static boolean chargersUseEnergy() {
         return chargerEnergyPerTick > 0 && chargerEnergyStorage > 0;
     }
 
@@ -68,5 +70,9 @@ public final class Config {
 
     public static boolean robotsUseEnergy() {
         return robotEnergyPerTick > 0 && robotEnergyStorage > 0;
+    }
+
+    public static boolean monitorsUseEnergy() {
+        return computerEnergyPerTick > 0 && computerEnergyStorage > 0;
     }
 }

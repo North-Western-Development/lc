@@ -59,7 +59,7 @@ public final class MonitorDisplayWidget {
         }
     }
 
-    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, @Nullable final Component error) {
+    public void render(final GuiGraphics graphics, @Nullable final Component error) {
         if (container.getPowerState() && container.isMounted() && container.hasPower()) {
             final PoseStack terminalStack = new PoseStack();
             terminalStack.translate(leftPos + TERMINAL_X, topPos + TERMINAL_Y, 0);
@@ -97,13 +97,6 @@ public final class MonitorDisplayWidget {
 
     public void tick() {
 
-    }
-
-    public boolean charTyped(final char ch, final int modifier) {
-        if (modifier == 0 || modifier == GLFW.GLFW_MOD_SHIFT) {
-
-        }
-        return true;
     }
 
     public void init() {

@@ -153,6 +153,7 @@ public final class ProjectorBlockEntity extends ModBlockEntity implements Tickab
         } else {
             isPowered = true;
         }
+
         updateProjectorState(isMounted, isPowered);
 
         if (!hasEnergy || (!projectorDevice.hasChanges() && !needsIDR)) {
@@ -268,7 +269,7 @@ public final class ProjectorBlockEntity extends ModBlockEntity implements Tickab
     }
 
     private void updateProjectorState(final boolean isMounted, final boolean hasEnergy) {
-        if (isMounted == this.isMounted && hasEnergy == this.hasEnergy) {
+        if ((isMounted == this.isMounted && hasEnergy == this.hasEnergy) || !isValid()) {
             return;
         }
 
