@@ -5,7 +5,6 @@ package li.cil.oc2.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import li.cil.oc2.common.util.Vec3Utils;
-import net.minecraft.core.Vec3i;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import li.cil.oc2.api.API;
@@ -17,7 +16,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -69,13 +67,6 @@ public final class NetworkCableRenderer {
 
     public static void invalidateConnections() {
         isDirty = true;
-    }
-
-    public static void renderCablesFor(final BlockAndTintGetter level, final PoseStack stack, final Vec3 eye, final NetworkConnectorBlockEntity connector) {
-        final ArrayList<Connection> connections = connectionsByConnector.get(connector);
-        if (connections != null) {
-            renderCables(level, stack, eye, connections, unused -> true);
-        }
     }
 
     ///////////////////////////////////////////////////////////////////

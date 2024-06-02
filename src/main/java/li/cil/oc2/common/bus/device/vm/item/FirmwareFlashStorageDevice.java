@@ -44,10 +44,6 @@ public final class FirmwareFlashStorageDevice extends IdentityProxy<ItemStack> i
         memoryMap = null;
     }
 
-    @Override
-    public void dispose() {
-    }
-
     @Subscribe
     public void handleInitializingEvent(final VMInitializingEvent event) {
         copyDataToMemory(event.programStartAddress());

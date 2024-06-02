@@ -23,12 +23,10 @@ public final class MinecraftRealTimeCounter implements RealTimeCounter {
 
     @Override
     public long getTime() {
-        final long ticks = level != null ? level.getGameTime() : 0;
-        final long days = ticks; // / TICKS_PER_DAY
+        final long days = level != null ? level.getGameTime() : 0; // / TICKS_PER_DAY
         final long hours = days * 24;
         final long minutes = hours * 60;
-        final long seconds = minutes * 60;
-        return seconds; // * FREQUENCY
+        return minutes * 60; // * FREQUENCY
     }
 
     @Override

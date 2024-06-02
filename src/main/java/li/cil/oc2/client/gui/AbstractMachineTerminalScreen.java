@@ -3,14 +3,12 @@
 package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.oc2.client.gui.widget.ImageButton;
 import li.cil.oc2.client.gui.widget.ToggleImageButton;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
 import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;

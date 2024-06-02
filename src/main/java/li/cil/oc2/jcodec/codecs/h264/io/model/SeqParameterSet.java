@@ -140,17 +140,13 @@ public final class SeqParameterSet {
     public int numRefFramesInPicOrderCntCycle;
 
     public static ColorSpace getColor(final int id) {
-        switch (id) {
-            case 0:
-                return ColorSpace.MONO;
-            case 1:
-                return ColorSpace.YUV420J;
-            case 2:
-                return ColorSpace.YUV422;
-            case 3:
-                return ColorSpace.YUV444;
-        }
-        throw new RuntimeException("Colorspace not supported");
+        return switch (id) {
+            case 0 -> ColorSpace.MONO;
+            case 1 -> ColorSpace.YUV420J;
+            case 2 -> ColorSpace.YUV422;
+            case 3 -> ColorSpace.YUV444;
+            default -> throw new RuntimeException("Colorspace not supported");
+        };
     }
 
     public static int fromColor(final ColorSpace color) {

@@ -44,7 +44,7 @@ public final class FirmwareFlasherMessage extends AbstractMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        MessageUtils.withClientBlockEntityAt(pos, DiskDriveBlockEntity.class,
-            diskDrive -> diskDrive.setFloppyClient(ItemStack.of(data)));
+        MessageUtils.withClientBlockEntityAt(pos, FlashMemoryFlasherBlockEntity.class,
+            diskDrive -> diskDrive.setFlashMemory(ItemStack.of(data)));
     }
 }

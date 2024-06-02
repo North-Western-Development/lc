@@ -3,7 +3,6 @@
 package li.cil.oc2.common.entity;
 
 import li.cil.oc2.api.API;
-import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;

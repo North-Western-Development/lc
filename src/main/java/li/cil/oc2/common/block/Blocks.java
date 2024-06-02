@@ -3,11 +3,8 @@
 package li.cil.oc2.common.block;
 
 import li.cil.oc2.api.API;
-import li.cil.oc2.common.blockentity.VxlanBlockEntity;
-import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;

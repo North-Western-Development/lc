@@ -3,7 +3,6 @@
 package li.cil.oc2.common.container;
 
 import li.cil.oc2.api.API;
-import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;

@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import li.cil.oc2.api.API;
 import li.cil.oc2.client.renderer.ModRenderType;
 import li.cil.oc2.common.block.ComputerBlock;
@@ -35,8 +34,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import java.time.Duration;
 import java.util.List;

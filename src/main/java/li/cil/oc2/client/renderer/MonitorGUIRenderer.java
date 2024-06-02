@@ -62,130 +62,124 @@ public class MonitorGUIRenderer {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static final class Renderer implements RendererModel, RendererView {
-        private record RenderInfo(DynamicTexture texture) implements MonitorBlockEntity.FrameConsumer {
-            private static final ThreadLocal<byte[]> RGB = ThreadLocal.withInitial(() -> new byte[3]);
+        private record Renderer(MonitorBlockEntity monitorBlock) implements RendererModel, RendererView {
+            private record RenderInfo(DynamicTexture texture) implements MonitorBlockEntity.FrameConsumer {
+                private static final ThreadLocal<byte[]> RGB = ThreadLocal.withInitial(() -> new byte[3]);
 
-            public synchronized void close() {
-                texture.close();
+                public synchronized void close() {
+                    texture.close();
+                }
+
+                @Override
+                public synchronized void processFrame(final Picture picture) {
+                    final NativeImage image = texture.getPixels();
+                    if (image == null) {
+                        return;
+                    }
+
+                    final byte[] y = picture.getPlaneData(0);
+                    final byte[] u = picture.getPlaneData(1);
+                    final byte[] v = picture.getPlaneData(2);
+
+                    // Convert in quads, based on the half resolution of UV. As such, skip every other row, since
+                    // we're setting the current and the next.
+                    int lumaIndex = 0, chromaIndex = 0;
+                    for (int halfRow = 0; halfRow < MonitorDevice.HEIGHT / 2; halfRow++, lumaIndex += MonitorDevice.WIDTH * 2) {
+                        final int row = halfRow * 2;
+                        for (int halfCol = 0; halfCol < MonitorDevice.WIDTH / 2; halfCol++, chromaIndex++) {
+                            final int col = halfCol * 2;
+                            final int yIndex = lumaIndex + col;
+                            final byte cb = u[chromaIndex];
+                            final byte cr = v[chromaIndex];
+                            setFromYUV420(image, col, row, y[yIndex], cb, cr);
+                            setFromYUV420(image, col + 1, row, y[yIndex + 1], cb, cr);
+                            setFromYUV420(image, col, row + 1, y[yIndex + MonitorDevice.WIDTH], cb, cr);
+                            setFromYUV420(image, col + 1, row + 1, y[yIndex + MonitorDevice.WIDTH + 1], cb, cr);
+                        }
+                    }
+
+                    texture.upload();
+                }
+
+                private static void setFromYUV420(final NativeImage image, final int col, final int row, final byte y, final byte cb, final byte cr) {
+                    final byte[] bytes = RGB.get();
+                    Yuv420jToRgb.YUVJtoRGB(y, cb, cr, bytes, 0);
+                    final int r = bytes[0] + 128;
+                    final int g = bytes[1] + 128;
+                    final int b = bytes[2] + 128;
+                    image.setPixelRGBA(col, row, r | (g << 8) | (b << 16) | (0xFF << 24));
+                }
+            }
+
+        private static final Cache<MonitorBlockEntity, RenderInfo> RENDER_INFO = CacheBuilder.newBuilder()
+                .expireAfterAccess(Duration.ofSeconds(5))
+                .removalListener(MonitorGUIRenderer::handleProjectorNoLongerRendering)
+                .build();
+
+            private static DynamicTexture getColorBuffer(final MonitorBlockEntity monitor) {
+                try {
+                    return RENDER_INFO.get(monitor, () -> {
+                        final DynamicTexture texture = new DynamicTexture(MonitorDevice.WIDTH, MonitorDevice.HEIGHT, false);
+                        texture.upload();
+                        final RenderInfo renderInfo = new RenderInfo(texture);
+                        monitor.setFrameConsumer(renderInfo);
+                        return renderInfo;
+                    }).texture();
+                } catch (final ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             @Override
-            public synchronized void processFrame(final Picture picture) {
-                final NativeImage image = texture.getPixels();
-                if (image == null) {
-                    return;
+            public void close() {
+
+            }
+
+            @Override
+            public void render(final PoseStack stack, final Matrix4f projectionMatrix, float width, float height) {
+                if (monitorBlock.isValid()) {
+                    DynamicTexture texture = getColorBuffer(monitorBlock);
+                    monitorBlock.onRendering();
+
+                    RenderSystem.backupProjectionMatrix();
+                    RenderSystem.getModelViewStack().pushPose();
+
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+
+                    RenderSystem.colorMask(true, true, true, true);
+                    RenderSystem.disableDepthTest();
+                    RenderSystem.depthMask(false);
+
+                    final ShaderInstance shader = GameRenderer.getPositionTexShader();
+
+                    if (shader == null) return;
+
+                    final BufferBuilder builder = Tesselator.getInstance().getBuilder();
+
+                    RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
+
+                    RenderSystem.setShaderTexture(0, texture.getId());
+
+                    VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+
+                    builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                    builder.vertex(0, 0, 0).uv(0, 0).endVertex();
+                    builder.vertex(0, height, 0).uv(0, 1).endVertex();
+                    builder.vertex(width, height, 0).uv(1, 1).endVertex();
+                    builder.vertex(width, 0, 0).uv(1, 0).endVertex();
+
+                    buffer.bind();
+                    buffer.upload(builder.end());
+                    buffer.drawWithShader(stack.last().pose(), projectionMatrix, shader);
+                    VertexBuffer.unbind();
+
+                    buffer.close();
+
+                    RenderSystem.restoreProjectionMatrix();
+                    RenderSystem.getModelViewStack().popPose();
+                    RenderSystem.applyModelViewMatrix();
                 }
-
-                final byte[] y = picture.getPlaneData(0);
-                final byte[] u = picture.getPlaneData(1);
-                final byte[] v = picture.getPlaneData(2);
-
-                // Convert in quads, based on the half resolution of UV. As such, skip every other row, since
-                // we're setting the current and the next.
-                int lumaIndex = 0, chromaIndex = 0;
-                for (int halfRow = 0; halfRow < MonitorDevice.HEIGHT / 2; halfRow++, lumaIndex += MonitorDevice.WIDTH * 2) {
-                    final int row = halfRow * 2;
-                    for (int halfCol = 0; halfCol < MonitorDevice.WIDTH / 2; halfCol++, chromaIndex++) {
-                        final int col = halfCol * 2;
-                        final int yIndex = lumaIndex + col;
-                        final byte cb = u[chromaIndex];
-                        final byte cr = v[chromaIndex];
-                        setFromYUV420(image, col, row, y[yIndex], cb, cr);
-                        setFromYUV420(image, col + 1, row, y[yIndex + 1], cb, cr);
-                        setFromYUV420(image, col, row + 1, y[yIndex + MonitorDevice.WIDTH], cb, cr);
-                        setFromYUV420(image, col + 1, row + 1, y[yIndex + MonitorDevice.WIDTH + 1], cb, cr);
-                    }
-                }
-
-                texture.upload();
-            }
-
-            private static void setFromYUV420(final NativeImage image, final int col, final int row, final byte y, final byte cb, final byte cr) {
-                final byte[] bytes = RGB.get();
-                Yuv420jToRgb.YUVJtoRGB(y, cb, cr, bytes, 0);
-                final int r = bytes[0] + 128;
-                final int g = bytes[1] + 128;
-                final int b = bytes[2] + 128;
-                image.setPixelRGBA(col, row, r | (g << 8) | (b << 16) | (0xFF << 24));
             }
         }
-
-        private final MonitorBlockEntity monitorBlock;
-
-        public Renderer(MonitorBlockEntity monitorBlock) {
-            this.monitorBlock = monitorBlock;
-        }
-
-        private static final Cache<MonitorBlockEntity, RenderInfo> RENDER_INFO = CacheBuilder.newBuilder()
-            .expireAfterAccess(Duration.ofSeconds(5))
-            .removalListener(MonitorGUIRenderer::handleProjectorNoLongerRendering)
-            .build();
-
-        private static DynamicTexture getColorBuffer(final MonitorBlockEntity monitor) {
-            try {
-                return RENDER_INFO.get(monitor, () -> {
-                    final DynamicTexture texture = new DynamicTexture(MonitorDevice.WIDTH, MonitorDevice.HEIGHT, false);
-                    texture.upload();
-                    final RenderInfo renderInfo = new RenderInfo(texture);
-                    monitor.setFrameConsumer(renderInfo);
-                    return renderInfo;
-                }).texture();
-            } catch (final ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public void close() {
-
-        }
-
-        @Override
-        public void render(final PoseStack stack, final Matrix4f projectionMatrix, float width, float height) {
-            if(monitorBlock.isValid()) {
-                DynamicTexture texture = getColorBuffer(monitorBlock);
-                monitorBlock.onRendering();
-
-                RenderSystem.backupProjectionMatrix();
-                RenderSystem.getModelViewStack().pushPose();
-
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-
-                RenderSystem.colorMask(true, true, true, true);
-                RenderSystem.disableDepthTest();
-                RenderSystem.depthMask(false);
-
-                final ShaderInstance shader = GameRenderer.getPositionTexShader();
-
-                if(shader == null) return;
-
-                final BufferBuilder builder = Tesselator.getInstance().getBuilder();
-
-                RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
-
-                RenderSystem.setShaderTexture(0, texture.getId());
-
-                VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
-
-                builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                builder.vertex(0, 0, 0).uv(0, 0).endVertex();
-                builder.vertex(0, height, 0).uv(0, 1).endVertex();
-                builder.vertex(width, height, 0).uv(1, 1).endVertex();
-                builder.vertex(width, 0, 0).uv(1, 0).endVertex();
-
-                buffer.bind();
-                buffer.upload(builder.end());
-                buffer.drawWithShader(stack.last().pose(), projectionMatrix, shader);
-                VertexBuffer.unbind();
-
-                buffer.close();
-
-                RenderSystem.restoreProjectionMatrix();
-                RenderSystem.getModelViewStack().popPose();
-                RenderSystem.applyModelViewMatrix();
-            }
-        }
-    }
 }

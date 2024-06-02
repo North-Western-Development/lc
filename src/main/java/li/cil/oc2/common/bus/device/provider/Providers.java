@@ -4,9 +4,6 @@ package li.cil.oc2.common.bus.device.provider;
 
 import li.cil.oc2.api.bus.device.provider.BlockDeviceProvider;
 import li.cil.oc2.api.bus.device.provider.ItemDeviceProvider;
-import li.cil.oc2.common.bus.device.provider.block.BlockEntityCapabilityDeviceProvider;
-import li.cil.oc2.common.bus.device.provider.item.*;
-import li.cil.oc2.common.bus.device.rpc.block.*;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.function.BiConsumer;

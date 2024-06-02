@@ -110,8 +110,6 @@ public final class ChunkUtils {
     /**
      * Marks the specified as unsaved, if it was marked as lazy unsaved before
      * and clears the lazy unsaved flags.
-     *
-     * @param chunk the chunk to apply the lazy unsaved state for.
      */
     public static void applyChunkLazyUnsaved() {
         for (final ChunkAccess chunk : UNSAVED_CHUNKS) {

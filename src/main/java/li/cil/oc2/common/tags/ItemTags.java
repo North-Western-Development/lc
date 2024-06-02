@@ -3,7 +3,6 @@
 package li.cil.oc2.common.tags;
 
 import li.cil.oc2.api.API;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;

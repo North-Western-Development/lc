@@ -3,7 +3,6 @@
 package li.cil.oc2.common.item.crafting;
 
 import li.cil.oc2.api.API;
-import li.cil.oc2.common.util.RegistryUtils;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;

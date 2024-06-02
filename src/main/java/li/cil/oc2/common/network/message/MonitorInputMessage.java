@@ -2,7 +2,6 @@
 
 package li.cil.oc2.common.network.message;
 
-import li.cil.oc2.common.blockentity.KeyboardBlockEntity;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.network.MessageUtils;
 import net.minecraft.core.BlockPos;

@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.*;
 
 public class DeviceGroup extends IdentityProxy<BlockEntity> implements Device {
-    private Set<Device> devices = new HashSet<>();
+    private final Set<Device> devices = new HashSet<>();
 
     public DeviceGroup(final BlockEntity identity) {
         super(identity);

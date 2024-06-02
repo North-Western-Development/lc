@@ -3,23 +3,13 @@
 package li.cil.oc2.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.Style;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -101,7 +91,7 @@ public abstract class ImageButton extends AbstractButton {
         if (tooltip.stream().findFirst().isEmpty()) return null;
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < tooltip.size(); i++) {
-            builder.append(tooltip.get(i).getString() + (i == tooltip.size() - 1 ? "" : "\n"));
+            builder.append(tooltip.get(i).getString()).append(i == tooltip.size() - 1 ? "" : "\n");
         }
         Component component = Component.literal(builder.toString());
         return Tooltip.create(component);

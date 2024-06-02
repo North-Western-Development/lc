@@ -7,13 +7,9 @@ import li.cil.oc2.common.bus.device.data.FirmwareRegistry;
 import li.cil.oc2.common.util.ItemStackUtils;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.Util;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;

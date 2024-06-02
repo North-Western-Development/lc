@@ -3,15 +3,12 @@
 package li.cil.oc2.common.bus.device.data;
 
 import li.cil.oc2.api.bus.device.data.Firmware;
-import li.cil.sedna.api.Sizes;
 import li.cil.sedna.api.memory.MemoryMap;
-import li.cil.sedna.elf.*;
 import li.cil.sedna.buildroot.Buildroot;
 import li.cil.sedna.memory.MemoryMaps;
 import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public final class BuildrootFirmware implements Firmware {
     @Override

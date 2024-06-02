@@ -6,7 +6,6 @@ import li.cil.oc2.api.bus.device.ItemDevice;
 import li.cil.oc2.api.bus.device.rpc.RPCDevice;
 import li.cil.oc2.api.bus.device.vm.VMDevice;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

@@ -3,7 +3,6 @@
 package li.cil.oc2.data;
 
 import li.cil.oc2.api.API;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.BlockTagsProvider;

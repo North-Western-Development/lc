@@ -77,7 +77,7 @@ public interface DeviceBusController {
      * This is the aggregation of all {@link Device}s added to all {@link DeviceBusElement}s known
      * to the controller as found during the last scan scheduled via {@link #scheduleBusScan()}.
      *
-     * @return the list of all devices on the bus managed by this controller.
+     * @return the set of all devices on the bus managed by this controller.
      */
     Set<Device> getDevices();
 

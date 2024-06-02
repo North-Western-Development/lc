@@ -9,7 +9,6 @@ import net.minecraft.util.RandomSource;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public final class ThrottledSoundEmitter {

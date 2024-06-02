@@ -13,8 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
-import org.apache.commons.collections4.QueueUtils;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -30,7 +28,7 @@ public final class VxlanBlockEntity extends ModBlockEntity implements NetworkInt
     private int frameCount;
     private long lastGameTime;
 
-    private final Queue<byte[]> packetQueue = new ArrayBlockingQueue<byte[]>(32);
+    private final Queue<byte[]> packetQueue = new ArrayBlockingQueue<>(32);
 
     ///////////////////////////////////////////////////////////////////
 

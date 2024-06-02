@@ -2,8 +2,6 @@
 
 package li.cil.oc2.data;
 
-import com.mojang.datafixers.util.Pair;
-import li.cil.oc2.api.API;
 import li.cil.oc2.common.block.Blocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -18,22 +16,14 @@ import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static java.util.Collections.singletonList;
-import static java.util.Objects.requireNonNull;
 import static li.cil.oc2.common.Constants.*;
 
 public final class ModLootTableProvider extends LootTableProvider {

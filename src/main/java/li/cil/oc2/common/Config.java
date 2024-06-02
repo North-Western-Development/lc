@@ -9,6 +9,7 @@ import net.minecraftforge.common.TierSortingRegistry;
 
 import java.util.UUID;
 
+@SuppressWarnings("FieldMayBeFinal")
 public final class Config {
     @Path("vm") public static long maxAllocatedMemory = 512 * Constants.MEGABYTE;
 
@@ -54,10 +55,6 @@ public final class Config {
 
     public static boolean computersUseEnergy() {
         return computerEnergyPerTick > 0 && computerEnergyStorage > 0;
-    }
-
-    public static boolean chargersUseEnergy() {
-        return chargerEnergyPerTick > 0 && chargerEnergyStorage > 0;
     }
 
     public static boolean projectorsUseEnergy() {

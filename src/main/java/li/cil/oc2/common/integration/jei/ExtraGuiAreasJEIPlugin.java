@@ -6,23 +6,18 @@ import li.cil.oc2.api.API;
 import li.cil.oc2.client.gui.AbstractMachineInventoryScreen;
 import li.cil.oc2.client.gui.AbstractMachineTerminalScreen;
 import li.cil.oc2.common.block.ComputerBlock;
-import li.cil.oc2.common.item.Items;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @JeiPlugin
 public class ExtraGuiAreasJEIPlugin implements IModPlugin {
@@ -34,7 +29,7 @@ public class ExtraGuiAreasJEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(final IRecipeRegistration registration)
     {
-        HashSet<ItemStack> removals = new HashSet<ItemStack>();
+        HashSet<ItemStack> removals = new HashSet<>();
         removals.add(ComputerBlock.getPreconfiguredComputer());
         registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, removals);
     }

@@ -10,9 +10,6 @@ import li.cil.oc2.api.bus.device.object.DocumentedDevice;
 import li.cil.oc2.api.bus.device.object.NamedDevice;
 import li.cil.oc2.api.capabilities.NetworkInterface;
 import li.cil.oc2.common.Constants;
-import li.cil.oc2.common.block.NetworkSwitchBlock;
-import li.cil.oc2.common.blockentity.BlockEntities;
-import li.cil.oc2.common.blockentity.NetworkHubBlockEntity;
 import li.cil.oc2.common.capabilities.Capabilities;
 import li.cil.oc2.common.util.LazyOptionalUtils;
 import li.cil.oc2.common.util.LevelUtils;
@@ -309,9 +306,7 @@ public final class NetworkSwitchBlockEntity extends ModBlockEntity implements Na
     }
 
     private void copyBytes(byte[] input, byte[] output, int inputOffset, int outputOffset, int length) {
-        for (int i = 0; i < length; i++) {
-            output[outputOffset + i] = input[inputOffset + i];
-        }
+        if (length >= 0) System.arraycopy(input, inputOffset, output, outputOffset, length);
     }
 
     private void validateAdjacentBlocks() {
@@ -347,8 +342,8 @@ public final class NetworkSwitchBlockEntity extends ModBlockEntity implements Na
     }
 
     private static class HostEntry {
-        public int iface;
-        public long timestamp;
+        public final int iface;
+        public final long timestamp;
         public HostEntry(int iface, long timestamp) {
             this.iface = iface;
             this.timestamp = timestamp;
@@ -356,9 +351,9 @@ public final class NetworkSwitchBlockEntity extends ModBlockEntity implements Na
     }
 
     public static class LuaHostEntry {
-        public String mac;
-        public long age;
-        public int side;
+        public final String mac;
+        public final long age;
+        public final int side;
 
         public LuaHostEntry(String mac, long age, int iface) {
             this.mac = mac;
@@ -377,15 +372,15 @@ public final class NetworkSwitchBlockEntity extends ModBlockEntity implements Na
          * A list of tagged vlans that will be accepted on both ingress and egress. 0 (the global untagged vlan) is not a valid
          * value
          */
-        public List<Short> tagged;
+        public final List<Short> tagged;
         /**
          * If enabled, packets entering on this port may also leave via this port again
          */
-        public boolean hairpin;
+        public final boolean hairpin;
         /**
          * If this is set, tagged will be ignored. Instead all tagged vlans will be accepted. untagged will still be honored
          */
-        public boolean trunkAll;
+        public final boolean trunkAll;
 
         public PortSettings(final short untagged, final List<Short> tagged, final boolean hairpin, final boolean trunkAll) {
             this.untagged = untagged;

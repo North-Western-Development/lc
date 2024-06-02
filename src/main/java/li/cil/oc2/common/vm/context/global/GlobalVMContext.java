@@ -31,11 +31,11 @@ public final class GlobalVMContext implements VMContext, VMContextManagerCollect
 
     @Serialized
     @SuppressWarnings("FieldMayBeFinal")
-    private BitSet reservedInterrupts = new BitSet();
+    private final BitSet reservedInterrupts = new BitSet();
 
     @Serialized
     @SuppressWarnings("FieldMayBeFinal")
-    private MemoryRangeList reservedMemoryRanges = new MemoryRangeList();
+    private final MemoryRangeList reservedMemoryRanges = new MemoryRangeList();
 
     ///////////////////////////////////////////////////////////////////
 

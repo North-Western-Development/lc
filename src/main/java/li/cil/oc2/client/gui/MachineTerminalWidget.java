@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraftforge.client.ForgeHooksClient;
 import org.joml.Matrix4f;
 import li.cil.oc2.client.gui.terminal.TerminalInput;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;

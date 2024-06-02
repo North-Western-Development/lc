@@ -13,7 +13,6 @@ import li.cil.oc2.api.bus.device.vm.event.VMInitializingEvent;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.bus.device.util.IdentityProxy;
 import li.cil.oc2.common.bus.device.util.OptionalAddress;
-import li.cil.oc2.common.item.AbstractStorageItem;
 import li.cil.oc2.common.serialization.BlobStorage;
 import li.cil.oc2.common.util.ItemStackUtils;
 import li.cil.sedna.api.memory.MemoryAccessException;

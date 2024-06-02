@@ -2,7 +2,6 @@
 
 package li.cil.oc2.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -14,8 +13,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +23,7 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static li.cil.oc2.common.util.TranslationUtils.text;
@@ -161,11 +159,9 @@ public final class FileChooserScreen extends Screen {
 
         final int buttonTop = fileNameTop + TEXT_FIELD_HEIGHT + WIDGET_SPACING;
         final int buttonCount = 2;
-        final int buttonWidth = widgetsWidth / buttonCount - (buttonCount - 1) * WIDGET_SPACING;
-        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed, (p_253298_) -> {
-            return (MutableComponent)p_253298_.get();
-        }));
-        addRenderableWidget(new Button(MARGIN + buttonWidth + WIDGET_SPACING, buttonTop, buttonWidth, BUTTON_HEIGHT, CANCEL_TEXT, this::handleCancelPressed, null));
+        final int buttonWidth = widgetsWidth / buttonCount - WIDGET_SPACING;
+        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed, Supplier::get));
+        addRenderableWidget(new Button(MARGIN + buttonWidth + WIDGET_SPACING, buttonTop, buttonWidth, BUTTON_HEIGHT, CANCEL_TEXT, this::handleCancelPressed, Supplier::get));
 
         fileList.refreshFiles(directory);
 
@@ -210,7 +206,7 @@ public final class FileChooserScreen extends Screen {
         }
 
         final String selectedFileEntry = fileNameTextField.getValue();
-        if ("".equals(selectedFileEntry) || ".".equals(selectedFileEntry)) {
+        if (selectedFileEntry.isEmpty() || ".".equals(selectedFileEntry)) {
             return Optional.empty();
         }
 
@@ -307,7 +303,7 @@ public final class FileChooserScreen extends Screen {
                                 return 1;
                             }
                             return p1.getFileName().compareTo(p2.getFileName());
-                        }).collect(Collectors.toList());
+                        }).toList();
                     for (final Path path : files) {
                         try {
                             if (Files.isHidden(path)) {

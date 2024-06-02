@@ -3,14 +3,12 @@
 package li.cil.oc2.common.blockentity;
 
 import li.cil.oc2.common.Constants;
-import li.cil.oc2.common.block.DiskDriveBlock;
 import li.cil.oc2.common.block.FlashMemoryFlasherBlock;
 import li.cil.oc2.common.bus.device.vm.block.FlashMemoryFlasherContainer;
 import li.cil.oc2.common.bus.device.vm.block.FlashMemoryFlasherDevice;
 import li.cil.oc2.common.capabilities.Capabilities;
 import li.cil.oc2.common.container.TypedItemStackHandler;
 import li.cil.oc2.common.network.Network;
-import li.cil.oc2.common.network.message.DiskDriveFloppyMessage;
 import li.cil.oc2.common.network.message.FirmwareFlasherMessage;
 import li.cil.oc2.common.tags.ItemTags;
 import li.cil.oc2.common.util.ItemStackUtils;
@@ -98,7 +96,7 @@ public final class FlashMemoryFlasherBlockEntity extends ModBlockEntity implemen
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void setFloppyClient(final ItemStack stack) {
+    public void setFlashMemory(final ItemStack stack) {
         itemHandler.setStackInSlot(0, stack);
     }
 

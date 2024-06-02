@@ -2,7 +2,6 @@
 
 package li.cil.oc2.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.oc2.api.API;
 import net.minecraft.resources.ResourceLocation;
 

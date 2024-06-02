@@ -14,12 +14,8 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import net.minecraftforge.client.event.ViewportEvent;
-import org.codehaus.plexus.util.dag.Vertex;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import li.cil.oc2.common.block.ProjectorBlock;
 import li.cil.oc2.common.blockentity.ProjectorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.ProjectorDevice;
@@ -439,17 +435,6 @@ public final class ProjectorDepthRenderer {
         builder.vertex(MAIN_CAMERA_DEPTH.width, MAIN_CAMERA_DEPTH.height, 0).uv(1, 0).endVertex();
         builder.vertex(MAIN_CAMERA_DEPTH.width, 0, 0).uv(1, 1).endVertex();
         tesselator.end();
-    }
-
-    private static Matrix4f getFrustumMatrix(final float near, final float far, final float dist,
-                                             final float left, final float right,
-                                             final float top, final float bottom) {
-        return new Matrix4f(
-            2 * dist / (right - left), 0, (right + left) / (right - left), 0,
-            0, 2 * dist / (top - bottom), (top + bottom) / (top - bottom), 0,
-            0, 0, -(far + near) / (far - near), -(2 * far * near) / (far - near),
-            0, 0, -1, 0
-        );
     }
 
     private static DynamicTexture getColorBuffer(final ProjectorBlockEntity projector) {

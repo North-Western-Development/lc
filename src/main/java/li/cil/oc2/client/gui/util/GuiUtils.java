@@ -2,7 +2,6 @@
 
 package li.cil.oc2.client.gui.util;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.oc2.api.bus.device.DeviceType;
 import li.cil.oc2.api.bus.device.DeviceTypes;
 import li.cil.oc2.client.gui.widget.Sprite;

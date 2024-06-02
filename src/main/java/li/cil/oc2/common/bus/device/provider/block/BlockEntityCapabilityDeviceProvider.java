@@ -9,8 +9,6 @@ import li.cil.oc2.common.bus.device.provider.util.AbstractBlockEntityCapabilityD
 import li.cil.oc2.common.capabilities.Capabilities;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import java.util.List;
-
 public final class BlockEntityCapabilityDeviceProvider extends AbstractBlockEntityCapabilityDeviceProvider<Device, BlockEntity> {
     public BlockEntityCapabilityDeviceProvider() {
         super(Capabilities::device);

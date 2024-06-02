@@ -5,8 +5,6 @@ package li.cil.oc2.client.renderer.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import li.cil.oc2.client.renderer.entity.model.RobotModel;
 import li.cil.oc2.common.entity.Robot;
 import net.minecraft.client.renderer.MultiBufferSource;

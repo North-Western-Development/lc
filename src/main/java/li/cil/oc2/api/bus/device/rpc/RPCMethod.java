@@ -39,7 +39,7 @@ public interface RPCMethod extends RPCMethodGroup {
     /**
      * The list of parameters this method accepts.
      *
-     * @return the list of parameters.
+     * @return the array of parameters.
      */
     RPCParameter[] getParameters();
 

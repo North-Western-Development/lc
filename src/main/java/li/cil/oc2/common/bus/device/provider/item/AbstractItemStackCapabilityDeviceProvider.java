@@ -32,9 +32,8 @@ public abstract class AbstractItemStackCapabilityDeviceProvider<TCapability> ext
         }
 
         final TCapability value = optional.orElseThrow(AssertionError::new);
-        final Optional<ItemDevice> device = getItemDevice(query, value);
 
-        return device;
+        return getItemDevice(query, value);
     }
 
     protected abstract Optional<ItemDevice> getItemDevice(ItemDeviceQuery query, TCapability value);

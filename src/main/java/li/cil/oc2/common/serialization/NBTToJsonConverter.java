@@ -36,8 +36,8 @@ public final class NBTToJsonConverter {
             case NBTTagIds.TAG_BYTE_ARRAY -> {
                 final JsonArray json = new JsonArray();
                 final byte[] array = ((ByteArrayTag) tag).getAsByteArray();
-                for (int i = 0; i < array.length; i++) {
-                    json.add(array[i]);
+                for (final byte b : array) {
+                    json.add(b);
                 }
                 return json;
             }
@@ -63,16 +63,16 @@ public final class NBTToJsonConverter {
             case NBTTagIds.TAG_INT_ARRAY -> {
                 final JsonArray json = new JsonArray();
                 final int[] array = ((IntArrayTag) tag).getAsIntArray();
-                for (int i = 0; i < array.length; i++) {
-                    json.add(array[i]);
+                for (final int j : array) {
+                    json.add(j);
                 }
                 return json;
             }
             case NBTTagIds.TAG_LONG_ARRAY -> {
                 final JsonArray json = new JsonArray();
                 final long[] array = ((LongArrayTag) tag).getAsLongArray();
-                for (int i = 0; i < array.length; i++) {
-                    json.add(array[i]);
+                for (final long l : array) {
+                    json.add(l);
                 }
                 return json;
             }

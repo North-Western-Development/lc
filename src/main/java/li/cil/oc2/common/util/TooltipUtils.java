@@ -2,7 +2,6 @@
 
 package li.cil.oc2.common.util;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import li.cil.oc2.api.bus.device.DeviceType;
@@ -18,8 +17,6 @@ import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -29,8 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
-import org.joml.Vector2i;
-import org.joml.Vector2ic;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -39,6 +34,7 @@ import java.util.List;
 import static li.cil.oc2.common.Constants.*;
 import static li.cil.oc2.common.util.TextFormatUtils.withFormat;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class TooltipUtils {
     private static final MutableComponent DEVICE_NEEDS_REBOOT =
         Component.translatable(Constants.TOOLTIP_DEVICE_NEEDS_REBOOT)

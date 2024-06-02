@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Function;
 
 public final class LevelUtils {
@@ -50,11 +51,7 @@ public final class LevelUtils {
             }
         }
 
-        if (blockEntity != null) {
-            return blockEntity.getClass().getSimpleName();
-        }
-
-        return block.getClass().getSimpleName();
+        return Objects.requireNonNullElse(blockEntity, block).getClass().getSimpleName();
     }
 
     public static void playSound(final LevelAccessor level, final BlockPos pos, final SoundType soundType, final Function<SoundType, SoundEvent> soundEvent) {

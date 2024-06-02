@@ -48,7 +48,7 @@ public abstract class AbstractBlockStorageDevice<TBlock extends BlockDevice, TId
 
     ///////////////////////////////////////////////////////////////
 
-    protected boolean readonly;
+    protected final boolean readonly;
     protected VirtIOBlockDevice device;
     private CompletableFuture<Void> openJob;
 

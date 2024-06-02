@@ -48,12 +48,6 @@ public final class PciRootPortDevice implements MemoryMappedDevice {
         }
     }
 
-
-    public boolean hasChanges() {
-        return false;
-    }
-
-
     @Override
     public int getLength() {
         return length;
@@ -62,12 +56,12 @@ public final class PciRootPortDevice implements MemoryMappedDevice {
     @Override
     public long load(final int offset, final int sizeLog2) throws MemoryAccessException {
         if (offset >= 0 && offset <= length - (1 << sizeLog2)) {
-            System.out.println(String.format("PCI config read: %x %x", offset, sizeLog2));
+            System.out.printf("PCI config read: %x %x%n", offset, sizeLog2);
             if (offset == 0x10) {
                 long res = buffer.getInt(offset);
-                System.out.println(String.format("        00:00.0 BAR0 read    %x", res));
+                System.out.printf("        00:00.0 BAR0 read    %x%n", res);
                 res = res & 0xFFFFF000L;
-                System.out.println(String.format("Clipped 00:00.0 BAR0 read to %x", res));
+                System.out.printf("Clipped 00:00.0 BAR0 read to %x%n", res);
                 return res;
             }
             return switch (sizeLog2) {
@@ -85,7 +79,7 @@ public final class PciRootPortDevice implements MemoryMappedDevice {
     @Override
     public void store(final int offset, final long value, final int sizeLog2) throws MemoryAccessException {
         if (offset >= 0 && offset <= length - (1 << sizeLog2)) {
-            System.out.println(String.format("PCI config write: %x %x %x", offset, value, sizeLog2));
+            System.out.printf("PCI config write: %x %x %x%n", offset, value, sizeLog2);
             switch (sizeLog2) {
                 case 0 -> buffer.put(offset, (byte) value);
                 case 1 -> buffer.putShort(offset, (short) value);
