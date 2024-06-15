@@ -8,7 +8,7 @@ The underlying VM, which is written entirely in Java, is called [Sedna] and was 
 
 ## Why the Fork?
 
-*OpenComputers II: Reimagined* aims to fix bugs with OC2 while adding new features and attempting to keep up with the latest popular versions of Minecraft. We did attempt to reach [Sangar (fnuecke)] on Twitter but got no response, so we've decided to continue with the fork and releasing separately on Curse under a new name.
+*OpenComputers II: Reimagined* aims to fix bugs with OC2 while adding new features and attempting to keep up with the latest popular versions of Minecraft. We did attempt to reach [Sangar (fnuecke)] on Twitter but got no response, so we've decided to continue with the fork and release separately on Curse under a new name.
 The name change is simply an attempt to ensure it is well known that [Sangar (fnuecke)] is not responsible for this version, so they're not blasted with issues from it. We will be doing everything we can to ensure [Sangar (fnuecke)] does still get the credit they deserve for the mod though.
 
 ## Gameplay Documentation
