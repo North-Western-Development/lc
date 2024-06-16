@@ -1,10 +1,16 @@
 # OpenComputers II: Reimagined
 
+[Searching for an Artist](#artists)
+
 *OpenComputers II: Reimagined* is a Minecraft mod adding virtual computers to the game. It is a fork of the mod originally made by [Sangar (fnuecke)], this fork is maintained North Western Development. These computers run a virtual machine emulating a 64-Bit RISC-V architecture capable of booting Linux. On top of this, a high-level Lua API is provided to communicate with various devices in the game world. This enables adding virtual devices using a simple, Java-friendly API, without having to implement actual kernel drivers.
 
 The original mod was a successor to [OpenComputers]. At least in spirit. While many of the implementation details have changed quite dramatically, the core concepts of customizable hardware, persistence and sand-boxing are shared.
 
 The underlying VM, which is written entirely in Java, is called [Sedna] and was written by [Sangar (fnuecke)] as well.
+
+## Artists
+
+We are looking for artists to assist with models and textures going forward. Artists will be entitled to a negotiated percentage of CurseForge rewards or any other donation platforms that may be employed. Artists will also receive special credits throughout the mod and it's repos.
 
 ## Why the Fork?
 
