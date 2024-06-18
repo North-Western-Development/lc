@@ -78,6 +78,16 @@
   "item.oc2r.circuit_board": "Circuit Board",
   "item.oc2r.circuit_board.desc": "Crafting material.",
 
+  "item.oc2r.silicon": "Silicon",
+  "item.oc2r.silicon.desc": "Crafting material.",
+  "item.oc2r.silicon_blend": "Silicon Blend",
+  "item.oc2r.silicon_blend.desc": "A mixture of sand and quartz from which silicon is cooked.",
+  "item.oc2r.silicon_wafer": "Silicon Wafer",
+  "item.oc2r.silicon_wafer.desc": "A wafer ready for processor construction.",
+  "item.oc2r.raw_silicon_wafer": "Raw Silicon Wafer",
+  "item.oc2r.raw_silicon_wafer.desc": "A wafer with small imperfections that must be cooked out.",
+
+
   "entity.oc2r.robot": "Robot",
 
   "gui.oc2r.computer.error.unknown": "Unknown Error",

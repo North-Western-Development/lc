@@ -98,6 +98,10 @@ public final class Items {
     public static final RegistryObject<Item> NETWORK_TUNNEL_MODULE = register("network_tunnel_module", NetworkTunnelItem::new);
 
     public static final RegistryObject<Item> TRANSISTOR = register("transistor", ModItem::new);
+    public static final RegistryObject<Item> SILICON_BLEND = register("silicon_blend", ModItem::new);
+    public static final RegistryObject<Item> SILICON = register("silicon", ModItem::new);
+    public static final RegistryObject<Item> SILICON_WAFER = register("silicon_wafer", ModItem::new);
+    public static final RegistryObject<Item> RAW_SILICON_WAFER = register("raw_silicon_wafer", ModItem::new);
     public static final RegistryObject<Item> CIRCUIT_BOARD = register("circuit_board", ModItem::new);
 
     ///////////////////////////////////////////////////////////////////

@@ -33,6 +33,10 @@ public final class ModItemModelProvider extends ItemModelProvider {
         simple(Items.CPU_TIER_2);
         simple(Items.CPU_TIER_3);
         simple(Items.CPU_TIER_4);
+        simple(Items.SILICON);
+        simple(Items.SILICON_BLEND);
+        simple(Items.SILICON_WAFER);
+        simple(Items.RAW_SILICON_WAFER);
         simple(Items.HARD_DRIVE_SMALL, "item/hard_drive_base")
             .texture("layer1", "item/hard_drive_tint");
         simple(Items.HARD_DRIVE_MEDIUM, "item/hard_drive_base")

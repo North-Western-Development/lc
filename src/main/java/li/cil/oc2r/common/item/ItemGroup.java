@@ -66,6 +66,10 @@ public final class ItemGroup {
             output.accept(Items.INVENTORY_OPERATIONS_MODULE.get());
             output.accept(Items.BLOCK_OPERATIONS_MODULE.get());
             output.accept(Items.NETWORK_TUNNEL_MODULE.get());
+            output.accept(Items.SILICON.get());
+            output.accept(Items.SILICON_BLEND.get());
+            output.accept(Items.SILICON_WAFER.get());
+            output.accept(Items.RAW_SILICON_WAFER.get());
             output.accept(Items.TRANSISTOR.get());
             output.accept(Items.CIRCUIT_BOARD.get());
             //output.accept(Items.NETWORK_SWITCH.get());
