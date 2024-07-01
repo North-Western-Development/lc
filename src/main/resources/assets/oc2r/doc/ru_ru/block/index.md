@@ -8,7 +8,7 @@
 - [Зарядное устройство](charger.md)
 - [Компьютер](computer.md)
 - [Дисковод](disk_drive.md)
-- [Программатор Flash памяти](flash_memory_flasher.md)
+- [Программатор карты памяти](flash_memory_flasher.md)
 - [Клавиатура](keyboard.md)
 - [Монитор](monitor.md)
 - [Сетевой разъем](network_connector.md)
