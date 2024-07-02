@@ -9,7 +9,6 @@ import li.cil.oc2r.common.blockentity.TickableBlockEntity;
 import li.cil.oc2r.common.integration.Wrenches;
 import li.cil.oc2r.common.network.Network;
 import li.cil.oc2r.common.network.message.MonitorPowerMessageForwarded;
-import li.cil.oc2r.common.util.TooltipUtils;
 import li.cil.oc2r.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -80,7 +79,6 @@ public final class MonitorBlock extends HorizontalDirectionalBlock implements En
     @Override
     public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter level, final List<Component> tooltip, final TooltipFlag advanced) {
         super.appendHoverText(stack, level, tooltip, advanced);
-        TooltipUtils.addEnergyConsumption(Config.monitorEnergyPerTick, tooltip);
     }
 
     @SuppressWarnings("deprecation")
