@@ -28,7 +28,7 @@ public class BundledRedstone {
     }
 
     public boolean isAvailable() {
-        return this.handler == null;
+        return this.handler != null;
     }
 
     @Nullable

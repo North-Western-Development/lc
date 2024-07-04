@@ -32,8 +32,10 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
     private static final String GET_BUNDLED_INPUT = "getBundledInput";
     private static final String GET_BUNDLED_OUTPUT = "getBundledOutput";
     private static final String SET_BUNDLED_OUTPUT = "setBundledOutput";
+    private static final String SET_BUNDLED_OUTPUTS = "setBundledOutputs";
     private static final String SIDE = "side";
     private static final String VALUE = "value";
+    private static final String VALUES = "values";
     private static final String COLOUR = "colour";
 
     ///////////////////////////////////////////////////////////////////
@@ -112,7 +114,7 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
     }
 
     @Callback(name = SET_REDSTONE_OUTPUT)
-    public void setRedstoneOutput(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUE) final int value) {
+    public void setRedstoneOutput(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUES) final int value) {
         if (side == null) throw new IllegalArgumentException();
         final int index = side.getDirection().get3DDataValue();
 
@@ -131,11 +133,14 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
         setChanged();
     }
 
+    @Nullable
     @Callback(name = GET_BUNDLED_INPUT)
     public byte[] getBundledInput(@Parameter(SIDE) @Nullable final Side side) {
+        if (side == null) throw new IllegalArgumentException();
+
         BundledRedstone bundledRedstone = BundledRedstone.getInstance();
         if (bundledRedstone.isAvailable()) {
-            return bundledRedstone.getBundledInput(this.level, this.getBlockPos(), side.getDirection());
+            return bundledRedstone.getBundledInput(this.level, this.getBlockPos(), side.getDirection().getOpposite());
         } else {
             return new byte[Constants.BLOCK_FACE_COUNT];
         }
@@ -143,16 +148,49 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
 
     @Callback(name = GET_BUNDLED_OUTPUT)
     public byte[] getBundledOutput(@Parameter(SIDE) @Nullable final Side side) {
+        if (side == null) throw new IllegalArgumentException();
+
         final int index = side.getDirection().get3DDataValue();
         return bundled_output[index];
     }
 
     @Callback(name = SET_BUNDLED_OUTPUT)
-    public void setBundledOutput(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUE) final int[] values) {
+    public void setBundledOutput(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUE) final int value, @Parameter(COLOUR) final int color) {
         if (side == null) throw new IllegalArgumentException();
 
         boolean changed = false;
-        final int index = side.getDirection().get3DDataValue();
+        final int index = side.getDirection().getOpposite().get3DDataValue();
+        final byte clampedValue = (byte) Mth.clamp(value, 0, 255);
+        final byte clampedColor = (byte) Mth.clamp(color, 0, 15);
+        /*for (int i=0; i < values.length; i++) {
+            final byte clampedValue = (byte) Mth.clamp(values[i], 0, 255);
+            if (clampedValue != bundled_output[index][i]) {
+                bundled_output[index][i] = clampedValue;
+                changed = true;
+            }
+        }*/
+
+        if (bundled_output[index][clampedColor] != clampedValue) {
+            changed = true;
+            bundled_output[index][clampedColor] = clampedValue;
+        }
+
+        if (changed) {
+            final Direction direction = HorizontalBlockUtils.toGlobal(getBlockState(), side);
+            if (direction != null) {
+                notifyNeighbor(direction);
+            }
+
+            setChanged();
+        }
+    }
+
+    @Callback(name = SET_BUNDLED_OUTPUTS)
+    public void setBundledOutputs(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUES) final int[] values) {
+        if (side == null) throw new IllegalArgumentException();
+
+        boolean changed = false;
+        final int index = side.getDirection().getOpposite().get3DDataValue();
         for (int i=0; i < values.length; i++) {
             final byte clampedValue = (byte) Mth.clamp(values[i], 0, 255);
             if (clampedValue != bundled_output[index][i]) {
@@ -208,12 +246,18 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
             .description("Get the current bundled level sent out on the specified side.")
             .parameterDescription(SIDE, "the side to read the bundled output level from");
         visitor.visitCallback(SET_BUNDLED_OUTPUT)
-            .description("Set the new bundled level transmitted on the specified side.\n" +
+            .description("Set the new bundled level transmitted for a specific color on the specified side.\n" +
                 "Sides may be specified by name or zero-based index. Please note that " +
                 "the side depends on the orientation of the device.")
             .parameterDescription(SIDE, "the side to write the output level to.")
             .parameterDescription(VALUE, "the output level to set, will be clamped to [0, 255].")
             .parameterDescription(COLOUR, "the colour wire this sets, as int [0, 15]");
+        visitor.visitCallback(SET_BUNDLED_OUTPUTS)
+            .description("Set the new bundled levels transmitted on the specified side.\n" +
+                "Sides may be specified by name or zero-based index. Please note that " +
+                "the side depends on the orientation of the device.")
+            .parameterDescription(SIDE, "the side to write the output level to.")
+            .parameterDescription(VALUES, "the output levels to set in array form, each value will be clamped to [0, 255], 16 entries.");
     }
 
     ///////////////////////////////////////////////////////////////////
