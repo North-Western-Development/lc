@@ -392,7 +392,7 @@ public final class ProjectorDepthRenderer {
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
         RenderSystem.colorMask(true, true, true, false);
-        // RenderSystem.disableDepthTest();
+        RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
     }
 
