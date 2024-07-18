@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -136,6 +137,7 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
     @Nullable
     @Callback(name = GET_BUNDLED_INPUT)
     public byte[] getBundledInput(@Parameter(SIDE) @Nullable final Side side) {
+        if(!ModList.get().isLoaded("projectred_transmission")) throw new IllegalStateException();
         if (side == null) throw new IllegalArgumentException();
 
         BundledRedstone bundledRedstone = BundledRedstone.getInstance();
@@ -148,6 +150,7 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
 
     @Callback(name = GET_BUNDLED_OUTPUT)
     public byte[] getBundledOutput(@Parameter(SIDE) @Nullable final Side side) {
+        if(!ModList.get().isLoaded("projectred_transmission")) throw new IllegalStateException();
         if (side == null) throw new IllegalArgumentException();
 
         final int index = side.getDirection().get3DDataValue();
@@ -156,6 +159,7 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
 
     @Callback(name = SET_BUNDLED_OUTPUT)
     public void setBundledOutput(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUE) final int value, @Parameter(COLOUR) final int color) {
+        if(!ModList.get().isLoaded("projectred_transmission")) throw new IllegalStateException();
         if (side == null) throw new IllegalArgumentException();
 
         boolean changed = false;
@@ -187,6 +191,7 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
 
     @Callback(name = SET_BUNDLED_OUTPUTS)
     public void setBundledOutputs(@Parameter(SIDE) @Nullable final Side side, @Parameter(VALUES) final int[] values) {
+        if(!ModList.get().isLoaded("projectred_transmission")) throw new IllegalStateException();
         if (side == null) throw new IllegalArgumentException();
 
         boolean changed = false;
@@ -239,25 +244,28 @@ public final class RedstoneInterfaceBlockEntity extends ModBlockEntity implement
             .parameterDescription(SIDE, "the side to write the output level to.")
             .parameterDescription(VALUE, "the output level to set, will be clamped to [0, 15].");
 
-        visitor.visitCallback(GET_BUNDLED_INPUT)
-            .description("Get the current bundled level received on the specified side.")
-            .parameterDescription(SIDE, "the side to read the bundled input level from");
-        visitor.visitCallback(GET_BUNDLED_OUTPUT)
-            .description("Get the current bundled level sent out on the specified side.")
-            .parameterDescription(SIDE, "the side to read the bundled output level from");
-        visitor.visitCallback(SET_BUNDLED_OUTPUT)
-            .description("Set the new bundled level transmitted for a specific color on the specified side.\n" +
-                "Sides may be specified by name or zero-based index. Please note that " +
-                "the side depends on the orientation of the device.")
-            .parameterDescription(SIDE, "the side to write the output level to.")
-            .parameterDescription(VALUE, "the output level to set, will be clamped to [0, 255].")
-            .parameterDescription(COLOUR, "the colour wire this sets, as int [0, 15]");
-        visitor.visitCallback(SET_BUNDLED_OUTPUTS)
-            .description("Set the new bundled levels transmitted on the specified side.\n" +
-                "Sides may be specified by name or zero-based index. Please note that " +
-                "the side depends on the orientation of the device.")
-            .parameterDescription(SIDE, "the side to write the output level to.")
-            .parameterDescription(VALUES, "the output levels to set in array form, each value will be clamped to [0, 255], 16 entries.");
+        if(ModList.get().isLoaded("projectred_transmission"))
+        {
+            visitor.visitCallback(GET_BUNDLED_INPUT)
+                .description("Get the current bundled level received on the specified side.")
+                .parameterDescription(SIDE, "the side to read the bundled input level from");
+            visitor.visitCallback(GET_BUNDLED_OUTPUT)
+                .description("Get the current bundled level sent out on the specified side.")
+                .parameterDescription(SIDE, "the side to read the bundled output level from");
+            visitor.visitCallback(SET_BUNDLED_OUTPUT)
+                .description("Set the new bundled level transmitted for a specific color on the specified side.\n" +
+                    "Sides may be specified by name or zero-based index. Please note that " +
+                    "the side depends on the orientation of the device.")
+                .parameterDescription(SIDE, "the side to write the output level to.")
+                .parameterDescription(VALUE, "the output level to set, will be clamped to [0, 255].")
+                .parameterDescription(COLOUR, "the colour wire this sets, as int [0, 15]");
+            visitor.visitCallback(SET_BUNDLED_OUTPUTS)
+                .description("Set the new bundled levels transmitted on the specified side.\n" +
+                    "Sides may be specified by name or zero-based index. Please note that " +
+                    "the side depends on the orientation of the device.")
+                .parameterDescription(SIDE, "the side to write the output level to.")
+                .parameterDescription(VALUES, "the output levels to set in array form, each value will be clamped to [0, 255], 16 entries.");
+        }
     }
 
     ///////////////////////////////////////////////////////////////////
