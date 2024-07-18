@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @SuppressWarnings("FieldMayBeFinal")
 public final class Config {
+    //TODO: Implement configuration of CPU MHzs
     @Path("vm") public static long maxAllocatedMemory = 512 * Constants.MEGABYTE;
 
     @Path("energy.blocks") public static double busCableEnergyPerTick = 0.1;
@@ -31,6 +32,7 @@ public final class Config {
 
     @Path("energy.items") public static double memoryEnergyPerMegabytePerTick = 0.5;
     @Path("energy.items") public static double hardDriveEnergyPerMegabytePerTick = 1;
+    @Path("energy.items") public static double cpuEnergyPerMegahertzPerTick = 0.1;
     @Path("energy.items") public static int redstoneInterfaceCardEnergyPerTick = 1;
     @Path("energy.items") public static int networkInterfaceEnergyPerTick = 1;
     @Path("energy.items") public static int fileImportExportCardEnergyPerTick = 1;
