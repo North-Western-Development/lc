@@ -148,7 +148,7 @@ public class MonitorGUIRenderer {
                     RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
                     RenderSystem.colorMask(true, true, true, true);
-                    RenderSystem.depthMask(false);
+                    //RenderSystem.depthMask(false);
 
                     final ShaderInstance shader = GameRenderer.getPositionTexShader();
 
