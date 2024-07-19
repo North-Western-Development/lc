@@ -166,6 +166,7 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
             }
 
             stack.popPose();
+            RenderSystem.disableDepthTest();
         } else {
             stack.pushPose();
             stack.translate(0, 0, -0.9f);
