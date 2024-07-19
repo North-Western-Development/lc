@@ -158,6 +158,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.ModList;
+import li.cil.oc2r.api.bus.device.Device;
 
 class ModBlockEntity extends BlockEntity {
     public int getMagicValue() {
@@ -199,7 +200,7 @@ class Integration {
     // existing devices. Otherwise, the devices will technically be removed and re-added every time the device bus
     // scans for device changes. This is particularly relevant when using the lifecycle methods mount(), unmount()
     // and suspend() (e.g. if we were to implement LifecycleAwareDevice on this record).
-    record ModBlockEntityDevice(ModBlockEntity blockEntity) {
+    public record ModBlockEntityDevice(ModBlockEntity blockEntity) {
         @Callback
         public int getMagicValue() {
             return blockEntity.getMagicValue();
